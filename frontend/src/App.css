@@ -12,11 +12,16 @@
 @import '~@clr/ui/clr-ui.min.css'; /* clarity ui components */
 @import url('https://fonts.googleapis.com/css2?family=Clarity+City:wght@300;400;600&display=swap'); /* clarity city font */
 
-
+@font-face {
+  font-family: 'Metropolis';
+  src: url('./Assets/Fonts/Webfonts/WOFF2/Metropolis-Medium.woff2') format('woff2'),
+       url('./Assets/Fonts/Webfonts/WOFF/Metropolis-Medium.woff') format('woff');
+}
 
 
 .App {
   text-align: center;
+
 }
 
 .main{
@@ -29,8 +34,7 @@
   letter-spacing: .7em !important;
   color: #fafafa !important;
   text-decoration: none !important;
-  font-family: 'Clarity City' !important;
-    text-shadow: 2px -1px 10px #e7e70f !important;
+  text-shadow: 2px -1px 10px #e7e70f !important;
 
   /* animation: text-shadow-animation 2s ease-in-out forwards ; */
 }
@@ -48,10 +52,6 @@
   height: 4.5rem !important;
 }
 
-
-body {
-  font-family: 'Clarity City', sans-serif;
-}
 
 .settings {
   justify-content: flex-start;
@@ -71,12 +71,6 @@ body {
 
 * {box-sizing: border-box;}
 
-body {
-  font-family: "Montserrat", sans-serif;
-  background-color: #fff;
-  margin: 0;
-  transition: background 0.2s linear;
-}
 
 .App-header{
   display: flex;
@@ -86,8 +80,8 @@ body {
 
 
 
-body.dark {background-color: #414f35 !important;}
-.App-header.dark {background-color: #111213 !important;}  */
+body.dark {background-color: #90968b !important;}
+.App-header.dark {background-color: #70767b !important;}  */
 p.dark {color: #fff;}
 a.dark {color: #59ff00;}
 
@@ -99,7 +93,7 @@ body.dark h1, body.dark, p {color: #dadada } a{color: #00ff59;}
 }
 
 .checkbox-label {
-  background-color: #8a8a8a5c;
+  background-color: #c5c5c55c;
   width: 50px;
   height: 26px;
   border-radius: 50px;
@@ -152,7 +146,6 @@ body.dark h1, body.dark, p {color: #dadada } a{color: #00ff59;}
   text-align: justify;
     padding-left: 30vw;
     padding-right: 30vw;
-    font-family: 'Clarity City' !important;
 }
 
 

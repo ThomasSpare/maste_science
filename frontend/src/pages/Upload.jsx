@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
 import "./Upload.css";
-import { CdsGrid, CdsGridColumn } from '@cds/react/grid';
-import { CdsAlert, CdsAlertActions } from '@cds/react/alert';
-
-
 
 const Upload = () => {
     const [file, setFile] = useState('');
@@ -12,32 +8,32 @@ const Upload = () => {
     const [country, setCountry] = useState('');
     const [category, setCategory] = useState('');
 
-    const handleUpload = () => {
+    const handleUpload = (event) => {
+        event.preventDefault();
         // Check if any input field is empty
-        if (!file || !author || !uploadDate || !country || !category) {
-      <CdsAlert
-        type="info"
-        items={[<CdsAlertActions>Please submit all fields</CdsAlertActions>]}
-      />
+        if (!file || !author || !country || !category) {
+            alert("Please submit all fields");
             return;
         }
-    
+
         // Logic to upload content to the database with the provided tags
         // You can use an API call or any other method to save the data
-    
-        // Example API call using fetch:
-        fetch('/api/upload', {
+
+        // Create a new FormData instance
+        let formData = new FormData();
+
+        // Append the file and other data to the FormData instance
+        formData.append('file', file);
+        formData.append('author', author);
+        formData.append('uploadDate', uploadDate);
+        formData.append('country', country);
+        formData.append('category', category);
+
+        // Send the FormData instance to the server
+        fetch('http://localhost:8000/api/uploads', {
             method: 'POST',
-            body: JSON.stringify({
-                file,
-                author,
-                uploadDate,
-                country,
-                category,
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            body: formData,
+            JSON : true
         })
             .then(response => response.json())
             .then(data => {
@@ -49,6 +45,7 @@ const Upload = () => {
                 console.error(error);
             });
     };
+
 
     const currentDate = new Date().toISOString().split('T')[0];
 
@@ -102,78 +99,66 @@ const Upload = () => {
     ];
 
     return (
-        <CdsGrid>
-            <CdsGridColumn>
-                <form className="clr-form">
-                <div className="clr-form-control">
-                    <label htmlFor="file">Upload File</label>
-                    <input
-                        type="file"
-                        id="file"
-                        value={file}
-                        accept="pdf/*, pdf, ppt/*, ppt"
-                        onChange={e => setFile(e.target.value)}
-                        required  
-                        autoFocus
-                    />
-                </div>
-                <div className="clr-form-control">
-                    <label htmlFor="author">Author</label>
-                    <input
-                        type="text"
-                        id="author"
-                        placeholder="Author"
-                        value={author}
-                        onChange={e => setAuthor(e.target.value)}
-                        autoFocus
-                    />
-                </div>
-                <div className="clr-form-control">
-                    <label htmlFor="uploadDate">Upload Date</label>
-                    <input
-                        type="text"
-                        id="uploadDate"
-                        placeholder="Upload Date"
-                        value={currentDate}
-                        onChange={e => setUploadDate(e.target.value)}
-                        autoFocus
-                    />
-                </div>
-                <div className="clr-form-control">
-                    <label htmlFor="country">Country</label>
-                    <select
-                        id="country"
-                        value={country}
-                        onChange={e => setCountry(e.target.value)}
-                    >
-                        <option value="">Select a country</option>
-                        {europeanCountries.map(country => (
-                            <option key={country} value={country}>
-                                {country}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="clr-form-control">
-                    <label htmlFor="category">Category</label>
-                    <input
-                        type="text"
-                        id="category"
-                        placeholder="Category"
-                        value={category}
-                        onChange={e => setCategory(e.target.value)}
-                        autoFocus
-                    />
-                </div>
-                <div className="clr-form-control">
-                    <button className="clr-button" onClick={handleUpload}>
-                        Upload
-                    </button>
-                </div>
-                </form>
-            </CdsGridColumn>
-        </CdsGrid>
+        <form className="clr-form" clrlayout="horizontal">
+            <label>Upload File</label>
+            <input
+                type="file"
+                id="file"
+                accept="pdf/*, pdf, ppt/*, ppt"
+                onChange={e => setFile(e.target.files[0])}
+                required
+                autoFocus
+            />
+
+            <label htmlFor="author">Author</label>
+            <input
+                type="text"
+                id="author"
+                placeholder="Author"
+                value={author}
+                onChange={e => setAuthor(e.target.value)}
+                autoFocus
+            />
+
+            <label htmlFor="uploadDate">Upload Date</label>
+            <input
+                type="text"
+                id="uploadDate"
+                placeholder="Upload Date"
+                value={currentDate}
+                onChange={e => setUploadDate(e.target.value)}
+                autoFocus
+            />
+
+            <label htmlFor="country">Country</label>
+            <select
+                id="country"
+                value={country}
+                onChange={e => setCountry(e.target.value)}
+            >
+                <option value="">Select a country</option>
+                {europeanCountries.map(country => (
+                    <option key={country} value={country}>
+                        {country}
+                    </option>
+                ))}
+            </select>
+
+            <label htmlFor="category">Category</label>
+            <input
+                type="text"
+                id="category"
+                placeholder="Category"
+                value={category}
+                onChange={e => setCategory(e.target.value)}
+                autoFocus
+            />
+
+            <button className="clr-button" onClick={handleUpload}>
+                Upload
+            </button>
+        </form>
     );
-};
+}
 
 export default Upload;

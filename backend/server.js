@@ -1,9 +1,12 @@
-require("dotenv").config();
+const dotenv = require("dotenv");
 const express = require("express");
+const multer = require("multer");
 const cors = require("cors");
 const { Pool } = require("pg");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
+dotenv.config();
 const app = express();
 const port = 8000;
 
@@ -30,10 +33,30 @@ pool.connect((err) => {
   }
 });
 
-// Route to get all users
-app.get("/users", async (req, res) => {
+// Uploading files
+
+const upload = multer({ dest: "uploads/" });
+
+app.post("/api/uploads", upload.single("file"), (req, res) => {
+  port.query(
+    "INSERT INTO uploads (file) VALUES ($1)",
+    [req.file.filename],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+      } else {
+        res.status(201).json({ message: "File uploaded successfully" });
+      }
+    }
+  );
+});
+
+// Searching Files in the Database
+
+app.get("/api/uploads", async (_, res) => {
   try {
-    const result = await pool.query("SELECT * FROM users");
+    const result = await pool.query("SELECT * FROM uploads");
     res.json(result.rows);
   } catch (err) {
     console.error(err);
@@ -119,16 +142,33 @@ app.get("/protected", (req, res) => {
 
 // To Create new tables in DB, only run once
 
-// pool.query(`
-//   CREATE TABLE users (
+// pool.query(
+//   `
+//   CREATE TABLE uploads (
 //     id SERIAL PRIMARY KEY,
 //     username VARCHAR(255) UNIQUE NOT NULL,
 //     password VARCHAR(255) NOT NULL
 //   )
-// `, (err, res) => {
-//   if (err) {
-//     console.error(err);
-//   } else {
-//     console.log('Table created successfully');
+// `,
+//   (err, res) => {
+//     if (err) {
+//       console.error(err);
+//     } else {
+//       console.log("Table created successfully");
+//     }
 //   }
-// });
+// );
+
+app.get("/api/tables", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public'
+    `);
+    res.json(result.rows.map((row) => row.table_name));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
