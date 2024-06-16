@@ -1,0 +1,8 @@
+#root > cds-grid > cds-grid-column {
+    display: flex;
+    margin-top: 10vh;
+    justify-content: center;
+    align-items: center;
+    height: 20vh;
+    background-color: #f8f9fa;
+}

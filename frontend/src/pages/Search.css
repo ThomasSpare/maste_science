@@ -1,0 +1,11 @@
+.logo {
+    display: none;
+}
+
+.DocViewer {
+    height: 1000vh;
+    scroll-behavior: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 1rem;
+}

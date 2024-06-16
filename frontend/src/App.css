@@ -1,0 +1,339 @@
+/* Clarity Design https://clarity.design/ */
+@import '@cds/core/global.min.css';
+@import '@cds/core/styles/theme.dark.min.css';
+@import '@clr/ui/clr-ui.min.css';
+@import url('https://fonts.googleapis.com/css2?family=Clarity+City:wght@300;400;600&display=swap');
+
+/* Sass file syntax */
+@import '~modern-normalize/modern-normalize.css'; /* css reset */
+@import '~@cds/core/global.min.css'; /* clarity global styles */
+@import '~@cds/city/css/bundles/default.min.css'; /* load base font */
+@import '~@cds/core/styles/theme.dark.min.css'; /* dark theme */
+@import '~@clr/ui/clr-ui.min.css'; /* clarity ui components */
+@import url('https://fonts.googleapis.com/css2?family=Clarity+City:wght@300;400;600&display=swap'); /* clarity city font */
+
+
+
+
+.App {
+  text-align: center;
+}
+
+.main{
+  width: 100%;
+}
+
+.header .branding .title, header .branding .title {
+  font-size: 1rem !important;
+  font-weight: 900 !important;
+  letter-spacing: .7em !important;
+  color: #fafafa !important;
+  text-decoration: none !important;
+  font-family: 'Clarity City' !important;
+    text-shadow: 2px -1px 10px #e7e70f !important;
+
+  /* animation: text-shadow-animation 2s ease-in-out forwards ; */
+}
+
+/* @keyframes text-shadow-animation {
+  0% {
+    text-shadow: -100px -1px 10px #44e70f !important;
+  }
+  100% {
+    text-shadow: 2px -1px 10px #44e70f !important;
+  }
+} */
+
+.header.header {
+  height: 4.5rem !important;
+}
+
+
+body {
+  font-family: 'Clarity City', sans-serif;
+}
+
+.settings {
+  justify-content: flex-start;
+  align-items: center !important;
+
+}
+
+/* Icons */
+#root > div > header > div > header > div.settings > a{
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+/* Light-Dark Mode */
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+
+* {box-sizing: border-box;}
+
+body {
+  font-family: "Montserrat", sans-serif;
+  background-color: #fff;
+  margin: 0;
+  transition: background 0.2s linear;
+}
+
+.App-header{
+  display: flex;
+  background-color: #bfbfbf;
+  transition: background 0.2s linear;
+}
+
+
+
+body.dark {background-color: #414f35 !important;}
+.App-header.dark {background-color: #111213 !important;}  */
+p.dark {color: #fff;}
+a.dark {color: #59ff00;}
+
+body.dark h1, body.dark, p {color: #dadada } a{color: #00ff59;}
+
+.checkbox {
+  opacity: 0;
+  position: absolute;
+}
+
+.checkbox-label {
+  background-color: #8a8a8a5c;
+  width: 50px;
+  height: 26px;
+  border-radius: 50px;
+  position: relative;
+  padding: 5px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fa-moon {color: #ddd6bd; font-size: 16px;}
+
+.fa-sun {color: #d19e4c; font-size: 16px;}
+
+.checkbox-label .ball {
+  background-color: #1d2238;
+  width: 22px;
+  height: 22px;
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  border-radius: 50%;
+  transition: transform 0.2s linear;
+}
+
+.checkbox:checked + .checkbox-label .ball {
+  transform: translateX(24px);
+}
+
+.checkbox-label .ball::before {
+  content: "\f185"; /* sun icon */
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  font-size: 16px;
+  margin-left: 3px;
+  color: #d2bf72;
+}
+
+.checkbox:checked + .checkbox-label .ball::before {
+  content: "\f186"; /* moon icon */
+  color: #c0c0c0;
+  margin-left: 3px;
+}
+
+
+/* Fonts */
+
+.text {
+  text-align: justify;
+    padding-left: 30vw;
+    padding-right: 30vw;
+    font-family: 'Clarity City' !important;
+}
+
+
+.main-container {
+  /* display: flex; */
+  height: 10vh;
+  background: var(--clr-global-app-background);
+}
+
+.sub-nav .nav, .subnav .nav {
+  padding-left: 30rem !important;
+}
+
+.logo {
+  width: 15%;
+  pointer-events: none;
+  margin-right: 4%;
+  margin-top: 31%;
+  z-index: 999;
+  opacity: 0;
+  animation: fadeIn 1s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    margin-right: 20vw;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+
+.App-header {
+  min-height: 20vh;
+    flex-direction: column;
+    align-items: center;
+    font-size: calc(10px + 2vmin);
+    width: 100%;
+    display: flex;
+    align-content: flex-end;
+    justify-content: space-between;
+}
+
+#hero {
+  height: 30vh;
+    width: 100vw;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* BURGER MENU */
+/* Position and sizing of burger button */
+.bm-burger-button {
+  position: fixed;
+  width: 36px;
+  height: 30px;
+  left: 36px;
+  top: 36px;
+  display: none;
+}
+
+/* Color/shape of burger icon bars */
+.bm-burger-bars {
+  background: #373a47;
+}
+
+/* Color/shape of burger icon bars on hover*/
+.bm-burger-bars-hover {
+  background: #a90000;
+}
+
+/* Position and sizing of clickable cross button */
+.bm-cross-button {
+  height: 24px;
+  width: 24px;
+}
+
+/* Color/shape of close button cross */
+.bm-cross {
+  background: #bdc3c7;
+}
+
+/*
+Sidebar wrapper styles
+Note: Beware of modifying this element as it can break the animations - you should not need to touch it in most cases
+*/
+.bm-menu-wrap {
+  position: fixed;
+  height: 100%;
+}
+
+/* General sidebar styles */
+.bm-menu {
+  background: #373a47;
+  padding: 2.5em 1.5em 0;
+  font-size: 1.15em;
+}
+
+/* Morph shape necessary with bubble or elastic */
+.bm-morph-shape {
+  fill: #373a47;
+}
+
+/* Wrapper for item list */
+.bm-item-list {
+  color: #b8b7ad;
+  padding: 0.8em;
+}
+
+/* Individual item */
+.bm-item {
+  display: inline-block;
+}
+
+/* Styling of overlay */
+.bm-overlay {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .App-header {
+    min-height: 8vh;
+  }
+  
+
+  .bm-burger-button {
+    display: block;
+}
+
+.header .search+.header-actions, .header .search+.settings, .header .search-box+.header-actions, .header .search-box+.settings, header .search+.header-actions, header .search+.settings, header .search-box+.header-actions, header .search-box+.settings {
+  display: none;
+}
+
+.text {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  padding-left: 5vw;
+  padding-right: 5vw;
+  width: 70vw !important;
+}
+
+.form, form {
+    display: none;
+}
+
+ input, select, textarea {
+  display: none;
+}
+ input, select, textarea{
+  display: none !important;
+}
+
+*, :after, :before {
+  box-sizing: inherit;
+  width: -webkit-fill-available;
+}
+
+
+  .sub-nav .nav, .subnav .nav {
+    padding-left: 0rem !important;
+    display: none;
+  }
+
+  .logo {
+    display: none;
+
+  }
+  .text {
+    padding-left: 10vw;
+    padding-right: 10vw;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .text {
+    padding-left: 5vw;
+    padding-right: 5vw;
+  }
+  
+}
