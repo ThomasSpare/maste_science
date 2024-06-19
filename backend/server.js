@@ -38,9 +38,11 @@ pool.connect((err) => {
 const upload = multer({ dest: "uploads/" });
 
 app.post("/api/uploads", upload.single("file"), (req, res) => {
-  port.query(
-    "INSERT INTO uploads (file) VALUES ($1)",
-    [req.file.filename],
+  const { author, uploadDate, country, category } = req.body;
+  pool.query(
+    // Had type error here 'port' instead of 'pool'
+    "INSERT INTO uploads (file, author, uploadDate, country, category) VALUES ($1, $2, $3, $4, $5)",
+    [req.file.filename, author, uploadDate, country, category],
     (err, result) => {
       if (err) {
         console.error(err);
@@ -159,14 +161,64 @@ app.get("/protected", (req, res) => {
 //   }
 // );
 
+// pool.query(
+//   `
+//   ALTER TABLE uploads
+//   DELETE COLUMN username VARCHAR(255)
+//   `,
+//   (err, res) => {
+//     if (err) {
+//       console.error(err);
+//     } else {
+//       console.log("Column added successfully");
+//     }
+//   }
+// );
+
+// pool.query(
+//   `
+//   ALTER TABLE uploads
+//   DROP COLUMN password
+//   `,
+//   (err, res) => {
+//     if (err) {
+//       console.error(err);
+//     } else {
+//       console.log("Column removed successfully");
+//     }
+//   }
+// );
+
 app.get("/api/tables", async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT table_name 
+      SELECT table_schema, table_name 
       FROM information_schema.tables 
       WHERE table_schema = 'public'
     `);
-    res.json(result.rows.map((row) => row.table_name));
+    res.json(
+      result.rows.map((row) => ({
+        schema: row.table_schema,
+        table: row.table_name,
+      }))
+    );
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.post("/api/tables/uploads", upload.single("file"), async (req, res) => {
+  try {
+    const { author, uploadDate, country, category } = req.body;
+    const result = await pool.query(
+      `
+      INSERT INTO uploads (file, author, uploadDate, country, category) 
+      VALUES ($1, $2, $3, $4, $5) RETURNING *
+    `,
+      [req.file.filename, author, uploadDate, country, category]
+    );
+    res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });

@@ -1,51 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import "./Upload.css";
 
 const Upload = () => {
-    const [file, setFile] = useState('');
+    const [file, setFile] = useState(null);
     const [author, setAuthor] = useState('');
     const [uploadDate, setUploadDate] = useState('');
     const [country, setCountry] = useState('');
     const [category, setCategory] = useState('');
+    
+    useEffect(() => {
+        setUploadDate(new Date().toISOString().split('T')[0]);
+    }, []);
 
-    const handleUpload = (event) => {
+    const handleUpload = async (event) => {
         event.preventDefault();
-        // Check if any input field is empty
         if (!file || !author || !country || !category) {
             alert("Please submit all fields");
             return;
         }
 
-        // Logic to upload content to the database with the provided tags
-        // You can use an API call or any other method to save the data
-
-        // Create a new FormData instance
-        let formData = new FormData();
-
-        // Append the file and other data to the FormData instance
+        const formData = new FormData();
         formData.append('file', file);
         formData.append('author', author);
         formData.append('uploadDate', uploadDate);
         formData.append('country', country);
         formData.append('category', category);
 
-        // Send the FormData instance to the server
-        fetch('http://localhost:8000/api/uploads', {
-            method: 'POST',
-            body: formData,
-            JSON : true
-        })
-            .then(response => response.json())
-            .then(data => {
-                // Handle the response from the server
-                console.log(data);
-            })
-            .catch(error => {
-                // Handle any errors that occurred during the upload
-                console.error(error);
+        try {
+            const response = await fetch('http://localhost:8000/api/uploads', {
+                method: 'POST',
+                body: formData
             });
-    };
 
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            console.log(data);
+            alert('File uploaded successfully');
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const currentDate = new Date().toISOString().split('T')[0];
 
@@ -99,14 +96,14 @@ const Upload = () => {
     ];
 
     return (
-        <form className="clr-form" clrlayout="horizontal">
+        <form encType='multipart/form-data' className="clr-form" clrlayout="horizontal" onSubmit={handleUpload}>
             <label>Upload File</label>
             <input
                 type="file"
                 id="file"
+                name='file'
                 accept="pdf/*, pdf, ppt/*, ppt"
                 onChange={e => setFile(e.target.files[0])}
-                required
                 autoFocus
             />
 
@@ -154,7 +151,7 @@ const Upload = () => {
                 autoFocus
             />
 
-            <button className="clr-button" onClick={handleUpload}>
+            <button className="clr-button" type='submit'>
                 Upload
             </button>
         </form>
