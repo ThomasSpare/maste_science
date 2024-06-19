@@ -192,14 +192,17 @@ app.get("/protected", (req, res) => {
 app.get("/api/tables", async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT table_schema, table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public'
+      SELECT t.table_schema, t.table_name, array_agg(c.column_name) as columns
+      FROM information_schema.tables t
+      LEFT JOIN information_schema.columns c ON t.table_name = c.table_name
+      WHERE t.table_schema = 'public'
+      GROUP BY t.table_schema, t.table_name
     `);
     res.json(
       result.rows.map((row) => ({
         schema: row.table_schema,
         table: row.table_name,
+        columns: row.columns,
       }))
     );
   } catch (err) {

@@ -5,6 +5,7 @@ import LayOut from "./components/LayOut";
 import Home from "./pages/Home";
 import Search from "./pages/Search";
 import Upload from "./pages/Upload";
+import ViewPdf from "./pages/ViewPdf";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
@@ -16,6 +17,7 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="/Search" index element={<Search />} />
           <Route path="/Upload" index element={<Upload />} />
+          <Route path="/View/:id" index element={<ViewPdf />} />
         </Route>
       </Routes>
     </BrowserRouter>
