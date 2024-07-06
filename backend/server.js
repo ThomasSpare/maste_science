@@ -66,6 +66,27 @@ app.get("/api/uploads", async (_, res) => {
   }
 });
 
+app.get("/api/uploads/:fileId", async (req, res) => {
+  const { fileId } = req.params;
+  try {
+    console.log([fileId]);
+    const queryResult = await pool.query(
+      "SELECT filename FROM uploads WHERE id = $1",
+      [fileId]
+    );
+    if (queryResult.rows.length > 0) {
+      const { filename } = queryResult.rows[0];
+      const filePath = path.join(__dirname, "uploads", filename);
+      res.sendFile(filePath);
+    } else {
+      res.status(404).json({ message: "File not found" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 // Route to create a new user
 
 app.post("/users", async (req, res) => {
