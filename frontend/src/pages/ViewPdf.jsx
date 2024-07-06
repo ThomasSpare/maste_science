@@ -1,32 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import DocViewer, { PDFRenderer } from "react-doc-viewer";
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import DocViewer, { PDFRenderer, HTMLRenderer } from "react-doc-viewer";
 
-function ViewPdf() {
-    const [docs, setDocs] = useState([]);
-    const urlParams = new URLSearchParams(window.location.search);
-    const selectedFile = JSON.parse(decodeURIComponent(urlParams.get('file')));
 
-    useEffect(() => {
-        // Assuming you have a state variable named 'selectedFile' that holds the selected file from the Search component
-        if (selectedFile) {
-            const document = { uri: selectedFile.filepath };
-            setDocs([document]);
-        }
-    }, [selectedFile]);
+const ViewPdf = () => {
+  // Assuming `fileId` or `filePath` is passed as a prop or via route parameters
+    const { fileId } = useParams();
+    const [fileUrl, setFileUrl] = useState('')
 
-    return (
-        <div>
-            {docs.length > 0 ? (
-                <DocViewer
-                    className="DocViewer"
-                    documents={docs}
-                    pluginRenderers={[PDFRenderer]}
-                />
-            ) : (
-                <p>No file selected.</p>
-            )}
-        </div>
+  useEffect(() => {
+    // Construct the URL to fetch the file
+    const url = `/api/uploads/:fileId`;
+
+    // Update the state with the URL for the file
+    setFileUrl(url);
+  }, [fileUrl, fileId]);
+
+  const docs = [
+    { uri: fileUrl }
+  ];
+
+  return (
+    
+      <DocViewer 
+      pluginRenderers={[PDFRenderer, HTMLRenderer]}
+      documents={docs}
+      config={{
+        header: {
+            retainURLParams: true,
+
+            },   
+       } } />
+
     );
 }
+
+
 
 export default ViewPdf;

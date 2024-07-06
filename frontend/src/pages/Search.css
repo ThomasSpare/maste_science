@@ -9,3 +9,47 @@
     overflow-x: hidden;
     padding: 0 1rem;
 }
+
+p {
+    color: rgb(32, 84, 32);
+}
+
+#root > div > div > ol {
+    color: rgb(32, 84, 32);
+}
+
+#root > div{
+    margin-top: 3vh;
+}
+
+li
+{
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
+}
+
+li:hover
+{
+    background-color: aqua;
+    transition: 0.5s;
+}
+
+@media screen and (max-width: 768px) {
+    #root > div > div > div:nth-child(1){
+        margin-top: 10vh;
+    }
+    button{
+        display: none;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    /* CSS code for screens between 768px and 1024px */
+}
+
+@media screen and (min-width: 1024px) {
+    /* CSS code for screens larger than 1024px */
+}

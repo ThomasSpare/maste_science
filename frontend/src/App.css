@@ -28,6 +28,11 @@
   width: 100%;
 }
 
+body {
+  color: #333;
+}
+
+
 .header .branding .title, header .branding .title {
   font-size: 1rem !important;
   font-weight: 900 !important;
@@ -82,10 +87,11 @@
 
 body.dark {background-color: #90968b !important;}
 .App-header.dark {background-color: #70767b !important;}  */
-p.dark {color: #fff;}
+p.dark {color: aquamarine;}
 a.dark {color: #59ff00;}
 
-body.dark h1, body.dark, p {color: #dadada } a{color: #00ff59;}
+
+body.dark h1, body.dark, p {color: aquamarine } a{color: #00ff59;} input {color: aquamarine !important;} select {color: rgb(75, 123, 107)  !important;} textarea {color: aquamarine !important;}
 
 .checkbox {
   opacity: 0;
@@ -110,7 +116,7 @@ body.dark h1, body.dark, p {color: #dadada } a{color: #00ff59;}
 .fa-sun {color: #d19e4c; font-size: 16px;}
 
 .checkbox-label .ball {
-  background-color: #1d2238;
+  background-color: #1640ff;
   width: 22px;
   height: 22px;
   position: absolute;
@@ -302,9 +308,34 @@ Note: Beware of modifying this element as it can break the animations - you shou
   display: none !important;
 }
 
+li:hover {
+  background-color: aqua;
+  transition: 0.5s;
+}
+
+  .main-container {
+    display: flex;
+    height: 10vh;
+    background: var(--clr-global-app-background);
+  }
+
+  .sub-nav .nav, .subnav .nav {
+    padding-left: 0rem !important;
+    display: none;
+  }
+
+
+  .logo {
+    display: none;
+
+  }
+  .text {
+    padding-left: 10vw;
+    padding-right: 10vw;
+  }
+
 *, :after, :before {
   box-sizing: inherit;
-  width: -webkit-fill-available;
 }
 
 

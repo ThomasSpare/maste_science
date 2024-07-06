@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '@cds/core/select/register.js';
 
 function Search() {
+  const navigate = useNavigate();
   const [uploads, setUploads] = useState([]);
   const [filter, setFilter] = useState({
     category: '',
@@ -8,8 +11,6 @@ function Search() {
     author: '',
     country: ''
   });
-
-  const [selectedFile, setSelectedFile] = useState(null);
 
 
   useEffect(() => {
@@ -37,10 +38,10 @@ function Search() {
     );
   });
 
-  const handleFileClick = (file) => {
-    setSelectedFile(file);
-    const fileData = encodeURIComponent(JSON.stringify(file));
-    window.open(`http://localhost:8000/View/${file.id}?file=${fileData}`, '_blank');
+  const handleFileClick = (upload) => {
+    // Assuming `file.filepath` or `file.id` holds the necessary information to access the file
+    const fileId = upload.id; // Adjust based on your data structure
+    navigate(`/api/uploads/${fileId}`);
   };
 
   return (
@@ -120,6 +121,7 @@ function Search() {
               <p style={{ display: "inline-block", marginRight: "50px" }}>Category: {upload.category}</p>
               <p style={{ display: "inline-block", marginRight: "50px" }}>Country: {upload.country}</p>
               <p style={{ display: "inline-block", marginRight: "50px" }}>Author: {upload.author}</p>
+              <p style={{ display: "inline-block", marginRight: "50px" }}>ID: {upload.id}</p>
             </li>
           ))}
         </ol>
