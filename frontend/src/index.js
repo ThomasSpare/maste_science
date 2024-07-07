@@ -17,7 +17,7 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="/Search" index element={<Search />} />
           <Route path="/Upload" index element={<Upload />} />
-          <Route path="/api/uploads/:fileId" element={<ViewPdf />} />
+          <Route path="/view-pdf/:fileId/:file" element={<ViewPdf />} />
         </Route>
       </Routes>
     </BrowserRouter>

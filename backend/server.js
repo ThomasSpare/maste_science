@@ -1,3 +1,4 @@
+const path = require("path");
 const dotenv = require("dotenv");
 const express = require("express");
 const multer = require("multer");
@@ -10,7 +11,7 @@ dotenv.config();
 const app = express();
 const port = 8000;
 
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3000" }));
 
 app.use(express.json());
 
@@ -38,9 +39,12 @@ pool.connect((err) => {
 const upload = multer({ dest: "uploads/" });
 
 app.post("/api/uploads", upload.single("file"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
   const { author, uploadDate, country, category } = req.body;
   pool.query(
-    // Had type error here 'port' instead of 'pool'
     "INSERT INTO uploads (file, author, uploadDate, country, category) VALUES ($1, $2, $3, $4, $5)",
     [req.file.filename, author, uploadDate, country, category],
     (err, result) => {
@@ -56,7 +60,7 @@ app.post("/api/uploads", upload.single("file"), (req, res) => {
 
 // Searching Files in the Database
 
-app.get("/api/uploads", async (_, res) => {
+app.get("/api/uploads/", async (_, res) => {
   try {
     const result = await pool.query("SELECT * FROM uploads");
     res.json(result.rows);
@@ -66,17 +70,19 @@ app.get("/api/uploads", async (_, res) => {
   }
 });
 
-app.get("/api/uploads/:fileId", async (req, res) => {
-  const { fileId } = req.params;
+app.get("/api/uploads/:file", async (req, res) => {
+  const { file } = req.params;
   try {
-    console.log([fileId]);
     const queryResult = await pool.query(
-      "SELECT filename FROM uploads WHERE id = $1",
-      [fileId]
+      "SELECT file FROM uploads WHERE file = $1",
+      [file]
     );
     if (queryResult.rows.length > 0) {
-      const { filename } = queryResult.rows[0];
-      const filePath = path.join(__dirname, "uploads", filename);
+      const { file } = queryResult.rows[0];
+      const filePath = path.join(__dirname, "uploads", file);
+
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `inline; filename="${file}"`);
       res.sendFile(filePath);
     } else {
       res.status(404).json({ message: "File not found" });
@@ -232,19 +238,19 @@ app.get("/api/tables", async (req, res) => {
   }
 });
 
-app.post("/api/tables/uploads", upload.single("file"), async (req, res) => {
-  try {
-    const { author, uploadDate, country, category } = req.body;
-    const result = await pool.query(
-      `
-      INSERT INTO uploads (file, author, uploadDate, country, category) 
-      VALUES ($1, $2, $3, $4, $5) RETURNING *
-    `,
-      [req.file.filename, author, uploadDate, country, category]
-    );
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
+// app.post("/api/tables/uploads", upload.single("file"), async (req, res) => {
+//   try {
+//     const { author, uploadDate, country, category } = req.body;
+//     const result = await pool.query(
+//       `
+//       INSERT INTO uploads (file, author, uploadDate, country, category)
+//       VALUES ($1, $2, $3, $4, $5) RETURNING *
+//     `,
+//       [req.file.filename, author, uploadDate, country, category]
+//     );
+//     res.json(result.rows[0]);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// });

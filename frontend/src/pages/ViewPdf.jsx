@@ -1,40 +1,63 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import DocViewer, { PDFRenderer, HTMLRenderer } from "react-doc-viewer";
-
+import { useParams, useNavigate } from 'react-router-dom';
 
 const ViewPdf = () => {
-  // Assuming `fileId` or `filePath` is passed as a prop or via route parameters
-    const { fileId } = useParams();
-    const [fileUrl, setFileUrl] = useState('')
+  const { file, fileId } = useParams();
+  const navigate = useNavigate();
+  const [fileUrl, setFileUrl] = useState('');
 
   useEffect(() => {
-    // Construct the URL to fetch the file
-    const url = `/api/uploads/:fileId`;
+    const abortController = new AbortController();
+    const signal = abortController.signal;
 
-    // Update the state with the URL for the file
-    setFileUrl(url);
-  }, [fileUrl, fileId]);
+    console.log("Params:", { file, fileId });
+    if (!file) {
+      console.error("File parameter is undefined.");
+      return;
+    }
+    const serverAddress = 'http://localhost:8000'; 
+    const url = `${serverAddress}/api/uploads/${file}`;
+    
+    fetch(url, { signal })
+      .then(response => response.blob())
+      .then(blob => {
+        // Rename the variable to avoid conflict with the `file` parameter
+        const pdfFile = new File([blob], `${file}.pdf`, { type: 'application/pdf' });
+        // Create an object URL from the File object
+        const objectUrl = URL.createObjectURL(pdfFile);
+        setFileUrl(objectUrl);
+      })
+      .catch(error => {
+        if (error.name === 'AbortError') {
+          console.log('Fetch aborted');
+        } else {
+          console.error('Fetch error:', error);
+        }
+      });
 
-  const docs = [
-    { uri: fileUrl }
-  ];
+    // This navigation seems redundant if you're already on the page you want to be, consider removing it
+    // or ensure it's necessary for your app's flow
+    const newUrl = `/view-pdf/${fileId}/${file}`;
+    navigate(newUrl);
+
+    return () => {
+      abortController.abort();
+      // Clean up the object URL to avoid memory leaks
+      if (fileUrl) {
+        URL.revokeObjectURL(fileUrl);
+      }
+    };
+  }, [file, fileId]);
 
   return (
-    
-      <DocViewer 
-      pluginRenderers={[PDFRenderer, HTMLRenderer]}
-      documents={docs}
-      config={{
-        header: {
-            retainURLParams: true,
-
-            },   
-       } } />
-
-    );
+        <iframe
+          title="PDF Viewer"
+          src={fileUrl}
+          style={{ width: '100%', height: '100vh'}}
+          frameBorder={0}
+        >
+        </iframe>
+  );
 }
-
-
 
 export default ViewPdf;

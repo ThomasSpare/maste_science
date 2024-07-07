@@ -39,9 +39,8 @@ function Search() {
   });
 
   const handleFileClick = (upload) => {
-    // Assuming `file.filepath` or `file.id` holds the necessary information to access the file
     const fileId = upload.id; // Adjust based on your data structure
-    navigate(`/api/uploads/${fileId}`);
+    navigate(`/view-pdf/${fileId}/${upload.file}`);
   };
 
   return (
