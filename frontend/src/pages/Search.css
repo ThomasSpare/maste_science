@@ -1,22 +1,7 @@
-.logo {
-    display: none;
-}
-
-.DocViewer {
-    height: 1000vh;
-    scroll-behavior: auto;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 0 1rem;
-}
-
 p {
     color: rgb(32, 84, 32);
 }
 
-#root > div > div > ol {
-    color: rgb(32, 84, 32);
-}
 
 #root > div{
     margin-top: 3vh;
@@ -33,7 +18,7 @@ li
 
 li:hover
 {
-    background-color: aqua;
+    background-color: rgba(0, 255, 255, 0.13);
     transition: 0.5s;
 }
 

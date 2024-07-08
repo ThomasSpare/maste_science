@@ -29,11 +29,7 @@ function Dropdown_1() {
           Resources
           <clr-icon shape="caret down"></clr-icon>
         </button>
-        <div
-          className={`dropdown-menu ${isDropdownOpen ? "fade-in" : ""}`}
-          onMouseEnter={handleDropdownToggle}
-          onMouseLeave={handleDropdownClose}
-        >
+        <div className="dropdown-menu">
           <h4 className="dropdown-header">Dropdown header</h4>
           <div className="dropdown-item active">First Action</div>
           <div className="dropdown-item disabled">Disabled Action</div>

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import './ViewPdf.css';
 
 const ViewPdf = () => {
   const { file, fileId } = useParams();
   const navigate = useNavigate();
   const [fileUrl, setFileUrl] = useState('');
+  const [isLoading, setIsLoading] = useState(true); // Add isLoading state
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -15,17 +17,18 @@ const ViewPdf = () => {
       console.error("File parameter is undefined.");
       return;
     }
-    const serverAddress = 'http://localhost:8000'; 
+    const serverAddress = 'http://localhost:8000';
     const url = `${serverAddress}/api/uploads/${file}`;
-    
+
+    setIsLoading(true); // Set isLoading to true before fetching
+
     fetch(url, { signal })
       .then(response => response.blob())
       .then(blob => {
-        // Rename the variable to avoid conflict with the `file` parameter
         const pdfFile = new File([blob], `${file}.pdf`, { type: 'application/pdf' });
-        // Create an object URL from the File object
         const objectUrl = URL.createObjectURL(pdfFile);
         setFileUrl(objectUrl);
+        setIsLoading(false); // Set isLoading to false after fetching
       })
       .catch(error => {
         if (error.name === 'AbortError') {
@@ -33,16 +36,14 @@ const ViewPdf = () => {
         } else {
           console.error('Fetch error:', error);
         }
+        setIsLoading(false); // Set isLoading to false on error
       });
 
-    // This navigation seems redundant if you're already on the page you want to be, consider removing it
-    // or ensure it's necessary for your app's flow
     const newUrl = `/view-pdf/${fileId}/${file}`;
     navigate(newUrl);
 
     return () => {
       abortController.abort();
-      // Clean up the object URL to avoid memory leaks
       if (fileUrl) {
         URL.revokeObjectURL(fileUrl);
       }
@@ -50,14 +51,19 @@ const ViewPdf = () => {
   }, [file, fileId]);
 
   return (
+    <>
+      {isLoading ? ( // Render loader while isLoading is true
+        <div className="loader">Loading...</div>
+      ) : (
         <iframe
           title="PDF Viewer"
           src={fileUrl}
-          style={{ width: '100%', height: '100vh'}}
+          style={{ width: '100%', height: '100vh' }}
           frameBorder={0}
-        >
-        </iframe>
+        ></iframe>
+      )}
+    </>
   );
-}
+};
 
 export default ViewPdf;

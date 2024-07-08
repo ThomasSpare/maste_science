@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@cds/core/select/register.js';
+import './Search.css';
 
 function Search() {
   const navigate = useNavigate();

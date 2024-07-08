@@ -1,3 +1,4 @@
+import Marquee from "react-marquee";
 import React from "react";
 import "../App.css";
 import "clarity-ui/clarity-ui.min.css"; // Import Clarity UI CSS
@@ -37,6 +38,7 @@ import "@cds/core/icon/register.js"; // Import Clarity Icon component
 import "@clr/icons/shapes/technology-shapes.js";
 import "@cds/core/button/register.js";
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Modal_auth from "./modal_auth.js";
 
 ClarityIcons.addIcons(bellIcon);
@@ -47,6 +49,7 @@ ClarityIcons.addIcons(homeIcon);
 
 function NavBar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleRegister = () => {
     // Perform registration logic here
@@ -71,6 +74,20 @@ function NavBar() {
     document.body.classList.toggle("dark");
   };
 
+
+  const handleSearchInputChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    // Implement search logic here
+    // For example, you could filter your site's content based on `searchQuery`
+    // and then display the results.
+    console.log('Searching for:', searchQuery);
+    // You might navigate to a search results page or filter content on the current page.
+  };
+
   return (
           <header className="App-header">
             <div className="main">
@@ -79,14 +96,17 @@ function NavBar() {
                   <span className="title">MÅSTE</span>
                 </div>
                 <Modal_auth />
-                <form className="search">
-                  <label htmlFor="search-input-sidenav-ng">
+                <form className="search" onSubmit={handleSearch}>
                     <input
                       id="search-input-sidenav-ng"
                       type="text"
                       placeholder="Search for keywords..."
+                      value={searchQuery}
+                      onChange={handleSearchInputChange}
                     />
-                  </label>
+                    <a href="/" className="nav-link nav-icon">
+                    <cds-icon shape="cog" type="submit">Search</cds-icon>
+                  </a>
                 </form>
                 <div className="settings">
                   {/* Light-Dark Mode */}
@@ -103,7 +123,7 @@ function NavBar() {
                     <div className="ball"></div>
                   </label>
 
-                  <a href="javascript://" className="nav-link nav-icon">
+                  <a href="/" className="nav-link nav-icon">
                     <cds-icon shape="home"></cds-icon>
                   </a>
                   <a href="javascript://" className="nav-link nav-icon">
@@ -112,7 +132,7 @@ function NavBar() {
                   <a href="javascript://" className="nav-link nav-icon">
                     <cds-icon shape="bell"></cds-icon>
                   </a>
-                  <a href="javascript://" className="nav-link nav-icon">
+                  <a href="/auth" className="nav-link nav-icon">
                     <cds-icon shape="user"></cds-icon>
                   </a>
                   <a href="javascript://" className="nav-link nav-icon">
@@ -121,6 +141,9 @@ function NavBar() {
                 </div>
               </header>
               <nav className="subnav">
+              <Marquee direction="left" speed={20}>
+                <p style="font-size: 30px">This is a rolling text from right to left.</p>
+              </Marquee>
                 <ul className="nav">
                   <Dropdown_1 />
                   <Dropdown_2 />
@@ -136,6 +159,7 @@ function NavBar() {
                 />
               </nav>
             </div>
+
             {/* Hero image */}
           {isLoggedIn ? (
               <button onClick={handleLogout}>Logout</button>
@@ -143,9 +167,11 @@ function NavBar() {
                   <button onClick={handleLogin}>Login</button>
                   )}
           <button onClick={handleRegister}>Register</button>
-                </header>
-    );
-    }
+
+
+          </header>
+  );
+}
 
 export default NavBar;
 

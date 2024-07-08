@@ -21,6 +21,7 @@
 
 .App {
   text-align: center;
+  font-family: "Metropolis", sans-serif;
 
 }
 
@@ -34,7 +35,7 @@ body {
 
 
 .header .branding .title, header .branding .title {
-  font-size: 1rem !important;
+  font-size: 1.5rem !important;
   font-weight: 900 !important;
   letter-spacing: .7em !important;
   color: #fafafa !important;
@@ -57,6 +58,29 @@ body {
   height: 4.5rem !important;
 }
 
+input {
+  color: #333;
+}
+
+
+/* HOME PAGE */
+
+.home_image1 {
+  height: 100vh;
+}
+
+.home_image2 {
+  height: 100vh;
+}
+
+#page-wrap > main > section.columns > div:nth-child(2) > div{
+  padding-inline: 227px;
+}
+
+/* Home text col */
+.text {
+  text-align: justify;
+}
 
 .settings {
   justify-content: flex-start;
@@ -68,6 +92,13 @@ body {
 #root > div > header > div > header > div.settings > a{
   display: flex;
   flex-wrap: nowrap;
+}
+
+/* Home columns */
+#page-wrap > main > section.columns{
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
 }
 
 /* Light-Dark Mode */
@@ -85,13 +116,13 @@ body {
 
 
 
-body.dark {background-color: #90968b !important;}
+body.dark {background-color: #242424 !important;}
 .App-header.dark {background-color: #70767b !important;}  */
-p.dark {color: aquamarine;}
-a.dark {color: #59ff00;}
+p.dark {color: rgb(127, 225, 255);}
+a.dark {color: rgb(127, 225, 255);}
 
 
-body.dark h1, body.dark, p {color: aquamarine } a{color: #00ff59;} input {color: aquamarine !important;} select {color: rgb(75, 123, 107)  !important;} textarea {color: aquamarine !important;}
+body.dark h1, body.dark, p {color: rgb(127, 225, 255) } a{color: rgb(127, 225, 255)} input {color: rgb(172, 172, 172) !important;} select {color: rgb(75, 123, 107)  !important;} textarea {color:rgb(127, 225, 255) !important;}
 
 .checkbox {
   opacity: 0;
@@ -99,8 +130,8 @@ body.dark h1, body.dark, p {color: aquamarine } a{color: #00ff59;} input {color:
 }
 
 .checkbox-label {
-  background-color: #c5c5c55c;
-  width: 50px;
+  background-color: #868686;
+  width: 57px;
   height: 26px;
   border-radius: 50px;
   position: relative;
@@ -117,17 +148,17 @@ body.dark h1, body.dark, p {color: aquamarine } a{color: #00ff59;} input {color:
 
 .checkbox-label .ball {
   background-color: #1640ff;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 27px;
   position: absolute;
-  left: 2px;
-  top: 2px;
+  left: 0px;
+  top: 0px;
   border-radius: 50%;
   transition: transform 0.2s linear;
 }
 
 .checkbox:checked + .checkbox-label .ball {
-  transform: translateX(24px);
+  transform: translateX(32px);
 }
 
 .checkbox-label .ball::before {
@@ -148,12 +179,6 @@ body.dark h1, body.dark, p {color: aquamarine } a{color: #00ff59;} input {color:
 
 /* Fonts */
 
-.text {
-  text-align: justify;
-    padding-left: 30vw;
-    padding-right: 30vw;
-}
-
 
 .main-container {
   /* display: flex; */
@@ -168,7 +193,7 @@ body.dark h1, body.dark, p {color: aquamarine } a{color: #00ff59;} input {color:
 .logo {
   width: 15%;
   pointer-events: none;
-  margin-right: 4%;
+  margin-right: 2%;
   margin-top: 31%;
   z-index: 999;
   opacity: 0;
@@ -187,7 +212,7 @@ body.dark h1, body.dark, p {color: aquamarine } a{color: #00ff59;} input {color:
 
 
 .App-header {
-  min-height: 20vh;
+  min-height: 12vh;
     flex-direction: column;
     align-items: center;
     font-size: calc(10px + 2vmin);
