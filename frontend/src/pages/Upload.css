@@ -6,3 +6,40 @@
     height: 20vh;
     background-color: #f8f9fa;
 }
+
+.Center {
+    background-image: url(https://res.cloudinary.com/djunroohl/image/upload/v1720394704/grass_mweova.jpg);
+    height: 100vh;
+    background-size: cover;
+}
+
+
+/* Form */
+
+#root > div{
+    text-align: -webkit-center;
+  }
+
+  #root > div > form > label{
+    margin-bottom: 10px;
+  }
+
+  #root > div > form > input{
+    margin-bottom: 10px;
+  }
+
+  #root > div > form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-width: medium;
+    border-color: #002538a6;
+    border-style: groove;
+    border-inline-width: 20px;
+    border-radius: 20px;
+    padding: 20px;
+    width: 23vw;
+    mix-blend-mode: hard-light;
+    background-color: #296783;
+    margin-top: 14vh;
+  }

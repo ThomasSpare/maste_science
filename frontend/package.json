@@ -5,7 +5,7 @@
   "dependencies": {
     "@cds/city": "^1.1.0",
     "@cds/core": "^6.10.0",
-    "@cds/react": "^6.10.0",
+    "@cds/react": "^6.12.0",
     "@clr/icons": "^13.0.2",
     "@clr/ui": "^17.1.0",
     "@dellstorage/clarity-react": "^1.2.15",

@@ -52,8 +52,16 @@ const ViewPdf = () => {
 
   return (
     <>
+    <div id="ViewPdf">
       {isLoading ? ( // Render loader while isLoading is true
-        <div className="loader">Loading...</div>
+        <div className="loader">
+             <cds-icon
+              size="lg"
+              id="lazy-load-icon"
+              shape="jabberwockee"
+              aria-label="This is an example of an icon that takes a little while to load its shape."
+             ></cds-icon>
+        </div>
       ) : (
         <iframe
           title="PDF Viewer"
@@ -62,6 +70,7 @@ const ViewPdf = () => {
           frameBorder={0}
         ></iframe>
       )}
+    </div>
     </>
   );
 };

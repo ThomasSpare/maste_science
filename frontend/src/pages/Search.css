@@ -7,19 +7,22 @@ p {
     margin-top: 3vh;
 }
 
-li
-{
+li{
     border-style: solid;
     border-width: 1px;
     border-radius: 5px;
     padding: 5px;
     margin: 5px;
+    border-color: #7272ff66;
+    width: 60vw;
+    padding-inline: 20px;
 }
+
 
 li:hover
 {
     background-color: rgba(0, 255, 255, 0.13);
-    transition: 0.5s;
+    transition: 0.1s;
 }
 
 @media screen and (max-width: 768px) {

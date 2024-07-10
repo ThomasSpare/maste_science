@@ -1,6 +1,7 @@
 import Marquee from "react-marquee";
 import React from "react";
 import "../App.css";
+import { useLocation } from "react-router-dom";
 import "clarity-ui/clarity-ui.min.css"; // Import Clarity UI CSS
 import "clarity-icons/clarity-icons.min.css"; // Import Clarity Icons CSS
 import "clarity-icons/shapes/technology-shapes.js"; // Import Clarity Icons shapes
@@ -37,8 +38,7 @@ import "@cds/core/divider/register.js"; // Import Clarity Divider component
 import "@cds/core/icon/register.js"; // Import Clarity Icon component
 import "@clr/icons/shapes/technology-shapes.js";
 import "@cds/core/button/register.js";
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRef, useState, useEffect } from "react";
 import Modal_auth from "./modal_auth.js";
 
 ClarityIcons.addIcons(bellIcon);
@@ -50,6 +50,18 @@ ClarityIcons.addIcons(homeIcon);
 function NavBar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const [showLogo, setShowLogo] = useState(true);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!(location.pathname === '/')) { // Only on the home page
+      setShowLogo(false); // Hide the logo
+    } else {
+      setShowLogo(true); // Show the logo on other pages
+    }
+  }, [location]); // Re-run the effect when the location changes
+
 
   const handleRegister = () => {
     // Perform registration logic here
@@ -152,11 +164,9 @@ function NavBar() {
                   <Dropdown_5 />
                   <Dropdown_6 />
                 </ul>
-                <img
-                  className="logo"
-                  src="https://res.cloudinary.com/djunroohl/image/upload/v1715630359/f%C3%A4rglogo4x_rmokzf.png"
-                  alt="logo"
-                />
+                {showLogo && <img className="logo"
+                  src="https://res.cloudinary.com/djunroohl/image/upload/v1720550711/m%C3%A5ste_logo_kwaffc.png"
+                  alt="logo" />}
               </nav>
             </div>
 

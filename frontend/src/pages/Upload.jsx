@@ -1,5 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import { CdsButton } from '@cds/react/button';
+
+
+
+
+import "@cds/core/button/register.js";
+import '@cds/core/input/register.js';
+import "@cds/core/icon/register.js"; // Import Clarity Icon component
+
+import "clarity-icons/clarity-icons.min.css"; // Import Clarity Icons CSS
+import "clarity-icons/shapes/technology-shapes.js"; // Import Clarity Icons shapes
+import "@cds/core/dropdown/register.js"; // Import Clarity Dropdown component
+import "@cds/core/divider/register.js"; // Import Clarity Divider component
+import "@cds/core/icon/register.js"; // Import Clarity Icon component
+import "@clr/icons/shapes/technology-shapes.js";
+import "@cds/core/button/register.js";
 import "./Upload.css";
+
 
 const Upload = () => {
     const [file, setFile] = useState(null);
@@ -96,7 +113,8 @@ const Upload = () => {
     ];
 
     return (
-        <form encType='multipart/form-data' className="clr-form" clrlayout="horizontal" onSubmit={handleUpload}>
+        <div className="Center">
+        <form encType='multipart/form-data' className="clr-form" clrLayout="horizontal" onSubmit={handleUpload}>
             <label>Upload File</label>
             <input
                 type="file"
@@ -151,10 +169,11 @@ const Upload = () => {
                 autoFocus
             />
 
-            <button className="clr-button" type='submit'>
+            <CdsButton className="clr-button" type='submit'>
                 Upload
-            </button>
+            </CdsButton>
         </form>
+        </div>
     );
 }
 
