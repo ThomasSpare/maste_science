@@ -6,6 +6,8 @@ const cors = require("cors");
 const { Pool } = require("pg");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { google } = require("googleapis");
+const analytics = google.analyticsreporting("v4");
 
 dotenv.config();
 const app = express();
@@ -92,6 +94,54 @@ app.get("/api/uploads/:file", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+// Google Analyics----------------------------------------------------------------
+
+async function getRealTimeUsers(auth) {
+  const response = await analytics.reports.batchGet({
+    auth: auth,
+    requestBody: {
+      reportRequests: [
+        {
+          viewId: "GOOGLE_ANALYTICS_VIEW_ID",
+          dateRanges: [
+            {
+              startDate: "30minutesAgo",
+              endDate: "today",
+            },
+          ],
+          metrics: [
+            {
+              expression: "rt:activeUsers",
+            },
+          ],
+        },
+      ],
+    },
+  });
+
+  return response.data.reports[0].data.totals[0].values[0];
+}
+
+// Assuming you have set up OAuth2 authentication
+const oauth2Client = new google.auth.OAuth2(
+  "GOOGLE_ANALYTICS_CLIENT_ID",
+  "GOOGLE_ANALYTICS_CLIENT_SECRET",
+  "GOOGLE_ANALYTICS_REDIRECT_URI"
+);
+
+// Function to call when you want to display the data on your site
+async function displayRealTimeUsers() {
+  try {
+    const users = await getRealTimeUsers(oauth2Client);
+    console.log(`Active users in the last 30 minutes: ${users}`);
+    // Here you would send the users variable to your frontend to be displayed
+  } catch (error) {
+    console.error("Error fetching real-time users:", error);
+  }
+}
+
+//-----------------------------------------------------------------------------
 
 // Route to create a new user
 
