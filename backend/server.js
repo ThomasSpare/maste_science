@@ -14,17 +14,17 @@ const app = express();
 const port = 8000;
 
 app.use(cors({ origin: "https://maste-science.onrender.com" }));
-// app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors({ origin: "http://localhost:3000" }));
 
 app.use(express.json());
 
-// Serve static files from the React frontend app
-app.use(express.static(path.join(__dirname, "../frontend/build")));
+// // Serve static files from the React frontend app
+// app.use(express.static(path.join(__dirname, "../frontend/build")));
 
-// Anything that doesn't match the above, send back index.html
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname + "/../frontend/build/index.html"));
-});
+// // Anything that doesn't match the above, send back index.html
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname + "/../frontend/build/index.html"));
+// });
 
 app.get("/", (req, res) => {
   res.send("Welcome to the MÅSTE project Database !");
