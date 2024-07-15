@@ -1,5 +1,5 @@
 import React from "react";
-import { pushRotate as Menu } from "react-burger-menu";
+// import { pushRotate as Menu } from "react-burger-menu";
 import "../App.css"; // Import your CSS file
 import Menu2 from "../components/menu2.js";
 import "clarity-ui/clarity-ui.min.css"; // Import Clarity UI CSS
@@ -44,7 +44,6 @@ function Home() {
   return (
     <div className="App">
       <div id="outer-container">
-        <Menu pageWrapId={"page-wrap"} outerContainerId={"outer-container"} />
         <main id="page-wrap">
           <main className="text">
             <section className="columns">

@@ -41,7 +41,13 @@ function Dropdown_3() {
         <div className="dropdown-menu">
           <h4 className="dropdown-header">MÅSTE DATABASE</h4>
           <a href="/Search" className="dropdown-item">
-            Search
+            Search PDF Reports
+          </a>
+          <a href="/" className="dropdown-item">
+            Search Powerpoints
+          </a>
+          <a href="/" className="dropdown-item">
+            Search Images
           </a>
           <a href="/Upload" className="dropdown-item">
             Upload
