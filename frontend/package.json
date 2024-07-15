@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@cds/city": "^1.1.0",
-    "@cds/core": "^6.12.0",
+    "@cds/core": "^6.10.0",
     "@cds/react": "^6.12.0",
     "@clr/icons": "^13.0.2",
     "@clr/ui": "^17.1.0",
@@ -14,6 +14,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@webcomponents/custom-elements": "^1.0.0",
+    "ajv": "^8.17.1",
     "axios": "^1.6.8",
     "clarity-icons": "^0.10.28",
     "clarity-ui": "^0.10.28",
@@ -56,8 +57,5 @@
   "main": "index.js",
   "repository": "https://github.com/ThomasSpare/maste_science/tree/main",
   "author": "ThomasSpare",
-  "license": "no",
-  "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
-  }
+  "license": "no"
 }

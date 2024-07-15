@@ -1,7 +1,7 @@
-/* Clarity Design https://clarity.design/ */
-@import '@cds/core/global.min.css';
-@import '@cds/core/styles/theme.dark.min.css';
-@import '@clr/ui/clr-ui.min.css';
+/* Clarity Design */
+@import '~@cds/core/global.min.css';
+@import '~@cds/core/styles/theme.dark.min.css';
+@import '~@clr/ui/clr-ui.min.css';
 
 
 body {

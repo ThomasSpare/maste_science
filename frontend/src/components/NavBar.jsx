@@ -153,9 +153,6 @@ function NavBar() {
                 </div>
               </header>
               <nav className="subnav">
-              <Marquee direction="left" speed={20}>
-                <p style="font-size: 30px">This is a rolling text from right to left.</p>
-              </Marquee>
                 <ul className="nav">
                   <Dropdown_1 />
                   <Dropdown_2 />

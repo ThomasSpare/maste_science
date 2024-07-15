@@ -1,7 +1,6 @@
 header > button:nth-child(2){
  display: none;
 }
-
 header > button:nth-child(3){
     display: none;
 }
