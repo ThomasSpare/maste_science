@@ -1,1 +1,7 @@
-
+#root > header > div > header > clr-modal{
+    font-size: x-small;
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+}

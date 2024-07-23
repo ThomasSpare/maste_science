@@ -1,5 +1,6 @@
 import React from "react";
 import { pushRotate as Menu } from "react-burger-menu";
+import Menu2 from "./components/menu2.jsx";
 import "./App.css"; // Import your CSS file
 import "clarity-ui/clarity-ui.min.css"; // Import Clarity UI CSS
 import "clarity-icons/clarity-icons.min.css"; // Import Clarity Icons CSS
@@ -21,7 +22,6 @@ import "@webcomponents/custom-elements/custom-elements.min.js";
 import "@clr/icons/clr-icons.min.css";
 import "@clr/icons/shapes/technology-shapes.js";
 import "@cds/core/button/register.js";
-import "./App.css"; // Import your CSS file
 import "clarity-icons/clarity-icons.min.css"; // Import Clarity Icons CSS
 import "clarity-icons/shapes/technology-shapes.js"; // Import Clarity Icons shapes
 import "@cds/core/button/register.js"; // Import Clarity Button component
@@ -43,9 +43,9 @@ ClarityIcons.addIcons(homeIcon);
 function App() {
   return (
     <div className="App">
-      <div id="outer-container">
-        <Menu pageWrapId={"page-wrap"} outerContainerId={"outer-container"} />
-        <main id="page-wrap">
+      <Menu2 pageWrapId={"page-wrap"} outerContainerId={"outer-container"} />
+      <main id="page-wrap">
+        <div id="outer-container">
           {/* Footer */}
           <footer className="footer">
             <div className="footer-container">
@@ -68,8 +68,8 @@ function App() {
               </div>
             </div>
           </footer>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

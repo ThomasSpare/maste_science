@@ -1,6 +1,8 @@
 import Marquee from "react-marquee";
 import React from "react";
 import "../App.css";
+import "../components/NavBar.css";
+import { register, login, logout } from '../Auth/Auth.js'; // Adjust the path as necessary
 import { useLocation } from "react-router-dom";
 import "clarity-ui/clarity-ui.min.css"; // Import Clarity UI CSS
 import "clarity-icons/clarity-icons.min.css"; // Import Clarity Icons CSS
@@ -17,6 +19,7 @@ import {
   cogIcon,
   homeIcon,
   vmIcon,
+  searchIcon,
 } from "@cds/core/icon";
 import "@webcomponents/custom-elements/custom-elements.min.js";
 import "@clr/icons/clr-icons.min.css";
@@ -28,7 +31,6 @@ import Dropdown_3 from "./dropdown_3.js";
 import Dropdown_4 from "./dropdown_4.js";
 import Dropdown_5 from "./dropdown_5.js";
 import Dropdown_6 from "./dropdown_6.js";
-import menu2 from "./menu2.js";
 import "clarity-icons/clarity-icons.min.css"; // Import Clarity Icons CSS
 import "clarity-icons/shapes/technology-shapes.js"; // Import Clarity Icons shapes
 import "@cds/core/button/register.js"; // Import Clarity Button component
@@ -46,6 +48,7 @@ ClarityIcons.addIcons(cogIcon);
 ClarityIcons.addIcons(userIcon);
 ClarityIcons.addIcons(vmIcon);
 ClarityIcons.addIcons(homeIcon);
+ClarityIcons.addIcons(searchIcon);
 
 function NavBar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -62,30 +65,11 @@ function NavBar() {
     }
   }, [location]); // Re-run the effect when the location changes
 
-
-  const handleRegister = () => {
-    // Perform registration logic here
-    // If registration is successful, set isLoggedIn to true
-    setIsLoggedIn(true);
-  };
-
-  const handleLogin = () => {
-    // Perform login logic here
-    // If login is successful, set isLoggedIn to true
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    // Perform logout logic here
-    // If logout is successful, set isLoggedIn to false
-    setIsLoggedIn(false);
-  };
   const checkboxRef = useRef(null);
 
   const handleCheckboxChange = () => {
     document.body.classList.toggle("dark");
   };
-
 
   const handleSearchInputChange = (event) => {
     setSearchQuery(event.target.value);
@@ -107,7 +91,6 @@ function NavBar() {
                 <div className="branding">
                   <span className="title">MÅSTE</span>
                 </div>
-                <Modal_auth />
                 <form className="search" onSubmit={handleSearch}>
                     <input
                       id="search-input-sidenav-ng"
@@ -117,9 +100,11 @@ function NavBar() {
                       onChange={handleSearchInputChange}
                     />
                     <a href="/" className="nav-link nav-icon">
-                    <cds-icon shape="cog" type="submit">Search</cds-icon>
+                    <cds-icon shape="search" type="submit">Search</cds-icon>
                   </a>
                 </form>
+                {isLoggedIn && <span className="user-email">User: your-email@example.com</span>}
+                <Modal_auth />
                 <div className="settings">
                   {/* Light-Dark Mode */}
                   <input
@@ -165,17 +150,7 @@ function NavBar() {
                   src="https://res.cloudinary.com/djunroohl/image/upload/v1720550711/m%C3%A5ste_logo_kwaffc.png"
                   alt="logo" />}
               </nav>
-            </div>
-
-            {/* Hero image */}
-          {isLoggedIn ? (
-              <button onClick={handleLogout}>Logout</button>
-              ) : (
-                  <button onClick={handleLogin}>Login</button>
-                  )}
-          <button onClick={handleRegister}>Register</button>
-
-
+            </div>        
           </header>
   );
 }

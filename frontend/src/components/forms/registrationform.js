@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { register } from "../../Auth/register"; // Add missing import statement
+import { register } from "../../Auth/Auth.js"; // Add missing import statement
 
 function RegistrationForm() {
   const [username, setUsername] = useState("");

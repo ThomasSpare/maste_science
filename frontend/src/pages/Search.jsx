@@ -1,54 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GlobalWorkerOptions } from 'pdfjs-dist';
 import '@cds/core/select/register.js';
 import './Search.css';
-import { getDocument } from 'pdfjs-dist/legacy/build/pdf';
-
-GlobalWorkerOptions.workerSrc =
-  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.mjs";
-
-
 
 function Search() {
   const navigate = useNavigate();
   const [uploads, setUploads] = useState([]);
-  const [thumbnails, setThumbnails] = useState({});
   const [filter, setFilter] = useState({
     category: '',
     uploadDate: '',
     author: '',
     country: ''
   });
-  
-  useEffect(() => {
-    uploads.forEach(upload => {
-      loadPdfThumbnail(upload.file, (thumbnailUrl) => {
-        setThumbnails(prevThumbnails => ({ ...prevThumbnails, [upload.id]: thumbnailUrl }));
-      });
-    });
-  }, [uploads]);
-  
-  const loadPdfThumbnail = async (pdfUrl, onThumbnailLoaded) => {
-    const pdf = await getDocument(pdfUrl).promise;
-    const page = await pdf.getPage(1);
-    const viewport = page.getViewport({ scale: 1.0 });
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-    
-    await page.render({ canvasContext: context, viewport: viewport }).promise;
-    onThumbnailLoaded(canvas.toDataURL());
-  };
-  
+
+
   useEffect(() => {
     fetch('http://localhost:8000/api/uploads')
-    .then(response => response.json())
-    .then(data => setUploads(data))
-    .catch(error => console.error('Error:', error));
+      .then(response => response.json())
+      .then(data => setUploads(data))
+      .catch(error => console.error('Error:', error));
   }, []);
-  
+
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
     setFilter(prevFilter => ({
@@ -56,7 +28,7 @@ function Search() {
       [name]: value
     }));
   };
-  
+
   const filteredUploads = uploads.filter(upload => {
     const { category, uploadDate, author, country } = filter;
     return (
@@ -66,7 +38,7 @@ function Search() {
       (country === '' || upload.country === country)
     );
   });
-  
+
   const handleFileClick = (upload) => {
     const fileId = upload.id; // Adjust based on your data structure
     navigate(`/view-pdf/${fileId}/${upload.file}`);
@@ -150,7 +122,6 @@ function Search() {
               <p style={{ display: "inline-block", marginRight: "50px" }}>Country: {upload.country}</p>
               <p style={{ display: "inline-block", marginRight: "50px" }}>Author: {upload.author}</p>
               <p style={{ display: "inline-block", marginRight: "50px" }}>ID: {upload.id}</p>
-              <img src={thumbnails[upload.id]} alt="PDF Thumbnail" /> 
             </li>
           ))}
         </ol>

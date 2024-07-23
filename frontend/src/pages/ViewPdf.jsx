@@ -1,77 +1,73 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import './ViewPdf.css';
+import { useParams } from 'react-router-dom';
+import DocViewer, { PDFRenderer } from '@cyntler/react-doc-viewer';
+import "@cyntler/react-doc-viewer/dist/index.css";
+
 
 const ViewPdf = () => {
-  const { file, fileId } = useParams();
-  const navigate = useNavigate();
-  const [fileUrl, setFileUrl] = useState('');
-  const [isLoading, setIsLoading] = useState(true); // Add isLoading state
+  const { file } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
+  const [docs, setDocs] = useState([]);
+  const [uploadedDocs, setUploadedDocs] = useState([]);
 
   useEffect(() => {
-    const abortController = new AbortController();
-    const signal = abortController.signal;
-
-    console.log("Params:", { file, fileId });
     if (!file) {
       console.error("File parameter is undefined.");
+      setIsLoading(false);
       return;
     }
+    const abortController = new AbortController();
+    const signal = abortController.signal;
     const serverAddress = 'http://localhost:8000';
     const url = `${serverAddress}/api/uploads/${file}`;
 
-    setIsLoading(true); // Set isLoading to true before fetching
+    setIsLoading(true);
 
     fetch(url, { signal })
       .then(response => response.blob())
       .then(blob => {
-        const pdfFile = new File([blob], `${file}.pdf`, { type: 'application/pdf' });
-        const objectUrl = URL.createObjectURL(pdfFile);
-        setFileUrl(objectUrl);
-        setIsLoading(false); // Set isLoading to false after fetching
+        const objectURL = URL.createObjectURL(blob);
+        setDocs([{ uri: objectURL, fileType: 'pdf' }]);
+        setIsLoading(false);
       })
       .catch(error => {
-        if (error.name === 'AbortError') {
-          console.log('Fetch aborted');
-        } else {
-          console.error('Fetch error:', error);
-        }
-        setIsLoading(false); // Set isLoading to false on error
+        console.error('Fetch error:', error);
+        setIsLoading(false);
       });
-
-    const newUrl = `/view-pdf/${fileId}/${file}`;
-    navigate(newUrl);
 
     return () => {
       abortController.abort();
-      if (fileUrl) {
-        URL.revokeObjectURL(fileUrl);
-      }
+      // Cleanup created object URLs
+      docs.forEach(doc => URL.revokeObjectURL(doc.uri));
+      uploadedDocs.forEach(doc => URL.revokeObjectURL(doc.uri));
     };
-  }, [file, fileId]);
+  }, [file]);
+
+  const handleFileChange = (event) => {
+    if (event.target.files?.length) {
+      const filesArray = Array.from(event.target.files);
+      const objectURLs = filesArray.map(file => ({
+        uri: window.URL.createObjectURL(file),
+        fileName: file.name,
+      }));
+      setUploadedDocs(objectURLs);
+    }
+  };
 
   return (
-    <>
     <div id="ViewPdf">
-      {isLoading ? ( // Render loader while isLoading is true
-        <div className="loader">
-             <cds-icon
-              size="lg"
-              id="lazy-load-icon"
-              shape="jabberwockee"
-              aria-label="This is an example of an icon that takes a little while to load its shape."
-             ></cds-icon>
-        </div>
-      ) : (
-        <iframe
-          title="PDF Viewer"
-          src={fileUrl}
-          style={{ width: '100%', height: '100vh' }}
-          frameBorder={0}
-        ></iframe>
-      )}
+      <input
+        type="file"
+        accept=".pdf"
+        multiple
+        onChange={handleFileChange}
+      />
+      <DocViewer
+        documents={uploadedDocs.length > 0 ? uploadedDocs : docs}
+        pluginRenderers={PDFRenderer}
+      />
+      {isLoading && <p>Loading...</p>}
     </div>
-    </>
   );
 };
 

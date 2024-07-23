@@ -1,7 +1,6 @@
 import React from "react";
 // import { pushRotate as Menu } from "react-burger-menu";
 import "../App.css"; // Import your CSS file
-import Menu2 from "../components/menu2.js";
 import "clarity-ui/clarity-ui.min.css"; // Import Clarity UI CSS
 import "clarity-icons/clarity-icons.min.css"; // Import Clarity Icons CSS
 import "clarity-icons/shapes/technology-shapes.js"; // Import Clarity Icons shapes
