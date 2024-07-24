@@ -6,8 +6,7 @@
 .pnp.js
 
 # Ignore the firebase.js file
-firebase.js
-
+/frontend/src/firebaseAuth/firebase.js
 # testing
 /coverage
 
