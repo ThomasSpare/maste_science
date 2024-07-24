@@ -3,7 +3,8 @@
 ## MÅSTE - Research in Nuclear Recycling
 
 This site is a University funded research project to help in researching how 
-to develop new technologies that will tackle the long term dangers of nuclear storage.
+to develop new technologies with the aim to investigate the use of Nuclear power in a more stable, safe, cost effective, environmentally friendly way
+in a longterm perspective.
 
 
 ### What is Nuclear Recycling ?
