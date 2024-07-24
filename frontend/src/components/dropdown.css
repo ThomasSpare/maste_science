@@ -1,0 +1,5 @@
+#root > header > div > nav > ul > div.dropdown.bottom-right.open > div .disabled {
+    color: #666666; /* Light grey color */
+    pointer-events: none; /* Prevents clicking */
+    cursor: default; /* Changes cursor to default to indicate it's not clickable */
+  }

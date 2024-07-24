@@ -171,6 +171,7 @@ body.dark h1, body.dark, p {color: rgb(127, 225, 255) } body.border{color:  rgb(
   color: #d2bf72;
 }
 
+
 .checkbox:checked + .checkbox-label .ball::before {
   content: "\f186"; /* moon icon */
   color: #c0c0c0;

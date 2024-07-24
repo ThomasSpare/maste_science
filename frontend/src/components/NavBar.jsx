@@ -1,5 +1,5 @@
 import Marquee from "react-marquee";
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import "../App.css";
 import "../components/NavBar.css";
 import { register, login, logout } from '../Auth/Auth.js'; // Adjust the path as necessary
@@ -25,6 +25,7 @@ import "@webcomponents/custom-elements/custom-elements.min.js";
 import "@clr/icons/clr-icons.min.css";
 import "@clr/icons/shapes/technology-shapes.js";
 import "@cds/core/button/register.js";
+import ModalAuth from "./modal_auth.js";
 import Dropdown_1 from "./dropdown_1.js";
 import Dropdown_2 from "./dropdown_2.js";
 import Dropdown_3 from "./dropdown_3.js";
@@ -40,8 +41,7 @@ import "@cds/core/divider/register.js"; // Import Clarity Divider component
 import "@cds/core/icon/register.js"; // Import Clarity Icon component
 import "@clr/icons/shapes/technology-shapes.js";
 import "@cds/core/button/register.js";
-import { useRef, useState, useEffect } from "react";
-import Modal_auth from "./modal_auth.js";
+import { firebase } from "googleapis/build/src/apis/firebase/index.js";
 
 ClarityIcons.addIcons(bellIcon);
 ClarityIcons.addIcons(cogIcon);
@@ -53,6 +53,7 @@ ClarityIcons.addIcons(searchIcon);
 function NavBar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [userEmail, setUserEmail] = useState('');
 
   const [showLogo, setShowLogo] = useState(true);
   const location = useLocation();
@@ -103,8 +104,8 @@ function NavBar() {
                     <cds-icon shape="search" type="submit">Search</cds-icon>
                   </a>
                 </form>
-                {isLoggedIn && <span className="user-email">User: your-email@example.com</span>}
-                <Modal_auth />
+                {isLoggedIn && <span className="user-email">Logged in as `{}`</span>}
+                <ModalAuth isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
                 <div className="settings">
                   {/* Light-Dark Mode */}
                   <input
@@ -141,7 +142,7 @@ function NavBar() {
                 <ul className="nav">
                   <Dropdown_1 />
                   <Dropdown_2 />
-                  <Dropdown_3 />
+                  <Dropdown_3 isLoggedIn={isLoggedIn} />
                   <Dropdown_4 />
                   <Dropdown_5 />
                   <Dropdown_6 />

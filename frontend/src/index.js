@@ -35,7 +35,16 @@ export default function App() {
           <Route path="/Search" index element={<Search />} />
           <Route path="/Upload" index element={<Upload />} />
           <Route path="/view-pdf/:fileId/:file" element={<ViewPdf />} />
-          <Route path="/auth" index element={<ModalAuth />} />
+          <Route
+            path="/auth"
+            index
+            element={
+              <ModalAuth
+                isLoggedIn={isLoggedIn}
+                setIsLoggedIn={setIsLoggedIn}
+              />
+            }
+          />
         </Route>
       </Routes>
     </BrowserRouter>

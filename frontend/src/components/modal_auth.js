@@ -1,34 +1,26 @@
 import React, { useState } from "react";
-import "clarity-ui/clarity-ui.min.css"; // Import Clarity UI CSS
-import "clarity-icons/clarity-icons.min.css"; // Import Clarity Icons CSS
-import "clarity-icons/shapes/technology-shapes.js"; // Import Clarity Icons shapes
-import "@cds/core/button/register.js"; // Import Clarity Button component
-import "@cds/core/icon/register.js"; // Import Clarity Icon component
-import "@cds/core/dropdown/register.js"; // Import Clarity Dropdown component
-import "@cds/core/divider/register.js"; // Import Clarity Divider component
-import "@cds/core/icon/register.js"; // Import Clarity Icon component
-import "@cds/core/dropdown/register.js";
-import { ClarityIcons, loginIcon } from "@cds/core/icon";
-import "@cds/core/icon/register.js";
+import "clarity-ui/clarity-ui.min.css";
+import "clarity-icons/clarity-icons.min.css";
+import "clarity-icons/shapes/technology-shapes.js";
 import "@cds/core/button/register.js";
+import "@cds/core/icon/register.js";
+import "@cds/core/dropdown/register.js";
 import "@cds/core/divider/register.js";
 import "@cds/core/modal/register.js";
 import "@webcomponents/custom-elements/custom-elements.min.js";
 import "@clr/icons/clr-icons.min.css";
 import "@clr/icons/shapes/technology-shapes.js";
-import "@cds/core/button/register.js";
+import { ClarityIcons, loginIcon } from "@cds/core/icon";
 import { register, login, logout } from "../Auth/Auth.js"; // Adjust the import path as necessary
 
 ClarityIcons.addIcons(loginIcon);
 
-function ModalAuth() {
+function ModalAuth({ isLoggedIn, setIsLoggedIn }) {
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isRegistrationOpen, setRegistrationOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [IsLoggedIn, setIsLoggedIn] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const openLoginModal = () => {
     setLoginOpen(true);
@@ -46,17 +38,15 @@ function ModalAuth() {
   };
 
   const handleRegister = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
     try {
       await register(email, password);
       setIsRegistered(true);
-      alert("Registration successful!"); // Show a success message to the user
-      closeModal(); // Close modal on successful registration
-      // Optionally, reset email and password state here
+      alert("Registration successful!");
+      closeModal();
     } catch (error) {
       console.error("Registration failed:", error);
-      // Optionally, handle errors (e.g., show an error message)
-      alert("Registration failed. Please try again."); // Show an error message to the user
+      alert("Registration failed. Please try again.");
     }
   };
 
@@ -66,13 +56,11 @@ function ModalAuth() {
       await login(email, password);
       setIsLoggedIn(true);
       setIsRegistered(true);
-      alert("Login successful!"); // Show a success message to the user
-      closeModal(); // Close modal on successful login
-      // Optionally, reset email and password state here
+      alert("Login successful!");
+      closeModal();
     } catch (error) {
       console.error("Login failed:", error);
-      alert("Login failed. Please try again."); // Show an error message to the user
-      // Optionally, handle errors (e.g., show an error message)
+      alert("Login failed. Please try again.");
     }
   };
 
@@ -80,11 +68,9 @@ function ModalAuth() {
     try {
       await logout();
       setIsLoggedIn(false);
-      closeModal(); // Close modal on successful logout
-      // Optionally, perform any additional cleanup (e.g., reset state)
+      closeModal();
     } catch (error) {
       console.error("Logout failed:", error);
-      // Optionally, handle errors (e.g., show an error message)
     }
   };
 
@@ -120,7 +106,6 @@ function ModalAuth() {
         )}
         {isRegistrationOpen && (
           <div>
-            {/* Registration form */}
             <h2>Registration</h2>
             <form onSubmit={handleRegister}>
               <input
@@ -143,18 +128,17 @@ function ModalAuth() {
             </form>
           </div>
         )}
-
         <clr-modal-footer>
           <button className="btn btn-link" onClick={openLoginModal}>
             Login
           </button>
           <cds-icon shape="login"></cds-icon>
-          {IsLoggedIn && (
+          {isLoggedIn && (
             <button className="btn btn-link" onClick={handleLogout}>
               Logout
             </button>
           )}
-          {!IsLoggedIn && !isRegistered && (
+          {!isLoggedIn && !isRegistered && (
             <button className="btn btn-link" onClick={openRegistrationModal}>
               Register
             </button>
@@ -167,4 +151,5 @@ function ModalAuth() {
     </React.Fragment>
   );
 }
+
 export default ModalAuth;

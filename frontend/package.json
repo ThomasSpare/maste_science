@@ -19,6 +19,7 @@
     "@webcomponents/custom-elements": "^1.0.0",
     "ajv": "^8.17.1",
     "axios": "^1.6.8",
+    "buffer": "^6.0.3",
     "clarity-icons": "^0.10.28",
     "clarity-ui": "^0.10.28",
     "firebase": "^10.12.4",
