@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LayOut from "./components/LayOut";
@@ -27,6 +28,7 @@ Sentry.init({
 });
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   return (
     <BrowserRouter>
       <Routes>
