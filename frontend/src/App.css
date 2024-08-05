@@ -121,7 +121,7 @@ p.dark {color: rgb(127, 225, 255);}
 a.dark {color: rgb(127, 225, 255);}
 
 
-body.dark h1, body.dark, p {color: rgb(127, 225, 255) } body.border{color:  rgb(45, 79, 90)} a{color: rgb(127, 225, 255)} input {color: rgb(238, 238, 238) !important;} select {color: rgb(75, 123, 107)  !important;} textarea {color:rgb(127, 225, 255) !important;}
+body.dark h1, body.dark, p {color: #bee7ff} body.border{color:  rgb(45, 79, 90)} a{color: #bee7ff} input {color: #ccc !important} select {color: rgb(75, 123, 107)  !important;} textarea {color:rgb(127, 225, 255) !important;}
 
 .checkbox {
   opacity: 0;
@@ -145,7 +145,7 @@ body.dark h1, body.dark, p {color: rgb(127, 225, 255) } body.border{color:  rgb(
 
 .fa-moon {color: #ddd6bd; font-size: 16px;}
 
-.fa-sun {color: #d19e4c; font-size: 16px;}
+.fa-sun {color: #ddd6bd; font-size: 16px;}
 
 .checkbox-label .ball {
   background-color: #1640ff;
@@ -168,13 +168,13 @@ body.dark h1, body.dark, p {color: rgb(127, 225, 255) } body.border{color:  rgb(
   font-weight: 900;
   font-size: 16px;
   margin-left: 3px;
-  color: #d2bf72;
+  color: #ffe88d;
 }
 
 
 .checkbox:checked + .checkbox-label .ball::before {
   content: "\f186"; /* moon icon */
-  color: #c0c0c0;
+  color: #ffe88d;  
   margin-left: 3px;
 }
 

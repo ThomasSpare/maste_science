@@ -130,12 +130,12 @@ const ModalAuth = () => {
           </div>
         )}
         <clr-modal-footer>
+          <cds-icon shape="login"></cds-icon>
           {!isLoggedIn && (
             <button className="btn btn-link" onClick={openLoginModal}>
               Login
             </button>
           )}
-          <cds-icon shape="login"></cds-icon>
           {isLoggedIn && (
             <button className="btn btn-link" onClick={handleLogout}>
               Logout

@@ -20,6 +20,7 @@ import {
   homeIcon,
   vmIcon,
   searchIcon,
+  thumbsUpIcon,
 } from "@cds/core/icon";
 import "@webcomponents/custom-elements/custom-elements.min.js";
 import "@clr/icons/clr-icons.min.css";
@@ -48,6 +49,7 @@ ClarityIcons.addIcons(userIcon);
 ClarityIcons.addIcons(vmIcon);
 ClarityIcons.addIcons(homeIcon);
 ClarityIcons.addIcons(searchIcon);
+ClarityIcons.addIcons(thumbsUpIcon);
 
 function NavBar(isLoggedIn) {
   const {currentUser} = useAuth();
@@ -68,9 +70,19 @@ function NavBar(isLoggedIn) {
 
   const checkboxRef = useRef(null);
 
+  // Dark-Light Mode
+
   const handleCheckboxChange = () => {
-    document.body.classList.toggle("dark");
+    const isDarkMode = document.body.classList.toggle("dark");
+      localStorage.setItem("darkMode", isDarkMode ? "enabled" : "disabled");
   };
+
+  useEffect(() => {
+    const darkMode = localStorage.getItem("darkMode");
+    if (darkMode === "enabled") {
+      document.body.classList.add("dark");
+    }
+  }, []);
 
   const handleSearchInputChange = (event) => {
     setSearchQuery(event.target.value);
@@ -105,9 +117,13 @@ function NavBar(isLoggedIn) {
                   </a>
                 </form>
                 {isLoggedIn && currentUser && currentUser.email && (
-                  <span className="display_email">
-                    Logged in as {currentUser.email}
-                  </span>
+
+                  <div className="currentUser">
+                    <cds-icon shape="thumbs-up"></cds-icon>
+                    <span className="display_email">
+                      Logged in as {currentUser.email}
+                    </span>
+                  </div>
                 )}
                 <ModalAuth isLoggedIn={isLoggedIn} />
                 <div className="settings">
@@ -152,7 +168,7 @@ function NavBar(isLoggedIn) {
                   <Dropdown_6 />
                 </ul>
                 {showLogo && <img className="logo"
-                  src="https://res.cloudinary.com/djunroohl/image/upload/v1720550711/m%C3%A5ste_logo_kwaffc.png"
+                  src="https://res.cloudinary.com/djunroohl/image/upload/v1721858132/M%C3%A5ste_hill_logo_morprz.png"
                   alt="logo" />}
               </nav>
             </div>        

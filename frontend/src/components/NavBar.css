@@ -4,5 +4,22 @@
     flex-direction: row-reverse;
     flex-wrap: nowrap;
     align-items: flex-end;
+    color: deepskyblue;
 }
 
+#root > header > div > header > div.currentUser{
+    font-size: x-small;
+    color: deepskyblue;
+}
+
+.nav{
+    background-color: #153657;
+}
+
+.btn-link .btn, .btn.btn-link {
+    color: #68cdff !important;
+}
+
+#root > header > div > nav{
+background-color: #153657;
+}
