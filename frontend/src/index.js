@@ -11,6 +11,7 @@ import ModalAuth from "./components/modal_auth";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import * as Sentry from "@sentry/react";
+import SearchPowerPoint from "./pages/SearchPowerPoint";
 
 Sentry.init({
   dsn: "https://2c54d8d1ddd169f0579e56fd4c45541b@o4507612471885824.ingest.de.sentry.io/4507612475555920",
@@ -35,8 +36,14 @@ export default function App() {
         <Route path="/" element={<LayOut />}>
           <Route index element={<Home />} />
           <Route path="/Search" index element={<Search />} />
+          <Route
+            path="/Search-Powerpoint"
+            index
+            element={<SearchPowerPoint />}
+          />
           <Route path="/Upload" index element={<Upload />} />
           <Route path="/view-pdf/:fileId/:file" element={<ViewPdf />} />
+          <Route path="/view-powerpoint/:fileId/:file" element={<ViewPdf />} />
           <Route
             path="/auth"
             index

@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CdsButton } from '@cds/react/button';
 
-
-
-
 import "@cds/core/button/register.js";
 import '@cds/core/input/register.js';
 import "@cds/core/icon/register.js"; // Import Clarity Icon component
@@ -16,7 +13,6 @@ import "@cds/core/icon/register.js"; // Import Clarity Icon component
 import "@clr/icons/shapes/technology-shapes.js";
 import "@cds/core/button/register.js";
 import "./Upload.css";
-
 
 const Upload = () => {
     const [file, setFile] = useState(null);
@@ -43,8 +39,17 @@ const Upload = () => {
         formData.append('country', country);
         formData.append('category', category);
 
+        let endpoint = 'http://localhost:8000/api/uploads';
+        const fileType = file.name.split('.').pop().toLowerCase();
+
+        if (fileType === 'ppt') {
+            endpoint = 'http://localhost:8000/ppt';
+        } else if (fileType === 'pptx') {
+            endpoint = 'http://localhost:8000/pptx';
+        }
+
         try {
-            const response = await fetch('http://localhost:8000/api/uploads', {
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 body: formData
             });
@@ -120,7 +125,7 @@ const Upload = () => {
                 type="file"
                 id="file"
                 name='file'
-                accept="pdf/*, pdf, ppt/*, ppt"
+                accept="pdf/*, pdf, ppt/*, ppt, pptx/*, pptx"
                 onChange={e => setFile(e.target.files[0])}
                 autoFocus
             />

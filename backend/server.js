@@ -1,3 +1,4 @@
+const fs = require("fs"); // Add this line
 const path = require("path");
 const dotenv = require("dotenv");
 const express = require("express");
@@ -38,17 +39,13 @@ app.use(
 
 app.use(express.json());
 
-// // Serve static files from the React frontend app
-// app.use(express.static(path.join(__dirname, "../frontend/build")));
-
-// // Anything that doesn't match the above, send back index.html
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname + "/../frontend/build/index.html"));
-// });
-
 app.get("/", (req, res) => {
   res.send("Welcome to the MÅSTE project Database !");
 });
+
+const upload = multer({ dest: "uploads/" });
+const ppt = multer({ dest: "ppt/" });
+const pptx = multer({ dest: "pptx/" });
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -67,8 +64,6 @@ pool.connect((err) => {
 
 // Uploading files
 
-const upload = multer({ dest: "uploads/" });
-
 app.post("/api/uploads", upload.single("file"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
@@ -77,6 +72,46 @@ app.post("/api/uploads", upload.single("file"), (req, res) => {
   const { author, uploadDate, country, category } = req.body;
   pool.query(
     "INSERT INTO uploads (file, author, uploadDate, country, category) VALUES ($1, $2, $3, $4, $5)",
+    [req.file.filename, author, uploadDate, country, category],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+      } else {
+        res.status(201).json({ message: "File uploaded successfully" });
+      }
+    }
+  );
+});
+
+app.post("/ppt", ppt.single("file"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  const { author, uploadDate, country, category } = req.body;
+  pool.query(
+    "INSERT INTO ppt (file, author, uploadDate, country, category) VALUES ($1, $2, $3, $4, $5)",
+    [req.file.filename, author, uploadDate, country, category],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+      } else {
+        res.status(201).json({ message: "File uploaded successfully" });
+      }
+    }
+  );
+});
+
+app.post("/pptx", pptx.single("file"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  const { author, uploadDate, country, category } = req.body;
+  pool.query(
+    "INSERT INTO pptx (file, author, uploadDate, country, category) VALUES ($1, $2, $3, $4, $5)",
     [req.file.filename, author, uploadDate, country, category],
     (err, result) => {
       if (err) {
@@ -101,6 +136,26 @@ app.get("/api/uploads/", async (_, res) => {
   }
 });
 
+app.get("/ppt/", async (_, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM ppt");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.get("/pptx/", async (_, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM pptx");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 app.get("/api/uploads/:file", async (req, res) => {
   const { file } = req.params;
   try {
@@ -110,9 +165,20 @@ app.get("/api/uploads/:file", async (req, res) => {
     );
     if (queryResult.rows.length > 0) {
       const { file } = queryResult.rows[0];
-      const filePath = path.join(__dirname, "uploads", file);
+      const ext = path.extname(file).toLowerCase();
+      let folder = "uploads/";
 
-      res.setHeader("Content-Type", "application/pdf");
+      if (ext === ".pdf") {
+        folder += "pdf";
+      } else if (ext === ".ppt") {
+        folder += "ppt";
+      } else if (ext === ".pptx") {
+        folder += "pptx";
+      }
+
+      const filePath = path.join(__dirname, folder, file);
+
+      res.setHeader("Content-Type", "application/octet-stream");
       res.setHeader("Content-Disposition", `inline; filename="${file}"`);
       res.sendFile(filePath);
     } else {
@@ -124,8 +190,7 @@ app.get("/api/uploads/:file", async (req, res) => {
   }
 });
 
-// Google Analyics----------------------------------------------------------------
-
+// Google Analytics
 async function getRealTimeUsers(auth) {
   const response = await analytics.reports.batchGet({
     auth: auth,
@@ -152,13 +217,6 @@ async function getRealTimeUsers(auth) {
   return response.data.reports[0].data.totals[0].values[0];
 }
 
-// Assuming you have set up OAuth2 authentication
-const oauth2Client = new google.auth.OAuth2(
-  "GOOGLE_ANALYTICS_CLIENT_ID",
-  "GOOGLE_ANALYTICS_CLIENT_SECRET",
-  "GOOGLE_ANALYTICS_REDIRECT_URI"
-);
-
 // Function to call when you want to display the data on your site
 async function displayRealTimeUsers() {
   try {
@@ -170,10 +228,14 @@ async function displayRealTimeUsers() {
   }
 }
 
-//-----------------------------------------------------------------------------
+// Assuming you have set up OAuth2 authentication
+const oauth2Client = new google.auth.OAuth2(
+  "GOOGLE_ANALYTICS_CLIENT_ID",
+  "GOOGLE_ANALYTICS_CLIENT_SECRET",
+  "GOOGLE_ANALYTICS_REDIRECT_URI"
+);
 
 // Route to create a new user
-
 app.post("/users", async (req, res) => {
   const { username, password } = req.body;
 
@@ -205,7 +267,7 @@ app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
 
-// Authorisation
+// Authorization
 
 // Login route
 app.post("/login", async (req, res) => {
@@ -249,10 +311,9 @@ app.get("/protected", (req, res) => {
 });
 
 // To Create new tables in DB, only run once
-
 // pool.query(
 //   `
-//   CREATE TABLE uploads (
+//   CREATE TABLE pptx (
 //     id SERIAL PRIMARY KEY,
 //     username VARCHAR(255) UNIQUE NOT NULL,
 //     password VARCHAR(255) NOT NULL
@@ -269,7 +330,7 @@ app.get("/protected", (req, res) => {
 
 // pool.query(
 //   `
-//   ALTER TABLE uploads
+//   ALTER TABLE uploads/ppt
 //   DELETE COLUMN username VARCHAR(255)
 //   `,
 //   (err, res) => {
@@ -283,7 +344,7 @@ app.get("/protected", (req, res) => {
 
 // pool.query(
 //   `
-//   ALTER TABLE uploads
+//   ALTER TABLE ppt
 //   DROP COLUMN password
 //   `,
 //   (err, res) => {
@@ -295,6 +356,27 @@ app.get("/protected", (req, res) => {
 //   }
 // );
 
+// Add columns to the pptx table
+// const addColumnsToPptxTable = async () => {
+//   try {
+//     await pool.query(`
+//       ALTER TABLE pptx
+//       ADD COLUMN category VARCHAR(255),
+//       ADD COLUMN author VARCHAR(255),
+//       ADD COLUMN uploadDate DATE,
+//       ADD COLUMN country VARCHAR(255),
+//       ADD COLUMN file VARCHAR(255);
+//     `);
+//     console.log("Columns added successfully");
+//   } catch (err) {
+//     console.error("Error adding columns:", err);
+//   }
+// };
+
+// Call the function to add columns
+// addColumnsToPptxTable();
+
+// Display all current tables and columns in MÅSTE DB
 app.get("/api/tables", async (req, res) => {
   try {
     const result = await pool.query(`
@@ -316,20 +398,3 @@ app.get("/api/tables", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
-// app.post("/api/tables/uploads", upload.single("file"), async (req, res) => {
-//   try {
-//     const { author, uploadDate, country, category } = req.body;
-//     const result = await pool.query(
-//       `
-//       INSERT INTO uploads (file, author, uploadDate, country, category)
-//       VALUES ($1, $2, $3, $4, $5) RETURNING *
-//     `,
-//       [req.file.filename, author, uploadDate, country, category]
-//     );
-//     res.json(result.rows[0]);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// });
