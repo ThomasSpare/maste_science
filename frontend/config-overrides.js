@@ -7,7 +7,7 @@ module.exports = function override(config) {
     crypto: require.resolve("crypto-browserify"),
     zlib: require.resolve("browserify-zlib"),
     path: require.resolve("path-browserify"),
-    "vm-browserify": require.resolve("vm-browserify"),
+    vm_browserify: require.resolve("vm-browserify"),
     querystring: require.resolve("querystring-es3"),
     stream: require.resolve("stream-browserify"),
     assert: require.resolve("assert"),

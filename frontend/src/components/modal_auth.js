@@ -12,12 +12,15 @@ import "@clr/icons/clr-icons.min.css";
 import "@clr/icons/shapes/technology-shapes.js";
 import { ClarityIcons, loginIcon } from "@cds/core/icon";
 import { register, login, logout } from "../Auth/Auth.js"; // Adjust the import path as necessary
+import { useAuth } from "../Auth/AuthContext.js";
 
 ClarityIcons.addIcons(loginIcon);
 
-function ModalAuth({ isLoggedIn, setIsLoggedIn }) {
+const ModalAuth = () => {
+  const { isLoggedIn } = useAuth();
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isRegistrationOpen, setRegistrationOpen] = useState(false);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isRegistered, setIsRegistered] = useState(false);
@@ -54,7 +57,6 @@ function ModalAuth({ isLoggedIn, setIsLoggedIn }) {
     e.preventDefault();
     try {
       await login(email, password);
-      setIsLoggedIn(true);
       setIsRegistered(true);
       alert("Login successful!");
       closeModal();
@@ -67,7 +69,6 @@ function ModalAuth({ isLoggedIn, setIsLoggedIn }) {
   const handleLogout = async () => {
     try {
       await logout();
-      setIsLoggedIn(false);
       closeModal();
     } catch (error) {
       console.error("Logout failed:", error);
@@ -129,9 +130,11 @@ function ModalAuth({ isLoggedIn, setIsLoggedIn }) {
           </div>
         )}
         <clr-modal-footer>
-          <button className="btn btn-link" onClick={openLoginModal}>
-            Login
-          </button>
+          {!isLoggedIn && (
+            <button className="btn btn-link" onClick={openLoginModal}>
+              Login
+            </button>
+          )}
           <cds-icon shape="login"></cds-icon>
           {isLoggedIn && (
             <button className="btn btn-link" onClick={handleLogout}>
@@ -143,13 +146,15 @@ function ModalAuth({ isLoggedIn, setIsLoggedIn }) {
               Register
             </button>
           )}
-          <button className="btn btn-link" onClick={closeModal}>
-            Close
-          </button>
+          {!isLoggedIn && isRegistered && (
+            <button className="btn btn-link" onClick={closeModal}>
+              Close
+            </button>
+          )}
         </clr-modal-footer>
       </clr-modal>
     </React.Fragment>
   );
-}
+};
 
 export default ModalAuth;

@@ -7,6 +7,7 @@ import "@clr/icons/shapes/all-shapes.js";
 import "@cds/core/icon/shapes/arrow.js";
 import "clarity-icons/clarity-icons.min.css";
 import { ClarityIcons, arrowIcon } from "@cds/core/icon";
+import { useAuth } from "../Auth/AuthContext"; // Ensure this path is correct
 
 import "@cds/core/dropdown/register.js";
 import "@cds/core/button/register.js";
@@ -16,7 +17,7 @@ ClarityIcons.addIcons(arrowIcon);
 
 function Dropdown_3() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Assuming you will manage this state based on your authentication logic
+  const { isLoggedIn } = useAuth(); // Get isLoggedIn from AuthContext
 
   const handleDropdownToggle = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -44,37 +45,37 @@ function Dropdown_3() {
           {/* Conditionally render links based on isLoggedIn */}
           <a
             href="/Search"
-            className={`dropdown-item ${!isLoggedIn ? "disabled" : ""}`}
+            className={`dropdown-item ${isLoggedIn ? "" : "disabled"}`}
             onClick={(e) => !isLoggedIn && e.preventDefault()}
           >
             Search PDF Reports
           </a>
           <a
             href="/"
-            className={`dropdown-item ${!isLoggedIn ? "disabled" : ""}`}
+            className={`dropdown-item ${isLoggedIn ? "" : "disabled"}`}
             onClick={(e) => !isLoggedIn && e.preventDefault()}
           >
             Search Powerpoints
           </a>
           <a
             href="/"
-            className={`dropdown-item ${!isLoggedIn ? "disabled" : ""}`}
+            className={`dropdown-item ${isLoggedIn ? "" : "disabled"}`}
             onClick={(e) => !isLoggedIn && e.preventDefault()}
           >
             Search Images
           </a>
           <a
             href="/Upload"
-            className={`dropdown-item ${!isLoggedIn ? "disabled" : ""}`}
+            className={`dropdown-item ${isLoggedIn ? "" : "disabled"}`}
             onClick={(e) => !isLoggedIn && e.preventDefault()}
           >
             Upload
           </a>
           <div className="dropdown-divider"></div>
-          <div className={`dropdown-item ${!isLoggedIn ? "disabled" : ""}`}>
+          <div className={`dropdown-item ${isLoggedIn ? "" : "disabled"}`}>
             Link 1
           </div>
-          <div className={`dropdown-item ${!isLoggedIn ? "disabled" : ""}`}>
+          <div className={`dropdown-item ${isLoggedIn ? "" : "disabled"}`}>
             Link 2
           </div>
         </div>

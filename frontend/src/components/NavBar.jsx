@@ -1,8 +1,8 @@
 import Marquee from "react-marquee";
 import React, { useRef, useState, useEffect } from "react";
+import { useAuth } from "../Auth/AuthContext";
 import "../App.css";
 import "../components/NavBar.css";
-import { register, login, logout } from '../Auth/Auth.js'; // Adjust the path as necessary
 import { useLocation } from "react-router-dom";
 import "clarity-ui/clarity-ui.min.css"; // Import Clarity UI CSS
 import "clarity-icons/clarity-icons.min.css"; // Import Clarity Icons CSS
@@ -41,7 +41,6 @@ import "@cds/core/divider/register.js"; // Import Clarity Divider component
 import "@cds/core/icon/register.js"; // Import Clarity Icon component
 import "@clr/icons/shapes/technology-shapes.js";
 import "@cds/core/button/register.js";
-import { firebase } from "googleapis/build/src/apis/firebase/index.js";
 
 ClarityIcons.addIcons(bellIcon);
 ClarityIcons.addIcons(cogIcon);
@@ -50,13 +49,14 @@ ClarityIcons.addIcons(vmIcon);
 ClarityIcons.addIcons(homeIcon);
 ClarityIcons.addIcons(searchIcon);
 
-function NavBar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+function NavBar(isLoggedIn) {
+  const {currentUser} = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [userEmail, setUserEmail] = useState('');
 
   const [showLogo, setShowLogo] = useState(true);
   const location = useLocation();
+
 
   useEffect(() => {
     if (!(location.pathname === '/')) { // Only on the home page
@@ -104,8 +104,12 @@ function NavBar() {
                     <cds-icon shape="search" type="submit">Search</cds-icon>
                   </a>
                 </form>
-                {isLoggedIn && <span className="user-email">Logged in as `{}`</span>}
-                <ModalAuth isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                {isLoggedIn && currentUser && currentUser.email && (
+                  <span className="display_email">
+                    Logged in as {currentUser.email}
+                  </span>
+                )}
+                <ModalAuth isLoggedIn={isLoggedIn} />
                 <div className="settings">
                   {/* Light-Dark Mode */}
                   <input
