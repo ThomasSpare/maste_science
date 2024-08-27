@@ -13,7 +13,7 @@ const analytics = google.analyticsreporting("v4");
 
 dotenv.config();
 const app = express();
-const port = 8000;
+const port = process.env.PORT || 4000;
 
 const allowedOrigins = [process.env.ALLOWED_ORIGINS];
 
@@ -299,7 +299,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
+  console.log(`Måste Server listening at port:${port}`);
 });
 
 // Authorization
