@@ -42,19 +42,14 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LayOut />}>
           <Route index element={<Home />} />
-          <Route path="/Search" index element={<Search />} />
+          <Route path="search" element={<Search />} />
+          <Route path="search-powerpoint" element={<SearchPowerPoint />} />
+          <Route path="upload" element={<Upload />} />
+          <Route path="view-pdf/:fileId/:file" element={<ViewPdf />} />
+          <Route path="view-ppt/:fileId/:file" element={<ViewPpt />} />
+          <Route path="settings" element={<Settings />} />
           <Route
-            path="/Search-Powerpoint"
-            index
-            element={<SearchPowerPoint />}
-          />
-          <Route path="/Upload" index element={<Upload />} />
-          <Route path="/view-pdf/:fileId/:file" element={<ViewPdf />} />
-          <Route path="/view-ppt/:fileId/:file" element={<ViewPpt />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route
-            path="/auth"
-            index
+            path="auth"
             element={
               <ModalAuth
                 isLoggedIn={isLoggedIn}
@@ -67,7 +62,8 @@ export default function App() {
     </BrowserRouter>
   );
 }
-ReactDOM.render(<App />, document.getElementById("root"));
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
