@@ -27,7 +27,7 @@ Sentry.init({
   tracesSampleRate: 1.0, //  Capture 100% of the transactions
   // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
   tracePropagationTargets: [
-    "https://maste-science-frontend.onrender.com/",
+    "maste-science-backend.onrender.com",
     /^https:\/\/yourserver\.io\/api/,
   ],
   // Session Replay
