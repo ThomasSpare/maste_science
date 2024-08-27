@@ -19,7 +19,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://192.168.0.35:3000",
   "https://kfk9td6j-3000.euw.devtunnels.ms",
-  "https://maste-science-frontend.onrender.com/",
+  "https://maste-science-frontend.onrender.com",
 ];
 
 app.use(
