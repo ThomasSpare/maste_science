@@ -39,6 +39,9 @@ app.use(
 
 app.use(express.json());
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, "build")));
+
 app.get("/", (req, res) => {
   res.send("Welcome to the MÅSTE project Database !");
 });
@@ -345,6 +348,11 @@ app.get("/protected", (req, res) => {
   }
 
   // Process request
+});
+
+// Catch-all handler to serve the index.html file for any other routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 // To Create new tables in DB, only run once
