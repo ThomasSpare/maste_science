@@ -15,7 +15,10 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 4000;
 
-const allowedOrigins = [process.env.ALLOWED_ORIGINS];
+const allowedOrigins = [
+  process.env.ALLOWED_ORIGINS,
+  "https://maste-science-frontend.onrender.com",
+];
 
 app.use(
   cors({
@@ -33,6 +36,12 @@ app.use(
 );
 
 app.use(express.json());
+
+// Logging middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, "build")));
