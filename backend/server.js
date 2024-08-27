@@ -15,7 +15,7 @@ dotenv.config();
 const app = express();
 const port = 8000;
 
-const allowedOrigins = ["https://maste-science-frontend.onrender.com"];
+const allowedOrigins = [process.env.ALLOWED_ORIGINS];
 
 app.use(
   cors({
