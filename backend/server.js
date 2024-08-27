@@ -15,12 +15,7 @@ dotenv.config();
 const app = express();
 const port = 8000;
 
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://192.168.0.35:3000",
-  "https://kfk9td6j-3000.euw.devtunnels.ms",
-  "https://maste-science-frontend.onrender.com",
-];
+const allowedOrigins = ["https://maste-science-frontend.onrender.com"];
 
 app.use(
   cors({
