@@ -18,7 +18,7 @@ const ViewPdf = () => {
       console.error("File parameter is undefined.");
       return;
     }
-    const serverAddress = 'http://localhost:8000'; 
+    const serverAddress = 'https://maste-science-backend.onrender.com/'; 
     const url = `${serverAddress}/api/uploads/${file}`;
     
     fetch(url, { signal })
