@@ -16,7 +16,7 @@ function Search() {
   const itemsPerPage = 15;
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/uploads')
+    fetch('https://maste-science.onrender.com/api/uploads')
       .then(response => response.json())
       .then(data => setUploads(data))
       .catch(error => console.error('Error:', error));

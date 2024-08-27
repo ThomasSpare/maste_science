@@ -14,7 +14,7 @@ function SearchPowerPoint() {
   });
 
   useEffect(() => {
-    fetch('http://localhost:8000/pptx')
+    fetch('https://maste-science.onrender.com/pptx')
       .then(response => response.json())
       .then(data => setPptx(data))
       .catch(error => console.error('Error:', error));
