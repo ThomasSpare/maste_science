@@ -15,6 +15,9 @@
        url('./Assets/Fonts/Webfonts/WOFF/Metropolis-Medium.woff') format('woff');
 }
 
+footer{
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+}
 
 .App {
   text-align: center;
@@ -119,6 +122,8 @@ body.dark {background-color: #242424 !important;}
 .App-header.dark {background-color: #70767b !important;}
 p.dark {color: rgb(127, 225, 255);}
 a.dark {color: rgb(127, 225, 255);}
+.footer-logo.dark{background-color: currentColor;}
+.Footer.dark {background-color: #242424 !important;}
 
 
 body.dark h1, body.dark, p {color: #bee7ff} body.border{color:  rgb(45, 79, 90)} a{color: #bee7ff} input {color: #ccc !important} select {color: rgb(75, 123, 107)  !important;} textarea {color:rgb(127, 225, 255) !important;}

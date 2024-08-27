@@ -1,0 +1,14 @@
+.Settings{
+    height: 100vh;
+    background-image: url(https://res.cloudinary.com/djunroohl/image/upload/v1720394704/grass_mweova.jpg);
+    background-size: cover;
+    font-family: "Metropolis", sans-serif;
+    font-size: medium;
+    padding: "20px"
+}
+
+.Settings-h2{
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 20px;
+}

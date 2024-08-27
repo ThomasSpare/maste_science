@@ -12,7 +12,8 @@ function Search() {
     author: '',
     country: ''
   });
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
 
   useEffect(() => {
     fetch('http://localhost:8000/api/uploads')
@@ -42,6 +43,22 @@ function Search() {
   const handleFileClick = (upload) => {
     const fileId = upload.id; // Adjust based on your data structure
     navigate(`/view-pdf/${fileId}/${upload.file}`);
+  };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedUploads = filteredUploads.slice(startIndex, endIndex);
+
+  const handleNextPage = () => {
+    if (endIndex < filteredUploads.length) {
+      setCurrentPage(prevPage => prevPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (startIndex > 0) {
+      setCurrentPage(prevPage => prevPage - 1);
+    }
   };
 
   return (
@@ -115,16 +132,20 @@ function Search() {
           </select>
         </div>
         <ol>
-          {filteredUploads.sort((a, b) => new Date(b.uploaddate) - new Date(a.uploaddate)).map((upload, index) => (
+          {paginatedUploads.sort((a, b) => new Date(b.uploaddate) - new Date(a.uploaddate)).map((upload, index) => (
             <li key={index} onClick={() => handleFileClick(upload)}>
               <p style={{ display: "inline-block", marginRight: "50px" }}>Upload Date: {upload.uploaddate}</p>
-              <p style={{ display: "inline-block", marginRight: "50px" }}>Category: {upload.category}</p>
+              <p style={{ display: "inline-block", marginRight: "50px" }}>Title: {upload.category}</p>
               <p style={{ display: "inline-block", marginRight: "50px" }}>Country: {upload.country}</p>
               <p style={{ display: "inline-block", marginRight: "50px" }}>Author: {upload.author}</p>
               <p style={{ display: "inline-block", marginRight: "50px" }}>ID: {upload.id}</p>
             </li>
           ))}
         </ol>
+        <div style={{ marginTop: "10px" }}>
+          <button onClick={handlePreviousPage} disabled={currentPage === 1}>Previous</button>
+          <button onClick={handleNextPage} disabled={endIndex >= filteredUploads.length}>Next</button>
+        </div>
       </div>
     </div>
   );

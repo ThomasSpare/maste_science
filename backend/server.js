@@ -1,4 +1,4 @@
-const fs = require("fs"); // Add this line
+const fs = require("fs");
 const path = require("path");
 const dotenv = require("dotenv");
 const express = require("express");
@@ -8,6 +8,7 @@ const { Pool } = require("pg");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { google } = require("googleapis");
+const admin = require("firebase-admin");
 const analytics = google.analyticsreporting("v4");
 
 dotenv.config();
@@ -23,8 +24,6 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin
-      // (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       if (allowedOrigins.indexOf(origin) === -1) {
         var msg =
@@ -62,29 +61,67 @@ pool.connect((err) => {
   }
 });
 
-// Uploading files
-
-app.post("/api/uploads", upload.single("file"), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No file uploaded" });
-  }
-
-  const { author, uploadDate, country, category } = req.body;
-  pool.query(
-    "INSERT INTO uploads (file, author, uploadDate, country, category) VALUES ($1, $2, $3, $4, $5)",
-    [req.file.filename, author, uploadDate, country, category],
-    (err, result) => {
-      if (err) {
-        console.error(err);
-        res.status(500).json({ message: "Internal server error" });
-      } else {
-        res.status(201).json({ message: "File uploaded successfully" });
-      }
-    }
-  );
+// Initialize Firebase Admin SDK
+admin.initializeApp({
+  credential: admin.credential.applicationDefault(),
+  databaseURL: "https://<your-database-name>.firebaseio.com",
 });
 
-app.post("/ppt", ppt.single("file"), (req, res) => {
+// Middleware to check user role
+const checkRole = (role) => {
+  return async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const token = authHeader.split(" ")[1];
+    try {
+      const decodedToken = await admin.auth().verifyIdToken(token);
+      const userRole = (
+        await admin.firestore().collection("roles").doc(decodedToken.uid).get()
+      ).data().role;
+
+      if (userRole !== role) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      req.user = decodedToken;
+      next();
+    } catch (error) {
+      console.error(error);
+      res.status(401).json({ message: "Unauthorized" });
+    }
+  };
+};
+
+// Uploading files
+app.post(
+  "/api/uploads",
+  checkRole("admin"),
+  upload.single("file"),
+  (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const { author, uploadDate, country, category } = req.body;
+    pool.query(
+      "INSERT INTO uploads (file, author, uploadDate, country, category) VALUES ($1, $2, $3, $4, $5)",
+      [req.file.filename, author, uploadDate, country, category],
+      (err, result) => {
+        if (err) {
+          console.error(err);
+          res.status(500).json({ message: "Internal server error" });
+        } else {
+          res.status(201).json({ message: "File uploaded successfully" });
+        }
+      }
+    );
+  }
+);
+
+app.post("/ppt", checkRole("admin"), ppt.single("file"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
   }
@@ -104,7 +141,7 @@ app.post("/ppt", ppt.single("file"), (req, res) => {
   );
 });
 
-app.post("/pptx", pptx.single("file"), (req, res) => {
+app.post("/pptx", checkRole("admin"), pptx.single("file"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
   }
@@ -125,7 +162,6 @@ app.post("/pptx", pptx.single("file"), (req, res) => {
 });
 
 // Searching Files in the Database
-
 app.get("/api/uploads/", async (_, res) => {
   try {
     const result = await pool.query("SELECT * FROM uploads");
@@ -334,67 +370,4 @@ app.get("/protected", (req, res) => {
 //   DELETE COLUMN username VARCHAR(255)
 //   `,
 //   (err, res) => {
-//     if (err) {
-//       console.error(err);
-//     } else {
-//       console.log("Column added successfully");
-//     }
-//   }
-// );
-
-// pool.query(
-//   `
-//   ALTER TABLE ppt
-//   DROP COLUMN password
-//   `,
-//   (err, res) => {
-//     if (err) {
-//       console.error(err);
-//     } else {
-//       console.log("Column removed successfully");
-//     }
-//   }
-// );
-
-// Add columns to the pptx table
-// const addColumnsToPptxTable = async () => {
-//   try {
-//     await pool.query(`
-//       ALTER TABLE pptx
-//       ADD COLUMN category VARCHAR(255),
-//       ADD COLUMN author VARCHAR(255),
-//       ADD COLUMN uploadDate DATE,
-//       ADD COLUMN country VARCHAR(255),
-//       ADD COLUMN file VARCHAR(255);
-//     `);
-//     console.log("Columns added successfully");
-//   } catch (err) {
-//     console.error("Error adding columns:", err);
-//   }
-// };
-
-// Call the function to add columns
-// addColumnsToPptxTable();
-
-// Display all current tables and columns in MÅSTE DB
-app.get("/api/tables", async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT t.table_schema, t.table_name, array_agg(c.column_name) as columns
-      FROM information_schema.tables t
-      LEFT JOIN information_schema.columns c ON t.table_name = c.table_name
-      WHERE t.table_schema = 'public'
-      GROUP BY t.table_schema, t.table_name
-    `);
-    res.json(
-      result.rows.map((row) => ({
-        schema: row.table_schema,
-        table: row.table_name,
-        columns: row.columns,
-      }))
-    );
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
+//     if (

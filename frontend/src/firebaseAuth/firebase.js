@@ -4,15 +4,14 @@ import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth"; // Import for Firebase Authentication
 
 // Your web app's Firebase configuration
-// Use Damrec configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCedsMmvgzXvEdEhbqncvlrxLBXxbtk9WU",
-  authDomain: "maste-a24d6.firebaseapp.com",
-  projectId: "maste-a24d6",
-  storageBucket: "maste-a24d6.appspot.com",
-  messagingSenderId: "941498169499",
-  appId: "1:941498169499:web:745a445230b8b8b8f1ae3e",
-  measurementId: "G-0P5JE8HC4Q",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase

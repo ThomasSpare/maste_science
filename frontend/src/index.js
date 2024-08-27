@@ -1,4 +1,6 @@
 import React from "react";
+import "mdb-react-ui-kit/dist/css/mdb.min.css";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import { useState } from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -12,6 +14,8 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import * as Sentry from "@sentry/react";
 import SearchPowerPoint from "./pages/SearchPowerPoint";
+import Settings from "./pages/Settings";
+import ViewPpt from "./pages/ViewPpt";
 
 Sentry.init({
   dsn: "https://2c54d8d1ddd169f0579e56fd4c45541b@o4507612471885824.ingest.de.sentry.io/4507612475555920",
@@ -43,7 +47,8 @@ export default function App() {
           />
           <Route path="/Upload" index element={<Upload />} />
           <Route path="/view-pdf/:fileId/:file" element={<ViewPdf />} />
-          <Route path="/view-powerpoint/:fileId/:file" element={<ViewPdf />} />
+          <Route path="/view-ppt/:fileId/:file" element={<ViewPpt />} />
+          <Route path="/settings" element={<Settings />} />
           <Route
             path="/auth"
             index

@@ -143,17 +143,8 @@ function NavBar(isLoggedIn) {
 
                   <a href="/" className="nav-link nav-icon">
                     <cds-icon shape="home"></cds-icon>
-                  </a>
-                  <a href="javascript://" className="nav-link nav-icon">
-                    <cds-icon shape="vm"></cds-icon>
-                  </a>
-                  <a href="javascript://" className="nav-link nav-icon">
-                    <cds-icon shape="bell"></cds-icon>
-                  </a>
-                  <a href="/auth" className="nav-link nav-icon">
-                    <cds-icon shape="user"></cds-icon>
-                  </a>
-                  <a href="javascript://" className="nav-link nav-icon">
+                  </a>           
+                  <a href="/settings" className="nav-link nav-icon">
                     <cds-icon shape="cog"></cds-icon>
                   </a>
                 </div>

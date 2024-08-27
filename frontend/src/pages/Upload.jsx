@@ -164,11 +164,11 @@ const Upload = () => {
                 ))}
             </select>
 
-            <label htmlFor="category">Category</label>
+            <label htmlFor="category">Title</label>
             <input
                 type="text"
                 id="category"
-                placeholder="Category"
+                placeholder="Title"
                 value={category}
                 onChange={e => setCategory(e.target.value)}
                 autoFocus

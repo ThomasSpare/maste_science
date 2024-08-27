@@ -31,8 +31,6 @@ import "@cds/core/divider/register.js"; // Import Clarity Divider component
 import "@cds/core/icon/register.js"; // Import Clarity Icon component
 import "@clr/icons/shapes/technology-shapes.js";
 import "@cds/core/button/register.js";
-import { useRef, useState } from "react";
-import Modal_auth from "./components/modal_auth.js";
 
 ClarityIcons.addIcons(bellIcon);
 ClarityIcons.addIcons(cogIcon);
@@ -50,19 +48,19 @@ function App() {
           <footer className="footer">
             <div className="footer-container">
               <div className="footer-links">
-                <a href="javascript:void(0)">About</a>
-                <a href="javascript:void(0)">Contact</a>
-                <a href="javascript:void(0)">Terms of Service</a>
-                <a href="javascript:void(0)">Privacy Policy</a>
+                <a href="/">About</a>
+                <a href="/">Contact</a>
+                <a href="/">Terms of Service</a>
+                <a href="/">Privacy Policy</a>
               </div>
               <div className="footer-social">
-                <a href="javascript:void(0)">
+                <a href="/">
                   <i className="fab fa-facebook-f"></i>
                 </a>
-                <a href="javascript:void(0)">
+                <a href="/">
                   <i className="fab fa-twitter"></i>
                 </a>
-                <a href="javascript:void(0)">
+                <a href="/">
                   <i className="fab fa-instagram"></i>
                 </a>
               </div>
