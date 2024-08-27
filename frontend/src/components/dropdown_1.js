@@ -26,16 +26,16 @@ function Dropdown_1() {
           className="dropdown-toggle btn btn-link"
           onMouseEnter={handleDropdownToggle}
         >
-          Resources
+          OVERVIEW
           <clr-icon shape="caret down"></clr-icon>
         </button>
         <div className="dropdown-menu">
-          <h4 className="dropdown-header">Dropdown header</h4>
-          <div className="dropdown-item active">First Action</div>
-          <div className="dropdown-item disabled">Disabled Action</div>
+          <h4 className="dropdown-header">About Måste</h4>
+          <div className="dropdown-item active">What is Måste ?</div>
+          <div className="dropdown-item disabled">What is our Aim ?</div>
           <div className="dropdown-divider"></div>
-          <div className="dropdown-item">Link 1</div>
-          <div className="dropdown-item">Link 2</div>
+          <div className="dropdown-item">WPs</div>
+          <div className="dropdown-item">Project Bodies</div>
         </div>
       </div>
     </React.Fragment>

@@ -46,8 +46,12 @@ app.use((req, res, next) => {
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, "build")));
 
+// Serve static files from the "node_modules" directory
+app.use("/node_modules", express.static(path.join(__dirname, "node_modules")));
+
 app.get("/", (req, res) => {
   res.send("Welcome to the MÅSTE project Database !");
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 const upload = multer({ dest: "uploads/" });
