@@ -104,7 +104,7 @@ const Settings = () => {
       try {
         const token = await user.getIdToken();
         const response = await fetch(
-          "https://maste-science.onrender.com/api/updateRole/",
+          "https://maste-science.onrender.com/api/updateRole",
           {
             method: "POST",
             headers: {
