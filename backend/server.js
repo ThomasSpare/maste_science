@@ -176,7 +176,7 @@ app.post("/pptx", checkRole("admin"), pptx.single("file"), (req, res) => {
 });
 
 // Searching Files in the Database
-app.get("/api/uploads/", async (_, res) => {
+app.get("/api/uploads", async (_, res) => {
   try {
     const result = await pool.query("SELECT * FROM uploads");
     res.json(result.rows);
@@ -186,7 +186,7 @@ app.get("/api/uploads/", async (_, res) => {
   }
 });
 
-app.get("/ppt/", async (_, res) => {
+app.get("/ppt", async (_, res) => {
   try {
     const result = await pool.query("SELECT * FROM ppt");
     res.json(result.rows);
@@ -196,7 +196,7 @@ app.get("/ppt/", async (_, res) => {
   }
 });
 
-app.get("/pptx/", async (_, res) => {
+app.get("/pptx", async (_, res) => {
   try {
     const result = await pool.query("SELECT * FROM pptx");
     res.json(result.rows);
