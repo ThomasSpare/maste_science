@@ -1,4 +1,3 @@
-import Marquee from "react-marquee";
 import React, { useRef, useState, useEffect } from "react";
 import { useAuth } from "../Auth/AuthContext";
 import "../App.css";
@@ -98,72 +97,79 @@ function NavBar(isLoggedIn) {
   };
 
   return (
-          <header className="App-header">
-            <div className="main">
-              <header className="header header-6">
-                <div className="branding">
-                  <span className="title">MÅSTE</span>
-                </div>
-                <form className="search" onSubmit={handleSearch}>
-                    <input
-                      id="search-input-sidenav-ng"
-                      type="text"
-                      placeholder="Search for keywords..."
-                      value={searchQuery}
-                      onChange={handleSearchInputChange}
-                    />
-                    <a href="/" className="nav-link nav-icon">
-                    <cds-icon shape="search" type="submit">Search</cds-icon>
-                  </a>
-                </form>
-                {isLoggedIn && currentUser && currentUser.email && (
+    <header className="App-header">
+      <div className="main">
+        <header className="header header-6">
+          <div className="branding">
+            <span className="title">MÅSTE</span>
+          </div>
+          <form className="search" onSubmit={handleSearch}>
+            <input
+              id="search-input-sidenav-ng"
+              type="text"
+              placeholder="Search for keywords..."
+              value={searchQuery}
+              onChange={handleSearchInputChange}
+            />
+            <a href="/" className="nav-link nav-icon">
+              <cds-icon shape="search" type="submit">
+                Search
+              </cds-icon>
+            </a>
+          </form>
+          {isLoggedIn && currentUser && currentUser.email && (
+            <div className="currentUser">
+              <cds-icon shape="thumbs-up"></cds-icon>
+              <span className="display_email">
+                Logged in as {currentUser.email}
+              </span>
+            </div>
+          )}
+          <ModalAuth isLoggedIn={isLoggedIn} />
+          <div className="settings">
+            {/* Light-Dark Mode */}
+            <input
+              type="checkbox"
+              className="checkbox"
+              id="checkbox"
+              ref={checkboxRef}
+              onChange={handleCheckboxChange}
+            />
+            <label htmlFor="checkbox" className="checkbox-label">
+              <i className="fas fa-moon"></i>
+              <i className="fas fa-sun"></i>
+              <div className="ball"></div>
+            </label>
 
-                  <div className="currentUser">
-                    <cds-icon shape="thumbs-up"></cds-icon>
-                    <span className="display_email">
-                      Logged in as {currentUser.email}
-                    </span>
-                  </div>
-                )}
-                <ModalAuth isLoggedIn={isLoggedIn} />
-                <div className="settings">
-                  {/* Light-Dark Mode */}
-                  <input
-                    type="checkbox"
-                    className="checkbox"
-                    id="checkbox"
-                    ref={checkboxRef}
-                    onChange={handleCheckboxChange}
-                  />
-                  <label htmlFor="checkbox" className="checkbox-label">
-                    <i className="fas fa-moon"></i>
-                    <i className="fas fa-sun"></i>
-                    <div className="ball"></div>
-                  </label>
-
-                  <a href="/" className="nav-link nav-icon">
-                    <cds-icon shape="home"></cds-icon>
-                  </a>           
-                  <a href="/settings" className="nav-link nav-icon">
-                    <cds-icon shape="cog"></cds-icon>
-                  </a>
-                </div>
-              </header>
-              <nav className="subnav">
-                <ul className="nav">
-                  <Dropdown_1 />
-                  <Dropdown_2 />
-                  <Dropdown_3 isLoggedIn={isLoggedIn} />
-                  <Dropdown_4 />
-                  <Dropdown_5 />
-                  <Dropdown_6 />
-                </ul>
-                {showLogo && <img className="logo"
-                  src="https://res.cloudinary.com/djunroohl/image/upload/v1721858132/M%C3%A5ste_hill_logo_morprz.png"
-                  alt="logo" />}
-              </nav>
-            </div>        
-          </header>
+            <a href="/" className="nav-link nav-icon">
+              <cds-icon shape="home"></cds-icon>
+            </a>
+            {isLoggedIn && ( // Only show the settings link if the user is logged in
+              <a href="/settings" className="nav-link nav-icon">
+                <cds-icon shape="cog"></cds-icon>
+              </a>
+            )}
+          </div>
+        </header>
+        <nav className="subnav">
+          <ul className="nav">
+            <Dropdown_1 />
+            <Dropdown_2 />
+            <Dropdown_3 isLoggedIn={isLoggedIn} />
+            <Dropdown_4 />
+            <Dropdown_5 />
+            <Dropdown_6 />
+          </ul>
+          {showLogo && (
+            <img
+              className="logo"
+              src="https://res.cloudinary.com/djunroohl/image/upload/v1721858132/M%C3%A5ste_hill_logo_morprz.png"
+              alt="logo"
+            />
+          )}
+        </nav>
+      </div>
+    </header>
   );
 }
 

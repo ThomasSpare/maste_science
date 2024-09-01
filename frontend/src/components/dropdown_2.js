@@ -32,8 +32,8 @@ function Dropdown_2() {
         </button>
         <div className="dropdown-menu">
           <h4 className="dropdown-header">Dropdown header</h4>
-          <div className="dropdown-item active">First Action</div>
-          <div className="dropdown-item disabled">Disabled Action</div>
+          <div className="dropdown-item">First Action</div>
+          <div className="dropdown-item">Disabled Action</div>
           <div className="dropdown-divider"></div>
           <div className="dropdown-item">Link 1</div>
           <div className="dropdown-item">Link 2</div>

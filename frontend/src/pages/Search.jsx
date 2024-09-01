@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@cds/core/select/register.js';
 import './Search.css';
+import { CdsButton } from '@cds/react/button';
 
 function Search() {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ function Search() {
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
+    <div className="Search-div" style={{ display: "flex", justifyContent: "center" }}>
       <div style={{ textAlign: "left" }}>
         <div style={{ marginBottom: "10px" }}>
           <label style={{ display: "inline-block", width: "100px" }}>Category:</label>
@@ -143,8 +144,8 @@ function Search() {
           ))}
         </ol>
         <div style={{ marginTop: "10px" }}>
-          <button onClick={handlePreviousPage} disabled={currentPage === 1}>Previous</button>
-          <button onClick={handleNextPage} disabled={endIndex >= filteredUploads.length}>Next</button>
+          <CdsButton onClick={handlePreviousPage} disabled={currentPage === 1}>Previous</CdsButton>
+          <CdsButton onClick={handleNextPage} disabled={endIndex >= filteredUploads.length}>Next</CdsButton>
         </div>
       </div>
     </div>

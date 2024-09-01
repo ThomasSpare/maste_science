@@ -30,9 +30,9 @@ function Dropdown_1() {
           <clr-icon shape="caret down"></clr-icon>
         </button>
         <div className="dropdown-menu">
-          <h4 className="dropdown-header">About Måste</h4>
-          <div className="dropdown-item active">What is Måste ?</div>
-          <div className="dropdown-item disabled">What is our Aim ?</div>
+          <h4 className="dropdown-header">ABOUT MÅSTE</h4>
+          <div className="dropdown-item">What is Måste ?</div>
+          <div className="dropdown-item">What is our Aim ?</div>
           <div className="dropdown-divider"></div>
           <div className="dropdown-item">WPs</div>
           <div className="dropdown-item">Project Bodies</div>

@@ -3,7 +3,7 @@ p {
 }
 
 
-#root > div{
+.Search-div{
     margin-top: 3vh;
 }
 
@@ -24,6 +24,13 @@ li:hover
     background-color: rgba(0, 255, 255, 0.13);
     transition: 0.1s;
 }
+
+@media screen and (max-width: 1440px){
+ /* Search Categories  */
+    .Search-div{
+        margin-top: 10vh;
+    }
+  }
 
 @media screen and (max-width: 768px) {
     #root > div > div > div:nth-child(1){

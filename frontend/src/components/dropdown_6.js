@@ -27,13 +27,13 @@ function Dropdown_6() {
           className="dropdown-toggle btn btn-link"
           onMouseEnter={handleDropdownToggle}
         >
-          About
+          CONTACTS
           <clr-icon shape="caret down"></clr-icon>
         </button>
         <div className="dropdown-menu">
           <h4 className="dropdown-header">Dropdown header</h4>
-          <div className="dropdown-item active">First Action</div>
-          <div className="dropdown-item disabled">Disabled Action</div>
+          <div className="dropdown-item">First Action</div>
+          <div className="dropdown-item">Disabled Action</div>
           <div className="dropdown-divider"></div>
           <div className="dropdown-item">Link 1</div>
           <div className="dropdown-item">Link 2</div>

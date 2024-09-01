@@ -26,7 +26,6 @@ const functions = getFunctions(app); // Initialize Firebase Functions
 const Settings = () => {
   const [password, setPassword] = useState("");
   const [newsletter, setNewsletter] = useState(false);
-  const [news, setNews] = useState(false);
   const [role, setRole] = useState("");
   const [message, setMessage] = useState("");
   const [userRole, setUserRoleState] = useState("");
@@ -84,7 +83,6 @@ const Settings = () => {
           doc(db, "users", user.uid),
           {
             newsletter,
-            news,
           },
           { merge: true }
         );
@@ -145,7 +143,6 @@ const Settings = () => {
 
   return (
     <div className="Settings">
-      <h2 className="Settings-h2">Settings</h2>
       <form onSubmit={handlePasswordChange}>
         <div>
           <label>
@@ -171,43 +168,8 @@ const Settings = () => {
             Receive Newsletter
           </label>
         </div>
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              checked={news}
-              onChange={(e) => setNews(e.target.checked)}
-            />
-            Receive News
-          </label>
-        </div>
         <CdsButton type="submit">Update Preferences</CdsButton>
       </form>
-      {userRole === "admin" && (
-        <form onSubmit={handleRoleChange}>
-          <div>
-            <label>
-              Role:
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                required
-              >
-                <option value="">Select Role</option>
-                <option value="admin">Admin</option>
-                <option value="editor">Editor</option>
-                <option value="viewer">Viewer</option>
-              </select>
-            </label>
-          </div>
-          <CdsButton type="submit">Change Role</CdsButton>
-        </form>
-      )}
-      <CdsButton onClick={callExampleFunction}>Call Function</CdsButton>
-      {message && <p>{message}</p>}
-      <div>
-        <h3>Current Role: {userRole}</h3>
-      </div>
     </div>
   );
 };

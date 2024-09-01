@@ -24,12 +24,22 @@ footer{
   font-family: "Metropolis", sans-serif;
 }
 
+.nav{
+  z-index: 999;
+}
+
 .main{
   width: 100%;
+  height: 100vh;
 }
 
 body {
   color: #333;
+}
+
+#Footer{
+  margin-top: 100vh;
+  width: 100vw;
 }
 
 
@@ -57,9 +67,6 @@ body {
   height: 4.5rem !important;
 }
 
-input {
-  color: #919191;
-}
 
 
 /* HOME PAGE */
@@ -240,11 +247,90 @@ body.dark h1, body.dark, p {color: #bee7ff} body.border{color:  rgb(45, 79, 90)}
 
 
 /* Responsive Design */
+
+@media screen and (max-width: 1440px){
+  .App-header {
+    min-height: 10vh;
+  }
+  .sub-nav .nav, .subnav .nav {
+    padding-left: 15rem !important;
+}
+.home_image2 {
+  height: 100vh;
+  display: none;
+  margin-top: 1vh;
+}
+.home_image1 {
+  margin-top: 1vh;
+}
+/*Text Home screen */
+#page-wrap > main > section.columns > div:nth-child(2) > div {
+  padding-inline: 214px;
+  padding-left: 5vw;
+  padding-right: 23vw;
+  padding-top: 4vh;
+}
+/* Nav dropdowns margin left right */
+.dropdown .dropdown-toggle.btn {
+  padding-right: 0rem !important;
+}
+}
+
+@media screen and (max-width: 1024px) {
+  .sub-nav .nav, .subnav .nav {
+    padding-left: 4rem !important;
+}
+.home_image1 {
+  height: 100vh;
+  object-fit: cover;
+  width: 21vw;
+}
+.dropdown .dropdown-toggle.btn {
+  padding-right: 0rem !important;
+}
+}
+
 @media screen and (max-width: 768px) {
   .App-header {
     min-height: 8vh;
   }
-  
+
+
+  /* left Button in nav bar */
+  #root > header > div > nav > ul > div:nth-child(1) > button {
+    margin-left: 9vw;
+  }
+
+.home_image1 {
+  height: 100vh;
+        object-fit: cover;
+        width: 14vw;
+        margin-top: 6vh;
+}
+
+.header, header{
+  display: block;
+}
+
+.checkbox-label {
+  background-color: #868686;
+  width: 54px;
+  height: 26px;
+  padding: 5px;
+  display: flex;
+}
+
+.header .header-actions, .header .settings, header .header-actions, header .settings {
+  display: grid !important;
+  justify-content: center;
+  margin-top: 20vh;
+}
+
+  .header header-6 {
+    font-size: 1.5rem;
+    align-items: center;
+  }
+
 
 .header .search+.header-actions, .header .search+.settings, .header .search-box+.header-actions, .header .search-box+.settings, header .search+.header-actions, header .search+.settings, header .search-box+.header-actions, header .search-box+.settings {
   display: none;
@@ -256,7 +342,14 @@ body.dark h1, body.dark, p {color: #bee7ff} body.border{color:  rgb(45, 79, 90)}
   flex-direction: row;
   padding-left: 5vw;
   padding-right: 5vw;
-  width: 70vw !important;
+}
+
+#page-wrap > main > section.columns > div:nth-child(2) > div {
+  padding-inline: -12px;
+  padding-left: 4vw;
+  padding-right: 0vw;
+  padding-top: 4vh;
+  width: 55vw;
 }
 
 .form, form {
@@ -265,9 +358,6 @@ body.dark h1, body.dark, p {color: #bee7ff} body.border{color:  rgb(45, 79, 90)}
 
  input, select, textarea {
   display: none;
-}
- input, select, textarea{
-  display: none !important;
 }
 
 li:hover {
@@ -283,7 +373,6 @@ li:hover {
 
   .sub-nav .nav, .subnav .nav {
     padding-left: 0rem !important;
-    display: none;
   }
 
 
@@ -303,11 +392,10 @@ li:hover {
 
   .sub-nav .nav, .subnav .nav {
     padding-left: 0rem !important;
-    display: none;
   }
 
   .logo {
-    display: none;
+    display: none !important;
 
   }
   .text {

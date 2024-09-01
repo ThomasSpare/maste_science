@@ -37,7 +37,7 @@ function Dropdown_3() {
           className="dropdown-toggle btn btn-link"
           onMouseEnter={handleDropdownToggle}
         >
-          Resources
+          DOCUMENTS
           <clr-icon shape="arrow" dir="down"></clr-icon>
         </button>
         <div className="dropdown-menu">

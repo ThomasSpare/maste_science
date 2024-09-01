@@ -12,7 +12,11 @@ import {
 
 const Footer = () => {
   return (
-    <MDBFooter bgColor="light" className="text-center text-lg-start text-muted">
+    <MDBFooter
+      id="Footer"
+      bgColor="light"
+      className="text-center text-lg-start text-muted"
+    >
       <section className="Footer">
         <MDBContainer className="text-center text-md-start mt-5">
           <MDBRow className="mt-3">
