@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../Auth/AuthContext'; // Ensure this path is correct
+import { useAuth } from '../Auth/AuthContext';
+import dotenv from 'dotenv'; // Import dotenv
 
+dotenv.config({ path: '/c:/Users/tspar/måste/frontend/.env' });
+
+// Rest of the code...
 
 const ViewPdf = () => {
-  const { file, fileId } = useParams();
-  const navigate = useNavigate();
+}
   const [fileUrl, setFileUrl] = useState('');
   useAuth(); // Ensure this path is correct
 
@@ -18,8 +21,8 @@ const ViewPdf = () => {
       console.error("File parameter is undefined.");
       return;
     }
-    const serverAddress = 'https://maste-science.onrender.com'; 
-    const url = `${serverAddress}/api/uploads/${file}`;
+    const apiUrl = process.env.MASTE_API_URL; 
+    const url = `${apiUrl}/api/uploads/${file}`;
     
     fetch(url, { signal })
       .then(response => response.blob())
