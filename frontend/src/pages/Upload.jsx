@@ -39,13 +39,13 @@ const Upload = () => {
         formData.append('country', country);
         formData.append('category', category);
 
-        let endpoint = 'https://maste-science.onrender.com/api/uploads';
+        let endpoint = '/api/uploads';
         const fileType = file.name.split('.').pop().toLowerCase();
 
         if (fileType === 'ppt') {
-            endpoint = 'https://maste-science.onrender.com/ppt';
+            endpoint = '/ppt';
         } else if (fileType === 'pptx') {
-            endpoint = 'https://maste-science.onrender.com/pptx';
+            endpoint = '/pptx';
         }
 
         try {

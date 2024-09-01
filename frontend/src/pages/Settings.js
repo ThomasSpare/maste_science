@@ -101,17 +101,14 @@ const Settings = () => {
     if (user) {
       try {
         const token = await user.getIdToken();
-        const response = await fetch(
-          "https://maste-science.onrender.com/api/updateRole",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ uid: user.uid, role }),
-          }
-        );
+        const response = await fetch("/api/updateRole", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ uid: user.uid, role }),
+        });
 
         if (response.ok) {
           const data = await response.json();
