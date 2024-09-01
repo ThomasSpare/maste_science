@@ -111,7 +111,7 @@ const checkRole = (role) => {
 
 // Uploading files
 app.post(
-  "/api/uploads",
+  "https://maste-science.onrender.com/api/uploads",
   checkRole("admin"),
   upload.single("file"),
   (req, res) => {
@@ -135,48 +135,58 @@ app.post(
   }
 );
 
-app.post("/ppt", checkRole("admin"), ppt.single("file"), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No file uploaded" });
-  }
-
-  const { author, uploadDate, country, category } = req.body;
-  pool.query(
-    "INSERT INTO ppt (file, author, uploadDate, country, category) VALUES ($1, $2, $3, $4, $5)",
-    [req.file.filename, author, uploadDate, country, category],
-    (err, result) => {
-      if (err) {
-        console.error(err);
-        res.status(500).json({ message: "Internal server error" });
-      } else {
-        res.status(201).json({ message: "File uploaded successfully" });
-      }
+app.post(
+  "https://maste-science.onrender.com/ppt",
+  checkRole("admin"),
+  ppt.single("file"),
+  (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
     }
-  );
-});
 
-app.post("/pptx", checkRole("admin"), pptx.single("file"), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No file uploaded" });
-  }
-
-  const { author, uploadDate, country, category } = req.body;
-  pool.query(
-    "INSERT INTO pptx (file, author, uploadDate, country, category) VALUES ($1, $2, $3, $4, $5)",
-    [req.file.filename, author, uploadDate, country, category],
-    (err, result) => {
-      if (err) {
-        console.error(err);
-        res.status(500).json({ message: "Internal server error" });
-      } else {
-        res.status(201).json({ message: "File uploaded successfully" });
+    const { author, uploadDate, country, category } = req.body;
+    pool.query(
+      "INSERT INTO ppt (file, author, uploadDate, country, category) VALUES ($1, $2, $3, $4, $5)",
+      [req.file.filename, author, uploadDate, country, category],
+      (err, result) => {
+        if (err) {
+          console.error(err);
+          res.status(500).json({ message: "Internal server error" });
+        } else {
+          res.status(201).json({ message: "File uploaded successfully" });
+        }
       }
+    );
+  }
+);
+
+app.post(
+  "https://maste-science.onrender.com/pptx",
+  checkRole("admin"),
+  pptx.single("file"),
+  (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
     }
-  );
-});
+
+    const { author, uploadDate, country, category } = req.body;
+    pool.query(
+      "INSERT INTO pptx (file, author, uploadDate, country, category) VALUES ($1, $2, $3, $4, $5)",
+      [req.file.filename, author, uploadDate, country, category],
+      (err, result) => {
+        if (err) {
+          console.error(err);
+          res.status(500).json({ message: "Internal server error" });
+        } else {
+          res.status(201).json({ message: "File uploaded successfully" });
+        }
+      }
+    );
+  }
+);
 
 // Searching Files in the Database
-app.get("/api/uploads", async (_, res) => {
+app.get("https://maste-science.onrender.com/api/uploads", async (_, res) => {
   try {
     const result = await pool.query("SELECT * FROM uploads");
     res.json(result.rows);
@@ -186,7 +196,7 @@ app.get("/api/uploads", async (_, res) => {
   }
 });
 
-app.get("/ppt", async (_, res) => {
+app.get("https://maste-science.onrender.com/ppt", async (_, res) => {
   try {
     const result = await pool.query("SELECT * FROM ppt");
     res.json(result.rows);
@@ -196,7 +206,7 @@ app.get("/ppt", async (_, res) => {
   }
 });
 
-app.get("/pptx", async (_, res) => {
+app.get("https://maste-science.onrender.com/pptx", async (_, res) => {
   try {
     const result = await pool.query("SELECT * FROM pptx");
     res.json(result.rows);
@@ -206,39 +216,42 @@ app.get("/pptx", async (_, res) => {
   }
 });
 
-app.get("/api/uploads/:file", async (req, res) => {
-  const { file } = req.params;
-  try {
-    const queryResult = await pool.query(
-      "SELECT file FROM uploads WHERE file = $1",
-      [file]
-    );
-    if (queryResult.rows.length > 0) {
-      const { file } = queryResult.rows[0];
-      const ext = path.extname(file).toLowerCase();
-      let folder = "uploads/";
+app.get(
+  "https://maste-science.onrender.com/api/uploads/:file",
+  async (req, res) => {
+    const { file } = req.params;
+    try {
+      const queryResult = await pool.query(
+        "SELECT file FROM uploads WHERE file = $1",
+        [file]
+      );
+      if (queryResult.rows.length > 0) {
+        const { file } = queryResult.rows[0];
+        const ext = path.extname(file).toLowerCase();
+        let folder = "uploads/";
 
-      if (ext === ".pdf") {
-        folder += "pdf";
-      } else if (ext === ".ppt") {
-        folder += "ppt";
-      } else if (ext === ".pptx") {
-        folder += "pptx";
+        if (ext === ".pdf") {
+          folder += "pdf";
+        } else if (ext === ".ppt") {
+          folder += "ppt";
+        } else if (ext === ".pptx") {
+          folder += "pptx";
+        }
+
+        const filePath = path.join(__dirname, folder, file);
+
+        res.setHeader("Content-Type", "application/octet-stream");
+        res.setHeader("Content-Disposition", `inline; filename="${file}"`);
+        res.sendFile(filePath);
+      } else {
+        res.status(404).json({ message: "File not found" });
       }
-
-      const filePath = path.join(__dirname, folder, file);
-
-      res.setHeader("Content-Type", "application/octet-stream");
-      res.setHeader("Content-Disposition", `inline; filename="${file}"`);
-      res.sendFile(filePath);
-    } else {
-      res.status(404).json({ message: "File not found" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Internal server error" });
     }
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Internal server error" });
   }
-});
+);
 
 // Google Analytics
 async function getRealTimeUsers(auth) {
