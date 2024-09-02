@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CdsButton } from '@cds/react/button';
+import { auth } from '../firebaseAuth/firebase';
 
 import "@cds/core/button/register.js";
 import '@cds/core/input/register.js';
@@ -49,8 +50,13 @@ const Upload = () => {
         }
 
         try {
+
+            const token = await auth.currentUser.getIdToken();
             const response = await fetch(endpoint, {
                 method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
                 body: formData
             });
 
