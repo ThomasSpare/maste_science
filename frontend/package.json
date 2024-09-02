@@ -42,8 +42,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build && npm run sentry:sourcemaps",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org damrec-productions --project javascript-react build && sentry-cli sourcemaps upload --org damrec-productions --project javascript-react build"
