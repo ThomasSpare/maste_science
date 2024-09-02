@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CdsButton } from '@cds/react/button';
-import { auth } from '../firebaseAuth/firebase';
+import { useAuth } from "../Auth/AuthContext";
 
 import "@cds/core/button/register.js";
 import '@cds/core/input/register.js';
@@ -21,6 +21,8 @@ const Upload = () => {
     const [uploadDate, setUploadDate] = useState('');
     const [country, setCountry] = useState('');
     const [category, setCategory] = useState('');
+
+    const { currentUser } = useAuth();
     
     useEffect(() => {
         setUploadDate(new Date().toISOString().split('T')[0]);
@@ -51,7 +53,11 @@ const Upload = () => {
 
         try {
 
-            const token = await auth.currentUser.getIdToken();
+            if (!currentUser) {
+                throw new Error('User is not authenticated');
+            }
+
+            const token = await currentUser.getIdToken();
             const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
