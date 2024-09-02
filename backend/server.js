@@ -17,6 +17,7 @@ const port = process.env.PORT || 10000;
 const allowedOrigins = [
   process.env.ALLOWED_ORIGINS,
   "https://maste-science-frontend.onrender.com",
+  "https://maste-science.onrender.com",
 ];
 
 app.use(
