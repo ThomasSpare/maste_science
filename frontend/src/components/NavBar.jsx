@@ -101,7 +101,7 @@ function NavBar(isLoggedIn) {
       <div className="main">
         <header className="header header-6">
           <div className="branding">
-            <span className="title">MÅSTE</span>
+            <a href="/" className="title">MÅSTE</a>
           </div>
           <form className="search" onSubmit={handleSearch}>
             <input
@@ -111,11 +111,11 @@ function NavBar(isLoggedIn) {
               value={searchQuery}
               onChange={handleSearchInputChange}
             />
-            <a href="/" className="nav-link nav-icon">
-              <cds-icon shape="search" type="submit">
+            <button type="submit" className="nav-link nav-icon">
+              <cds-icon shape="search">
                 Search
               </cds-icon>
-            </a>
+            </button>
           </form>
           {isLoggedIn && currentUser && currentUser.email && (
             <div className="currentUser">

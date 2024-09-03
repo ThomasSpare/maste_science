@@ -16,6 +16,7 @@ import * as Sentry from "@sentry/react";
 import SearchPowerPoint from "./pages/SearchPowerPoint";
 import Settings from "./pages/Settings";
 import ViewPpt from "./pages/ViewPpt";
+import { AuthProvider } from "./Auth/AuthContext"; // Import AuthProvider
 
 Sentry.init({
   dsn: "https://2c54d8d1ddd169f0579e56fd4c45541b@o4507612471885824.ingest.de.sentry.io/4507612475555920",
@@ -38,28 +39,32 @@ Sentry.init({
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LayOut />}>
-          <Route index element={<Home />} />
-          <Route path="search" element={<Search />} />
-          <Route path="search-powerpoint" element={<SearchPowerPoint />} />
-          <Route path="upload" element={<Upload />} />
-          <Route path="view-pdf/:fileId/:file" element={<ViewPdf />} />
-          <Route path="view-ppt/:fileId/:file" element={<ViewPpt />} />
-          <Route path="settings" element={<Settings />} />
-          <Route
-            path="auth"
-            element={
-              <ModalAuth
-                isLoggedIn={isLoggedIn}
-                setIsLoggedIn={setIsLoggedIn}
-              />
-            }
-          />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      {" "}
+      {/* Wrap the application with AuthProvider */}
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LayOut />}>
+            <Route index element={<Home />} />
+            <Route path="search" element={<Search />} />
+            <Route path="search-powerpoint" element={<SearchPowerPoint />} />
+            <Route path="upload" element={<Upload />} />
+            <Route path="view-pdf/:fileId/:file" element={<ViewPdf />} />
+            <Route path="view-ppt/:fileId/:file" element={<ViewPpt />} />
+            <Route path="settings" element={<Settings />} />
+            <Route
+              path="auth"
+              element={
+                <ModalAuth
+                  isLoggedIn={isLoggedIn}
+                  setIsLoggedIn={setIsLoggedIn}
+                />
+              }
+            />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

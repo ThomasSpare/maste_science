@@ -2,26 +2,9 @@ import React, { useState, useEffect } from "react";
 import { getAuth, updatePassword } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
-import { getFunctions, httpsCallable } from "firebase/functions"; // Import Firebase Functions
 import { CdsButton } from "@cds/react/button";
 import "./Settings.css";
-
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APP_ID,
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const functions = getFunctions(app); // Initialize Firebase Functions
+import { db, auth } from "../firebaseAuth/firebase"; // Ensure this path is correct
 
 const Settings = () => {
   const [password, setPassword] = useState("");
@@ -29,6 +12,12 @@ const Settings = () => {
   const [role, setRole] = useState("");
   const [message, setMessage] = useState("");
   const [userRole, setUserRoleState] = useState("");
+  const [image, setImage] = useState("");
+  const [headline, setHeadline] = useState("");
+  const [text, setText] = useState("");
+  const [currentDate, setCurrentDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -127,14 +116,23 @@ const Settings = () => {
     }
   };
 
-  // Example function call
-  const callExampleFunction = async () => {
-    const exampleFunction = httpsCallable(functions, "exampleFunction");
-    try {
-      const result = await exampleFunction({ text: "Hello, World!" });
-      console.log("Function result:", result.data);
-    } catch (error) {
-      console.error("Error calling function:", error);
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        await setDoc(doc(db, "homeContent", "latest"), {
+          image,
+          headline,
+          text,
+          currentDate,
+        });
+        setMessage("Content updated successfully.");
+      } catch (error) {
+        setMessage(`Error: ${error.message}`);
+      }
+    } else {
+      setMessage("No user is signed in.");
     }
   };
 
@@ -167,6 +165,54 @@ const Settings = () => {
         </div>
         <CdsButton type="submit">Update Preferences</CdsButton>
       </form>
+      <form onSubmit={handleFormSubmit}>
+        <div>
+          <label>
+            Image URL:
+            <input
+              type="text"
+              value={image}
+              onChange={(e) => setImage(e.target.value)}
+              required
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            Headline:
+            <input
+              type="text"
+              value={headline}
+              onChange={(e) => setHeadline(e.target.value)}
+              required
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            Text:
+            <textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              required
+              style={{ height: "200px", width: "460px" }}
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            Current Date:
+            <input
+              type="text"
+              value={currentDate}
+              onChange={(e) => setCurrentDate(e.target.value)}
+              required
+            />
+          </label>
+        </div>
+        <CdsButton type="submit">Update Content</CdsButton>
+      </form>
+      {message && <p>{message}</p>}
     </div>
   );
 };

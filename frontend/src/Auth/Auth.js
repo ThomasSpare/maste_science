@@ -1,17 +1,16 @@
-import { auth } from "../firebaseAuth/firebase.js"; // Ensure this path is correct
+import { auth, db } from "../firebaseAuth/firebase.js"; // Ensure this path is correct
+import { doc, setDoc } from "firebase/firestore";
 import {
   setPersistence,
   browserLocalPersistence,
   GoogleAuthProvider,
   signInWithPopup,
-} from "firebase/auth";
-
-import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
 
+// Set persistence to browser local persistence
 setPersistence(auth, browserLocalPersistence)
   .then(() => {
     // Existing and future Auth states are now persisted in the current session only.
@@ -21,21 +20,38 @@ setPersistence(auth, browserLocalPersistence)
     console.error("Failed to set persistence:", error);
   });
 
+// Register a new user with email and password
 export async function register(email, password) {
   try {
+    // Create user with email and password
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
-    return userCredential.user;
+    const user = userCredential.user;
+
+    // Log user creation success
+    console.log("User created successfully:", user);
+
+    // Store user data in Firestore
+    await setDoc(doc(db, "users", user.uid), {
+      email: user.email,
+    });
+
+    // Log Firestore document creation success
+    console.log("User data stored in Firestore successfully");
+
+    return user;
   } catch (error) {
+    // Log errors
     console.error("Error code:", error.code);
     console.error("Error message:", error.message);
     throw error; // Rethrow the error to be handled by the caller
   }
 }
 
+// Sign in with Google
 export const signInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
   try {
@@ -48,6 +64,7 @@ export const signInWithGoogle = async () => {
   }
 };
 
+// Login with email and password
 export async function login(email, password) {
   try {
     const userCredential = await signInWithEmailAndPassword(
@@ -62,6 +79,7 @@ export async function login(email, password) {
   }
 }
 
+// Logout the current user
 export async function logout() {
   try {
     await signOut(auth);
@@ -71,6 +89,7 @@ export async function logout() {
   }
 }
 
+// Get the current authentication status
 export async function getAuthStatus() {
   return new Promise((resolve, reject) => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
