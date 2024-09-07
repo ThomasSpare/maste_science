@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { useAuth } from "../Auth/AuthContext";
+import { useAuth } from "../Auth/useAuth";
 import "../App.css";
 import "../components/NavBar.css";
 import { useLocation } from "react-router-dom";
@@ -26,12 +26,12 @@ import "@clr/icons/clr-icons.min.css";
 import "@clr/icons/shapes/technology-shapes.js";
 import "@cds/core/button/register.js";
 import ModalAuth from "./modal_auth.js";
-import Dropdown_1 from "./dropdown_1.js";
-import Dropdown_2 from "./dropdown_2.js";
-import Dropdown_3 from "./dropdown_3.js";
-import Dropdown_4 from "./dropdown_4.js";
-import Dropdown_5 from "./dropdown_5.js";
-import Dropdown_6 from "./dropdown_6.js";
+import Dropdown_1 from "./dropdown_1.jsx";
+import Dropdown_2 from "./dropdown_2.jsx";
+import Dropdown_3 from "./dropdown_3.jsx";
+import Dropdown_4 from "./dropdown_4.jsx";
+import Dropdown_5 from "./dropdown_5.jsx";
+import Dropdown_6 from "./dropdown_6.jsx";
 import "clarity-icons/clarity-icons.min.css"; // Import Clarity Icons CSS
 import "clarity-icons/shapes/technology-shapes.js"; // Import Clarity Icons shapes
 import "@cds/core/button/register.js"; // Import Clarity Button component

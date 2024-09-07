@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CdsButton } from '@cds/react/button';
-import { useAuth } from "../Auth/AuthContext";
+import { useAuth } from "../Auth/useAuth";
 
 import "@cds/core/button/register.js";
 import '@cds/core/input/register.js';

@@ -21,12 +21,18 @@ import "@cds/core/divider/register.js"; // Import Clarity Divider component
 import "@cds/core/icon/register.js"; // Import Clarity Icon component
 import "@clr/icons/shapes/technology-shapes.js";
 import "@cds/core/button/register.js";
-
-import { MDBFooter, MDBIcon, MDBContainer, MDBRow, MDBCol } from 'mdb-react-ui-kit';
-
+import "../App.css";
+import { useAuth0 } from "@auth0/auth0-react";
 
 
 function Home() {
+
+  const { isAuthenticated } = useAuth0();
+
+  if (!isAuthenticated) {
+    return <div>Please log in to view this content.</div>;
+  }
+  
   return (
     <div className="App">
       <div id="outer-container">

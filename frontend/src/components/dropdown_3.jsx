@@ -7,7 +7,7 @@ import "@clr/icons/shapes/all-shapes.js";
 import "@cds/core/icon/shapes/arrow.js";
 import "clarity-icons/clarity-icons.min.css";
 import { ClarityIcons, arrowIcon } from "@cds/core/icon";
-import { useAuth } from "../Auth/AuthContext"; // Ensure this path is correct
+import { useAuth } from "../Auth/useAuth";
 
 import "@cds/core/dropdown/register.js";
 import "@cds/core/button/register.js";

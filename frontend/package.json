@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "/",
   "dependencies": {
+    "@auth0/auth0-react": "^2.2.4",
     "@cds/city": "^1.1.0",
     "@cds/core": "^6.10.0",
     "@cds/react": "^6.12.0",
@@ -25,7 +26,6 @@
     "clarity-icons": "^0.10.28",
     "clarity-ui": "^0.10.28",
     "cors": "^2.8.5",
-    "firebase": "^10.13.1",
     "mdb-react-ui-kit": "^8.0.0",
     "path-browserify": "^1.0.1",
     "pdfjs-dist": "^4.4.168",

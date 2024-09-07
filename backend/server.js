@@ -1,3 +1,4 @@
+const fs = require("fs");
 const path = require("path");
 const dotenv = require("dotenv");
 const express = require("express");
@@ -7,17 +8,56 @@ const { Pool } = require("pg");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { google } = require("googleapis");
-const admin = require("firebase-admin");
 const analytics = google.analyticsreporting("v4");
 
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 10000;
 
+// Load the private and public keys
+const privateKey = fs.readFileSync(path.join(__dirname, "private.key"), "utf8");
+const publicKey = fs.readFileSync(path.join(__dirname, "public.key"), "utf8");
+
+// Route to generate a token for testing
+app.post("/generate-token", (req, res) => {
+  const { userId } = req.body;
+  const token = jwt.sign({ userId }, privateKey, {
+    expiresIn: "1h",
+    algorithm: "RS256",
+  });
+  res.json({ token });
+});
+
+// Authentication middleware
+app.use(async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (authHeader) {
+    const token = authHeader.split(" ")[1];
+
+    try {
+      const payload = jwt.verify(token, publicKey, { algorithms: ["RS256"] });
+      req.user = await getUserById(payload.userId);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  next();
+});
+
+app.get("/authorized", function (req, res) {
+  res.send("Secured Resource");
+});
+
+app.get("/test", (req, res) => {
+  res.send("Server is running!");
+});
+
 const allowedOrigins = [
   process.env.ALLOWED_ORIGINS,
   "https://maste-science-frontend.onrender.com",
   "https://maste-science.onrender.com",
+  "http://localhost:3000",
 ];
 
 app.use(
@@ -75,67 +115,28 @@ pool.connect((err) => {
   }
 });
 
-// Initialize Firebase Admin SDK
-admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-  databaseURL: "https://<your-database-name>.firebaseio.com",
+// Uploading files
+app.post("/api/uploads", upload.single("file"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  const { author, uploadDate, country, category } = req.body;
+  pool.query(
+    "INSERT INTO uploads (file, author, uploadDate, country, category) VALUES ($1, $2, $3, $4, $5)",
+    [req.file.filename, author, uploadDate, country, category],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+      } else {
+        res.status(201).json({ message: "File uploaded successfully" });
+      }
+    }
+  );
 });
 
-// Middleware to check user role
-const checkRole = (role) => {
-  return async (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    const token = authHeader.split(" ")[1];
-    try {
-      const decodedToken = await admin.auth().verifyIdToken(token);
-      const userRole = (
-        await admin.firestore().collection("roles").doc(decodedToken.uid).get()
-      ).data().role;
-
-      if (userRole !== role) {
-        return res.status(403).json({ message: "Forbidden" });
-      }
-
-      req.user = decodedToken;
-      next();
-    } catch (error) {
-      console.error(error);
-      res.status(401).json({ message: "Unauthorized" });
-    }
-  };
-};
-
-// Uploading files
-app.post(
-  "/api/uploads",
-  checkRole("admin"),
-  upload.single("file"),
-  (req, res) => {
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-
-    const { author, uploadDate, country, category } = req.body;
-    pool.query(
-      "INSERT INTO uploads (file, author, uploadDate, country, category) VALUES ($1, $2, $3, $4, $5)",
-      [req.file.filename, author, uploadDate, country, category],
-      (err, result) => {
-        if (err) {
-          console.error(err);
-          res.status(500).json({ message: "Internal server error" });
-        } else {
-          res.status(201).json({ message: "File uploaded successfully" });
-        }
-      }
-    );
-  }
-);
-
-app.post("/ppt", checkRole("admin"), ppt.single("file"), (req, res) => {
+app.post("/ppt", ppt.single("file"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
   }
@@ -155,7 +156,7 @@ app.post("/ppt", checkRole("admin"), ppt.single("file"), (req, res) => {
   );
 });
 
-app.post("/pptx", checkRole("admin"), pptx.single("file"), (req, res) => {
+app.post("/pptx", pptx.single("file"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
   }
@@ -232,7 +233,7 @@ app.get("/api/uploads/:file", async (req, res) => {
       res.setHeader("Content-Disposition", `inline; filename="${file}"`);
       res.sendFile(filePath);
     } else {
-      res.status(404).json({ message: "File not found" });
+      res(404).json({ message: "File not found" });
     }
   } catch (err) {
     console.error(err);
@@ -240,49 +241,11 @@ app.get("/api/uploads/:file", async (req, res) => {
   }
 });
 
-// Google Analytics
-async function getRealTimeUsers(auth) {
-  const response = await analytics.reports.batchGet({
-    auth: auth,
-    requestBody: {
-      reportRequests: [
-        {
-          viewId: "GOOGLE_ANALYTICS_VIEW_ID",
-          dateRanges: [
-            {
-              startDate: "30minutesAgo",
-              endDate: "today",
-            },
-          ],
-          metrics: [
-            {
-              expression: "rt:activeUsers",
-            },
-          ],
-        },
-      ],
-    },
-  });
-
-  return response.data.reports[0].data.totals[0].values[0];
-}
-
-// Function to call when you want to display the data on your site
-async function displayRealTimeUsers() {
-  try {
-    const users = await getRealTimeUsers(oauth2Client);
-    console.log(`Active users in the last 30 minutes: ${users}`);
-    // Here you would send the users variable to your frontend to be displayed
-  } catch (error) {
-    console.error("Error fetching real-time users:", error);
-  }
-}
-
 // Assuming you have set up OAuth2 authentication
 const oauth2Client = new google.auth.OAuth2(
-  "GOOGLE_ANALYTICS_CLIENT_ID",
-  "GOOGLE_ANALYTICS_CLIENT_SECRET",
-  "GOOGLE_ANALYTICS_REDIRECT_URI"
+  process.env.GOOGLE_ANALYTICS_CLIENT_ID,
+  process.env.GOOGLE_ANALYTICS_CLIENT_SECRET,
+  process.env.GOOGLE_ANALYTICS_REDIRECT_URI
 );
 
 // Route to create a new user
@@ -323,41 +286,29 @@ app.listen(port, () => {
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  // Validate username and password and fetch user
-  // ...
+  try {
+    const result = await pool.query("SELECT * FROM users WHERE username = $1", [
+      username,
+    ]);
 
-  // Generate token
-  const token = jwt.sign({ userId: user.id }, "your-token");
+    const user = result.rows[0];
 
-  // Send token in the response
-  res.json({ token });
-});
-
-// Authentication middleware
-app.use(async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  if (authHeader) {
-    const token = authHeader.split(" ")[1];
-
-    try {
-      const payload = jwt.verify(token, "your-token");
-      req.user = await getUserById(payload.userId);
-    } catch (err) {
-      console.error(err);
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ message: "Invalid credentials" });
     }
+
+    // Generate token
+    const token = jwt.sign({ userId: user.id }, privateKey, {
+      expiresIn: "1h",
+      algorithm: "RS256",
+    });
+
+    // Send token in the response
+    res.json({ token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  next();
-});
-
-// Authorized route
-app.get("/protected", (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  // Process request
 });
 
 // Catch-all handler to serve the index.html file for any other routes
@@ -365,24 +316,9 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
 });
 
-// To Create new tables in DB, only run once
-// pool.query(
-//   `
-//   CREATE TABLE pptx (
-//     id SERIAL PRIMARY KEY,
-//     username VARCHAR(255) UNIQUE NOT NULL,
-//     password VARCHAR(255) NOT NULL
-//   )
-// `,
-//   (err, res) => {
-//     if (err) {
-//       console.error(err);
-//     } else {
-//       console.log("Table created successfully");
-//     }
-//   }
-// );
-
-// pool.query(
-//   `
-//
+async function getUserById(userId) {
+  const result = await pool.query("SELECT * FROM users WHERE id = $1", [
+    userId,
+  ]);
+  return result.rows[0];
+}

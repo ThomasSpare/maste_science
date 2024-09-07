@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../Auth/AuthContext'; // Ensure this path is correct
+import { useAuth } from '../Auth/useAuth'; // Ensure this path is correct
 
 
 const ViewPdf = () => {
