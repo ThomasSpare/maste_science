@@ -1,0 +1,90 @@
+
+h1{
+    font-size: x-large !important;
+    margin-left: 26vw;
+}
+
+
+.text-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: 'Metropolis', sans-serif;
+    font-weight: 500;
+    font-size: larger;
+    color: #333;
+  }
+
+
+    .quote {
+      font-style: italic;
+      font-size: smaller;
+      margin: 20px;
+      background-color: #ecf5ef;
+      padding: 20px;
+      border-radius: 15px;
+    }
+
+    .WhatIs_list {
+        text-align: justify;
+        align-self: center;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center; 
+        font-family: 'Metropolis', sans-serif;
+        font-weight: 500;
+        /* Override styles from lists.css */
+        font-size: initial;
+        font-weight: initial;
+    }
+
+    li{
+        width: 40vw !important;
+        font-size: medium;
+        font-weight: 500;
+        list-style: url('https://res.cloudinary.com/djunroohl/image/upload/c_scale,w_30/v1726400108/Skills4NuclearPNGX1_iuiopn.png') outside;
+        line-height-step: 1.5;
+        border-style: none;
+     }
+    
+
+    .header {
+        background-color: #2fb0ff;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+
+    .text-section h2 {
+        color: #002538;
+    }
+ 
+  
+  .header {
+    background-color: #2fb0ff;
+    color: white;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .content {
+    flex: 1 1;
+    padding: 20px;
+    background-color: #f9f9f9;
+    background-image: url(https://res.cloudinary.com/djunroohl/image/upload/v1726410687/tp244-bg1-08_iibjso.jpg) !important;
+    height: 101vh;
+    background-size: cover;
+    overflow-x: hidden;
+    
+  }
+  
+  .text-section {
+    margin-bottom: 20px;
+  }
+
+  #Footer {
+    margin-top: 5vh !important;
+    width: 100vw;
+}
+

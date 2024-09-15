@@ -5,6 +5,9 @@ import { useState } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LayOut from "./components/LayOut";
+import Aims from "./pages/Aims";
+import Links from "./pages/Links";
+import Partners from "./pages/Partners";
 import Home from "./pages/Home";
 import Search from "./pages/Search";
 import Upload from "./pages/Upload";
@@ -13,24 +16,33 @@ import ModalAuth from "./components/modal_auth";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import SearchPowerPoint from "./pages/SearchPowerPoint";
+import WhatIs from "./pages/WhatIs";
 import Settings from "./pages/Settings";
 import ViewPpt from "./pages/ViewPpt";
-import authConfig from "./Auth/auth_config.json";
 
 import { Auth0Provider } from "@auth0/auth0-react";
+
+const domain = process.env.REACT_APP_AUTH0_DOMAIN;
+const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   return (
     <Auth0Provider
-      domain={authConfig.domain}
-      clientId={authConfig.clientId}
+      domain={domain}
+      clientId={clientId}
       redirectUri={window.location.origin}
     >
       <Router>
         <Routes>
           <Route path="/" element={<LayOut />}>
             <Route index element={<Home />} />
+            <Route path="What_is_Maste" element={<WhatIs />} />
+            <Route path="Aims" element={<Aims />} />
+            <Route path="links" element={<Links />} />
+            <Route path="partners" element={<Partners />} />
+            <Route path="contacts" element={<Aims />} />
+
             <Route path="search" element={<Search />} />
             <Route path="search-powerpoint" element={<SearchPowerPoint />} />
             <Route path="upload" element={<Upload />} />

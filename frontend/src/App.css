@@ -68,6 +68,21 @@ body {
 }
 
 
+/* Login form group  */
+.form .form-group, form .form-group {
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+  padding-left: 9.5rem;
+  margin-bottom: .5rem;
+  font-size: medium;
+  letter-spacing: normal;
+  line-height: 1rem;
+  height: 12px;
+  margin-top: 0px;
+}
+
+
 
 /* HOME PAGE */
 
@@ -125,15 +140,27 @@ body {
 
 
 
-body.dark {background-color: #242424 !important;}
+
+body.dark {background-color: #424242 !important;}
 .App-header.dark {background-color: #70767b !important;}
-p.dark {color: rgb(127, 225, 255);}
+body.dark p {color: rgb(127, 225, 255);}
 a.dark {color: rgb(127, 225, 255);}
 .footer-logo.dark{background-color: currentColor;}
 .Footer.dark {background-color: #242424 !important;}
+/* Dark mode for The Content on all pages */
+body.dark .content{background-blend-mode: exclusion;}
+body.dark .text-section{color: #bee7ff}
+body.dark .text-section h2{color: #bee7ff}
+body.dark .header{background-color: #0e2533;}
+body.dark .Footer{background-color:#0e2533}
+body.dark .quote{background-color: #242424; color: #bee7ff;}
+body.dark h1, p {color: #bee7ff} body.border{color:  rgb(45, 79, 90)} a{color: #bee7ff} input {color: #ccc !important} select {color: rgb(75, 123, 107)  !important;} textarea {color:rgb(127, 225, 255) !important;}
+/* Dark mode for Partners page */
+body.dark #chalmers{ background-color: #aff9d3; border-radius: 25px;}
+body.dark #lund{ background-color: #aff9d3; border-radius: 25px;}
+body.dark #kth{ background-color: #aff9d3; border-radius: 25px;}
+body.dark #uppsala{ background-color: #aff9d3; border-radius: 25px;}
 
-
-body.dark h1, body.dark, p {color: #bee7ff} body.border{color:  rgb(45, 79, 90)} a{color: #bee7ff} input {color: #ccc !important} select {color: rgb(75, 123, 107)  !important;} textarea {color:rgb(127, 225, 255) !important;}
 
 .checkbox {
   opacity: 0;

@@ -1,0 +1,39 @@
+p{
+    font-family: 'Metropolis', sans-serif !important;
+    color: #000;
+    font-size: medium !important;
+    font-weight: 500 !important;
+    margin-top: 96px !important;
+}
+
+.news-section {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .news-article {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .news-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    margin-right: 20px;
+  }
+  
+  .news-content {
+    flex: 1;
+  }
+  
+  .news-date {
+    font-size: 0.8em;
+    color: #888;
+  }

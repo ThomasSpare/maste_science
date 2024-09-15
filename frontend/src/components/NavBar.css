@@ -12,6 +12,32 @@
     color: deepskyblue;
 }
 
+
+/* Links in Navbar not dropdowns */
+a:link:not(.btn,.nav-link,.dropdown-item,.alert-action,.badge) {
+  line-height: var(--cds-global-space-7);
+  letter-spacing: calc(-.1*(1rem / var(--cds-global-base)));
+  FONT-SIZE: 10px;
+  letter-spacing: 2px;
+  height: 14px;
+  display: flex;
+  align-items: flex-start;
+  font-weight: 800;
+  margin: 2px;
+  color: #68cdff;
+}
+
+a:visited {
+  color: #48bffa !important;
+  text-decoration: none !important;
+}
+
+a:link:not(.btn,.nav-link,.dropdown-item,.alert-action,.badge):hover {
+  color: aquamarine;
+  text-decoration: none;
+}
+
+
 .nav{
     background-color: #153657;
 }

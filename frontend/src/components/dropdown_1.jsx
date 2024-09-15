@@ -31,8 +31,8 @@ function Dropdown_1() {
         </button>
         <div className="dropdown-menu">
           <h4 className="dropdown-header">ABOUT MÅSTE</h4>
-          <div className="dropdown-item">What is Måste ?</div>
-          <div className="dropdown-item">What is our Aim ?</div>
+          <a href="/What_is_Maste" className="dropdown-item">What is Måste ?</a>
+          <a href="/Aims" className="dropdown-item">What is our Aim ?</a>
           <div className="dropdown-divider"></div>
           <div className="dropdown-item">WPs</div>
           <div className="dropdown-item">Project Bodies</div>

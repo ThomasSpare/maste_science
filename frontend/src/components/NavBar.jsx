@@ -27,9 +27,6 @@ import ModalAuth from "./modal_auth.js";
 import Dropdown1 from "./dropdown_1.jsx";
 import Dropdown2 from "./dropdown_2.jsx";
 import Dropdown3 from "./dropdown_3.jsx";
-import Dropdown4 from "./dropdown_4.jsx";
-import Dropdown5 from "./dropdown_5.jsx";
-import Dropdown6 from "./dropdown_6.jsx";
 
 ClarityIcons.addIcons(bellIcon);
 ClarityIcons.addIcons(cogIcon);
@@ -134,9 +131,9 @@ function NavBar() {
             <Dropdown1 />
             <Dropdown2 />
             <Dropdown3 isLoggedIn={!isAuthenticated} />
-            <Dropdown4 />
-            <Dropdown5 />
-            <Dropdown6 />
+            <a href="links">LINKS</a>
+            <a href="partners">PARTNERS</a>
+            <a href="contacts">CONTACTS</a>
           </ul>
           {showLogo && (
             <img

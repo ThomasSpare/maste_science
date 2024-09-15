@@ -5,6 +5,7 @@ p {
 
 .Search-div{
     margin-top: 3vh;
+    min-height: 100vh;
 }
 
 li{

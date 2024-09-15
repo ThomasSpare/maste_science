@@ -3,6 +3,14 @@
     justify-content: center !important;
 }
 
+
+#Footer > section.Footer > div > div{
+    margin-top: 20px !important;
+    font-family: "Metropolis", sans-serif !important;
+    font-size: "20px" !important;
+    display: "flexbox";
+}
+
 #root > footer > section:nth-child(1) > div > div > div{
     text-align: left;
 }

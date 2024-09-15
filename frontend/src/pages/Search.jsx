@@ -17,9 +17,15 @@ function Search() {
   const itemsPerPage = 15;
 
   useEffect(() => {
-    fetch('https://maste-science.onrender.com/api/uploads')
+    fetch('/api/uploads')
       .then(response => response.json())
-      .then(data => setUploads(data))
+      .then(data => {
+        if (Array.isArray(data)) {
+          setUploads(data);
+        } else {
+          console.error('Error: Data is not an array', data);
+        }
+      })
       .catch(error => console.error('Error:', error));
   }, []);
 

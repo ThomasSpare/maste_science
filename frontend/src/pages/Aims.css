@@ -1,0 +1,47 @@
+
+.text-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: 'Metropolis', sans-serif;
+    font-weight: 500;
+    font-size: larger;
+    color: #333;
+  }
+  
+  .header {
+    background-color: #2fb0ff;
+    color: white;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .content {
+    flex: 1;
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .text-section {
+    display: flex;
+    margin-bottom: 20px;
+    margin-left: 26vw;
+    margin-right: 26vw;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: justify;
+    line-height: normal;
+  }
+  
+  .text-section h2 {
+    color: #002538;
+    text-align: justify;
+    align-self: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; 
+    font-family: 'Metropolis', sans-serif;
+    font-weight: 500;
+    font-size: larger;
+    
+  }

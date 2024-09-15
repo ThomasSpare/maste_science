@@ -28,7 +28,7 @@ function Dropdown_3() {
   };
 
   // Conditionally render the dropdown based on isAuthenticated
-  if (!isAuthenticated) {
+  if (isAuthenticated) {
     return null; // Do not render the dropdown if the user is not authenticated
   }
 
