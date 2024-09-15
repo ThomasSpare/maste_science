@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const axios = require("axios");
 const dotenv = require("dotenv");
 const express = require("express");
 const multer = require("multer");
@@ -13,6 +14,10 @@ const analytics = google.analyticsreporting("v4");
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 10000;
+//Auth0
+const auth0Domain = process.env.AUTH0_DOMAIN;
+const clientId = process.env.AUTH0_CLIENT_ID;
+const clientSecret = process.env.AUTH0_CLIENT_SECRET;
 
 // Load the private and public keys
 const privateKey = fs.readFileSync(path.join(__dirname, "private.key"), "utf8");
@@ -28,6 +33,12 @@ app.post("/generate-token", (req, res) => {
   res.json({ token });
 });
 
+// Mock function to get user by ID
+async function getUserById(userId) {
+  // Replace this with actual database call
+  return { id: userId, email: "ts@ts.com" };
+}
+
 // Authentication middleware
 app.use(async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -40,13 +51,20 @@ app.use(async (req, res, next) => {
       req.user = await getUserById(payload.userId);
     } catch (err) {
       console.error(err);
+      return res.status(401).json({ message: "Unauthorized" });
     }
+  } else {
+    return res.status(401).json({ message: "Authorization header missing" });
   }
   next();
 });
 
 app.get("/authorized", function (req, res) {
-  res.send("Secured Resource");
+  if (req.user) {
+    res.send(`Secured Resource for user: ${req.user.email}`);
+  } else {
+    res.status(401).send("Unauthorized");
+  }
 });
 
 app.get("/test", (req, res) => {
@@ -83,19 +101,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static files from the "frontend/build" directory
-app.use(express.static(path.join(__dirname, "../frontend/build")));
-
-// Serve static files from the "node_modules" directory
-app.use(
-  "/node_modules",
-  express.static(path.join(__dirname, "../frontend/node_modules"))
-);
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
-});
-
 const upload = multer({ dest: "uploads/" });
 const ppt = multer({ dest: "ppt/" });
 const pptx = multer({ dest: "pptx/" });
@@ -112,6 +117,92 @@ pool.connect((err) => {
     console.error("connection error", err.stack);
   } else {
     console.log("connected");
+  }
+});
+
+// Authorization
+
+async function getAuth0AccessToken() {
+  try {
+    const response = await axios.post(`https://${auth0Domain}/oauth/token`, {
+      client_id: clientId,
+      client_secret: clientSecret,
+      audience: `https://${auth0Domain}/api/v2/`,
+      grant_type: "client_credentials",
+      scope: "create:users",
+    });
+
+    console.log("Access Token Response:", response.data);
+    return response.data.access_token;
+  } catch (error) {
+    console.error(
+      "Error getting Auth0 access token:",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
+}
+
+async function createUserInAuth0(email, password) {
+  const accessToken = await getAuth0AccessToken();
+
+  console.log("Using Access Token:", accessToken);
+
+  try {
+    const response = await axios.post(
+      `https://${auth0Domain}/api/v2/users`,
+      {
+        email: email,
+        password: password,
+        connection: "Username-Password-Authentication",
+      },
+      {
+        headers: {
+          authorization: `Bearer ${accessToken}`,
+          "content-type": "application/json",
+        },
+      }
+    );
+
+    console.log("User Creation Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error creating user in Auth0:",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
+}
+
+// Route to get Auth0 access token
+app.get("/api/auth0-token", async (req, res) => {
+  try {
+    const token = await getAuth0AccessToken();
+    res.json({ accessToken: token });
+  } catch (error) {
+    console.error("Error getting Auth0 access token:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// REGISTER NEW USER
+
+// Route to register a new user
+app.post("/api/register", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    console.log("Registering user with email:", email);
+
+    const user = await createUserInAuth0(email, password);
+    res.status(201).json(user);
+  } catch (error) {
+    console.error(
+      "Error creating user in Auth0:",
+      error.response ? error.response.data : error.message
+    );
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
@@ -248,77 +339,6 @@ const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_ANALYTICS_REDIRECT_URI
 );
 
-// Route to create a new user
-app.post("/users", async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Store the new user in the database
-    const result = await pool.query(
-      "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *",
-      [username, hashedPassword]
-    );
-
-    // Send the new user as the response
-    res.status(201).json(result.rows[0]);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send("Something broke!");
-});
-
 app.listen(port, () => {
   console.log(`Måste Server listening at port:${port}`);
 });
-
-// Authorization
-
-// Login route
-app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    const result = await pool.query("SELECT * FROM users WHERE username = $1", [
-      username,
-    ]);
-
-    const user = result.rows[0];
-
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    // Generate token
-    const token = jwt.sign({ userId: user.id }, privateKey, {
-      expiresIn: "1h",
-      algorithm: "RS256",
-    });
-
-    // Send token in the response
-    res.json({ token });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-// Catch-all handler to serve the index.html file for any other routes
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
-});
-
-async function getUserById(userId) {
-  const result = await pool.query("SELECT * FROM users WHERE id = $1", [
-    userId,
-  ]);
-  return result.rows[0];
-}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "clarity-ui/clarity-ui.min.css";
 import "clarity-icons/clarity-icons.min.css";
 import "clarity-icons/shapes/technology-shapes.js";
@@ -11,13 +11,13 @@ import "@webcomponents/custom-elements/custom-elements.min.js";
 import "@clr/icons/clr-icons.min.css";
 import "@clr/icons/shapes/technology-shapes.js";
 import { ClarityIcons, loginIcon } from "@cds/core/icon";
-import { useAuth } from "../Auth/useAuth"; // Adjust the import path as necessary
+import { useAuth0 } from "@auth0/auth0-react";
 import "../App.css";
 
 ClarityIcons.addIcons(loginIcon);
 
-const ModalAuth = () => {
-  const { loginWithRedirect, logout, isAuthenticated } = useAuth();
+const ModalAuth = ({ isLoggedIn, setIsLoggedIn }) => {
+  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isRegistrationOpen, setRegistrationOpen] = useState(false);
   const [username, setUsername] = useState("");
@@ -25,16 +25,19 @@ const ModalAuth = () => {
   const [password, setPassword] = useState("");
 
   const openLoginModal = () => {
+    console.log("Opening login modal");
     setLoginOpen(true);
     setRegistrationOpen(false);
   };
 
   const openRegistrationModal = () => {
+    console.log("Opening registration modal");
     setLoginOpen(false);
     setRegistrationOpen(true);
   };
 
   const closeModal = () => {
+    console.log("Closing modal");
     setLoginOpen(false);
     setRegistrationOpen(false);
   };
@@ -43,12 +46,20 @@ const ModalAuth = () => {
     e.preventDefault();
     try {
       await loginWithRedirect();
+      console.log({ currentUser: email });
       closeModal();
+      alert("Login successful!");
     } catch (error) {
       console.error("Login failed:", error);
       alert(`Login failed: ${error.message}`);
     }
   };
+
+  useEffect(() => {
+    if (typeof setIsLoggedIn === "function") {
+      setIsLoggedIn(isAuthenticated);
+    }
+  }, [isAuthenticated, setIsLoggedIn]);
 
   const handleLogout = async () => {
     try {
@@ -62,19 +73,19 @@ const ModalAuth = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:10000/api/users", {
+      const response = await fetch("http://localhost:10000/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
         throw new Error("Registration failed");
       }
 
-      const data = await response.json();
+      await response.json();
       alert("Registration successful!");
       closeModal();
     } catch (error) {
@@ -93,6 +104,28 @@ const ModalAuth = () => {
           <div>
             <h2>Login</h2>
             <form onSubmit={handleLogin}>
+              <div className="form-group">
+                <label htmlFor="email">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  className="form-control"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  className="form-control"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
               <cds-button class="btn btn-primary btn-sm" type="submit">
                 Login
               </cds-button>
@@ -149,7 +182,7 @@ const ModalAuth = () => {
               Login
             </button>
           )}
-          {isAuthenticated && (
+          {!isAuthenticated && (
             <button className="btn btn-link" onClick={handleLogout}>
               Logout
             </button>
@@ -159,11 +192,9 @@ const ModalAuth = () => {
               Register
             </button>
           )}
-          {isAuthenticated && (
-            <button className="btn btn-link" onClick={closeModal}>
-              Close
-            </button>
-          )}
+          <button className="btn btn-link" onClick={closeModal}>
+            Close
+          </button>
         </clr-modal-footer>
       </clr-modal>
     </React.Fragment>

@@ -7,31 +7,14 @@ import "@cds/core/button/register.js"; // Import Clarity Button component
 import "@cds/core/icon/register.js"; // Import Clarity Icon component
 import "@cds/core/dropdown/register.js"; // Import Clarity Dropdown component
 import "@cds/core/divider/register.js"; // Import Clarity Divider component
-import "@cds/core/icon/register.js"; // Import Clarity Icon component
 import "@webcomponents/custom-elements/custom-elements.min.js";
 import "@clr/icons/clr-icons.min.css";
 import "@clr/icons/shapes/technology-shapes.js";
-import "@cds/core/button/register.js";
-import "clarity-icons/clarity-icons.min.css"; // Import Clarity Icons CSS
-import "clarity-icons/shapes/technology-shapes.js"; // Import Clarity Icons shapes
-import "@cds/core/button/register.js"; // Import Clarity Button component
-import "@cds/core/icon/register.js"; // Import Clarity Icon component
-import "@cds/core/dropdown/register.js"; // Import Clarity Dropdown component
-import "@cds/core/divider/register.js"; // Import Clarity Divider component
-import "@cds/core/icon/register.js"; // Import Clarity Icon component
-import "@clr/icons/shapes/technology-shapes.js";
-import "@cds/core/button/register.js";
 import "../App.css";
-import { useAuth0 } from "@auth0/auth0-react";
 
 
 function Home() {
 
-  const { isAuthenticated } = useAuth0();
-
-  if (!isAuthenticated) {
-    return <div>Please log in to view this content.</div>;
-  }
   
   return (
     <div className="App">
@@ -43,50 +26,20 @@ function Home() {
                 <img className="home_image1" src="https://res.cloudinary.com/djunroohl/image/upload/c_crop,h_1701,w_600/v1720396474/greenfields_jcajzf.jpg" alt="Image 1" />
               </div>
               <div className="column">
-                <div>
-                  <h2>Nuclear Recycling</h2>
+                <div>                  
                   <p>
-                    Nuclear recycling, also known as nuclear fuel reprocessing,
-                    is a process that involves extracting usable materials from
-                    spent nuclear fuel. This process helps to reduce the amount
-                    of nuclear waste and maximize the energy potential of
-                    nuclear fuel.
-                  </p>
-                  <p>
-                    One of the main goals of nuclear recycling is to recover
-                    valuable materials such as uranium and plutonium from spent
-                    fuel. These materials can be reused in new fuel assemblies,
-                    reducing the need for fresh uranium and decreasing the
-                    demand for natural resources.
-                  </p>
-                  <p>
-                    In addition to reducing waste and conserving resources,
-                    nuclear recycling can also help to improve the overall
-                    safety of nuclear power. By removing certain radioactive
-                    isotopes from the spent fuel, the risk of long-term storage
-                    and potential leakage is minimized.
-                  </p>
-                  <p>
-                    Furthermore, nuclear recycling can contribute to the
-                    development of advanced nuclear technologies. The recovered
-                    materials can be used in next-generation reactors, such as
-                    fast neutron reactors, which have the potential to generate
-                    more energy and produce less waste compared to traditional
-                    reactors.
-                  </p>
-                  <p>
-                    However, it is important to note that nuclear recycling is a
-                    complex and highly regulated process. It requires advanced
-                    technologies and strict adherence to safety protocols to
-                    ensure the proper handling and disposal of radioactive
-                    materials.
-                  </p>
-                  <p>
-                    Overall, nuclear recycling offers a promising solution for
-                    managing nuclear waste and maximizing the energy potential
-                    of nuclear fuel. Continued research and development in this
-                    field can lead to more sustainable and efficient use of
-                    nuclear power.
+                  The project Multidisciplinära Åtaganden för Sveriges gen-IV Teknologi och Expertis
+                  (Multidisciplinary Commitments for Sweden&#39;s Gene IV Technology and Expertise),
+                  MÅSTE, lays the foundation for real understanding of the knowledge and
+                  challenges for the implementation of a Gen IV electricity production system. It also
+                  works as a ground for increasing the base line of younger scientist and professionals
+                  in the radiation science sector bringing a huge benefit for Sweden. MÅSTE not only
+                  brings the ability to continue the existing nuclear fleet but it is also the corner stone
+                  for any new build power system and replies to other needs such as radiological
+                  awareness, protection and hospital capabilities.
+                  MÅSTE promotes the younger research leaders and, in this way, contributes to
+                  sustainability of the high academic level at the Swedish universities where many
+                  senior researchers will retire in the next 1-2 decades.
                   </p>
                 </div>
               </div>

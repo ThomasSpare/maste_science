@@ -3,14 +3,13 @@ import { useAuth } from "../Auth/useAuth";
 import "../App.css";
 import "../components/NavBar.css";
 import { useLocation } from "react-router-dom";
-import "clarity-ui/clarity-ui.min.css"; // Import Clarity UI CSS
-import "clarity-icons/clarity-icons.min.css"; // Import Clarity Icons CSS
-import "clarity-icons/shapes/technology-shapes.js"; // Import Clarity Icons shapes
-import "@cds/core/button/register.js"; // Import Clarity Button component
-import "@cds/core/icon/register.js"; // Import Clarity Icon component
-import "@cds/core/dropdown/register.js"; // Import Clarity Dropdown component
-import "@cds/core/divider/register.js"; // Import Clarity Divider component
-import "@cds/core/icon/register.js"; // Import Clarity Icon component
+import "clarity-ui/clarity-ui.min.css";
+import "clarity-icons/clarity-icons.min.css";
+import "clarity-icons/shapes/technology-shapes.js";
+import "@cds/core/button/register.js";
+import "@cds/core/icon/register.js";
+import "@cds/core/dropdown/register.js";
+import "@cds/core/divider/register.js";
 import {
   ClarityIcons,
   userIcon,
@@ -24,23 +23,13 @@ import {
 import "@webcomponents/custom-elements/custom-elements.min.js";
 import "@clr/icons/clr-icons.min.css";
 import "@clr/icons/shapes/technology-shapes.js";
-import "@cds/core/button/register.js";
 import ModalAuth from "./modal_auth.js";
-import Dropdown_1 from "./dropdown_1.jsx";
-import Dropdown_2 from "./dropdown_2.jsx";
-import Dropdown_3 from "./dropdown_3.jsx";
-import Dropdown_4 from "./dropdown_4.jsx";
-import Dropdown_5 from "./dropdown_5.jsx";
-import Dropdown_6 from "./dropdown_6.jsx";
-import "clarity-icons/clarity-icons.min.css"; // Import Clarity Icons CSS
-import "clarity-icons/shapes/technology-shapes.js"; // Import Clarity Icons shapes
-import "@cds/core/button/register.js"; // Import Clarity Button component
-import "@cds/core/icon/register.js"; // Import Clarity Icon component
-import "@cds/core/dropdown/register.js"; // Import Clarity Dropdown component
-import "@cds/core/divider/register.js"; // Import Clarity Divider component
-import "@cds/core/icon/register.js"; // Import Clarity Icon component
-import "@clr/icons/shapes/technology-shapes.js";
-import "@cds/core/button/register.js";
+import Dropdown1 from "./dropdown_1.jsx";
+import Dropdown2 from "./dropdown_2.jsx";
+import Dropdown3 from "./dropdown_3.jsx";
+import Dropdown4 from "./dropdown_4.jsx";
+import Dropdown5 from "./dropdown_5.jsx";
+import Dropdown6 from "./dropdown_6.jsx";
 
 ClarityIcons.addIcons(bellIcon);
 ClarityIcons.addIcons(cogIcon);
@@ -50,30 +39,25 @@ ClarityIcons.addIcons(homeIcon);
 ClarityIcons.addIcons(searchIcon);
 ClarityIcons.addIcons(thumbsUpIcon);
 
-function NavBar(isLoggedIn) {
-  const {currentUser} = useAuth();
+function NavBar() {
+  const { isAuthenticated, user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
-  const [userEmail, setUserEmail] = useState('');
-
   const [showLogo, setShowLogo] = useState(true);
   const location = useLocation();
 
-
   useEffect(() => {
-    if (!(location.pathname === '/')) { // Only on the home page
-      setShowLogo(false); // Hide the logo
+    if (!(location.pathname === '/')) {
+      setShowLogo(false);
     } else {
-      setShowLogo(true); // Show the logo on other pages
+      setShowLogo(true);
     }
-  }, [location]); // Re-run the effect when the location changes
+  }, [location]);
 
   const checkboxRef = useRef(null);
 
-  // Dark-Light Mode
-
   const handleCheckboxChange = () => {
     const isDarkMode = document.body.classList.toggle("dark");
-      localStorage.setItem("darkMode", isDarkMode ? "enabled" : "disabled");
+    localStorage.setItem("darkMode", isDarkMode ? "enabled" : "disabled");
   };
 
   useEffect(() => {
@@ -89,11 +73,7 @@ function NavBar(isLoggedIn) {
 
   const handleSearch = (event) => {
     event.preventDefault();
-    // Implement search logic here
-    // For example, you could filter your site's content based on `searchQuery`
-    // and then display the results.
     console.log('Searching for:', searchQuery);
-    // You might navigate to a search results page or filter content on the current page.
   };
 
   return (
@@ -117,17 +97,16 @@ function NavBar(isLoggedIn) {
               </cds-icon>
             </button>
           </form>
-          {isLoggedIn && currentUser && currentUser.email && (
+          {isAuthenticated && (
             <div className="currentUser">
               <cds-icon shape="thumbs-up"></cds-icon>
               <span className="display_email">
-                Logged in as {currentUser.email}
+                Logged in as {user?.email || "Guest"}
               </span>
             </div>
           )}
-          <ModalAuth isLoggedIn={isLoggedIn} />
+          <ModalAuth isLoggedIn={isAuthenticated} />
           <div className="settings">
-            {/* Light-Dark Mode */}
             <input
               type="checkbox"
               className="checkbox"
@@ -140,11 +119,10 @@ function NavBar(isLoggedIn) {
               <i className="fas fa-sun"></i>
               <div className="ball"></div>
             </label>
-
             <a href="/" className="nav-link nav-icon">
               <cds-icon shape="home"></cds-icon>
             </a>
-            {isLoggedIn && ( // Only show the settings link if the user is logged in
+            {!isAuthenticated && (
               <a href="/settings" className="nav-link nav-icon">
                 <cds-icon shape="cog"></cds-icon>
               </a>
@@ -153,17 +131,17 @@ function NavBar(isLoggedIn) {
         </header>
         <nav className="subnav">
           <ul className="nav">
-            <Dropdown_1 />
-            <Dropdown_2 />
-            <Dropdown_3 isLoggedIn={isLoggedIn} />
-            <Dropdown_4 />
-            <Dropdown_5 />
-            <Dropdown_6 />
+            <Dropdown1 />
+            <Dropdown2 />
+            <Dropdown3 isLoggedIn={!isAuthenticated} />
+            <Dropdown4 />
+            <Dropdown5 />
+            <Dropdown6 />
           </ul>
           {showLogo && (
             <img
               className="logo"
-              src="https://res.cloudinary.com/djunroohl/image/upload/v1721858132/M%C3%A5ste_hill_logo_morprz.png"
+              src="https://res.cloudinary.com/djunroohl/image/upload/v1725996744/M%C3%85STE_2x_wwaat9.png"
               alt="logo"
             />
           )}
@@ -174,4 +152,3 @@ function NavBar(isLoggedIn) {
 }
 
 export default NavBar;
-
