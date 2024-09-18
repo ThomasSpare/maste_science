@@ -1,3 +1,4 @@
+<<<<<<< HEAD
   {
     "domain": "dev-h6b2f6mjco5pu6wz.us.auth0.com",
     "clientId": "ouh0VjCH7hpDYqvqLGWOBFxLVhcT7Onf",
@@ -5,3 +6,6 @@
     "redirectUri": "http://localhost:3000",
     "logoutRedirectUri": "http://localhost:3000"
   }
+=======
+
+>>>>>>> d2787b8007b745fe787e15bf9d1f572816dae8c9
