@@ -23,9 +23,9 @@ p{
   }
   
   .news-image {
-    width: 150px;
+    width: 250px;
     height: 150px;
-    object-fit: cover;
+    object-fit: contain;
     margin-right: 20px;
   }
   

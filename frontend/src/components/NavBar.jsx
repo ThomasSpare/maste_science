@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { useAuth } from "../Auth/useAuth";
+import { useAuth0 } from "@auth0/auth0-react";
 import "../App.css";
 import "../components/NavBar.css";
 import { useLocation } from "react-router-dom";
@@ -37,10 +37,11 @@ ClarityIcons.addIcons(searchIcon);
 ClarityIcons.addIcons(thumbsUpIcon);
 
 function NavBar() {
-  const { isAuthenticated, user } = useAuth();
+  const { isLoading, user } = useAuth0();
   const [searchQuery, setSearchQuery] = useState('');
   const [showLogo, setShowLogo] = useState(true);
   const location = useLocation();
+  const email = user ? user.email : "Guest";
 
   useEffect(() => {
     if (!(location.pathname === '/')) {
@@ -94,15 +95,15 @@ function NavBar() {
               </cds-icon>
             </button>
           </form>
-          {isAuthenticated && (
+          {!isLoading && user &&(
             <div className="currentUser">
               <cds-icon shape="thumbs-up"></cds-icon>
               <span className="display_email">
-                Logged in as {user?.email || "Guest"}
+                Logged in as {email || "Guest"}
               </span>
             </div>
           )}
-          <ModalAuth isLoggedIn={isAuthenticated} />
+          <ModalAuth isLoggedIn={isLoading} />
           <div className="settings">
             <input
               type="checkbox"
@@ -119,7 +120,7 @@ function NavBar() {
             <a href="/" className="nav-link nav-icon">
               <cds-icon shape="home"></cds-icon>
             </a>
-            {!isAuthenticated && (
+            {!isLoading && user &&(
               <a href="/settings" className="nav-link nav-icon">
                 <cds-icon shape="cog"></cds-icon>
               </a>
@@ -130,7 +131,7 @@ function NavBar() {
           <ul className="nav">
             <Dropdown1 />
             <Dropdown2 />
-            <Dropdown3 isLoggedIn={!isAuthenticated} />
+            <Dropdown3 isLoggedIn={!isLoading} />
             <a href="links">LINKS</a>
             <a href="partners">PARTNERS</a>
             <a href="contacts">CONTACTS</a>
@@ -138,7 +139,7 @@ function NavBar() {
           {showLogo && (
             <img
               className="logo"
-              src="https://res.cloudinary.com/djunroohl/image/upload/v1725996744/M%C3%85STE_2x_wwaat9.png"
+              src="https://res.cloudinary.com/djunroohl/image/upload/v1726651079/Untitled_zwoq69.svg"
               alt="logo"
             />
           )}

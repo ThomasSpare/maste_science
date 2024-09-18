@@ -233,10 +233,11 @@ body.dark #uppsala{ background-color: #aff9d3; border-radius: 25px;}
 
 .logo {
   display: flex !important;
-  width: 15%;
+  width: 22%;
   pointer-events: none;
   margin-right: 2%;
-  margin-top: 31%;
+  border-radius: 15px;
+  margin-top: 12%;
   z-index: 999;
   opacity: 0;
   animation: fadeIn 1s ease-in-out forwards;

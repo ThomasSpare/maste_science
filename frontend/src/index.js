@@ -20,7 +20,7 @@ import WhatIs from "./pages/WhatIs";
 import Settings from "./pages/Settings";
 import ViewPpt from "./pages/ViewPpt";
 
-import { Auth0Provider } from "@auth0/auth0-react";
+import Auth0ProviderWithHistory from "./Auth/Auth0Provider";
 
 const domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
@@ -28,12 +28,12 @@ const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   return (
-    <Auth0Provider
-      domain={domain}
-      clientId={clientId}
-      redirectUri={window.location.origin}
-    >
-      <Router>
+    <Router>
+      <Auth0ProviderWithHistory
+        domain={domain}
+        clientId={clientId}
+        redirectUri={window.location.origin}
+      >
         <Routes>
           <Route path="/" element={<LayOut />}>
             <Route index element={<Home />} />
@@ -46,7 +46,7 @@ export default function App() {
             <Route path="search" element={<Search />} />
             <Route path="search-powerpoint" element={<SearchPowerPoint />} />
             <Route path="upload" element={<Upload />} />
-            <Route path="view-pdf/:fileId/:file" element={<ViewPdf />} />
+            <Route path="/view-pdf/:fileId/:fileKey" element={<ViewPdf />} />
             <Route path="view-ppt/:fileId/:file" element={<ViewPpt />} />
             <Route path="settings" element={<Settings />} />
             <Route
@@ -60,8 +60,8 @@ export default function App() {
             />
           </Route>
         </Routes>
-      </Router>
-    </Auth0Provider>
+      </Auth0ProviderWithHistory>
+    </Router>
   );
 }
 

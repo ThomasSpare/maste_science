@@ -17,7 +17,7 @@ ClarityIcons.addIcons(arrowIcon);
 
 function Dropdown_3() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { isAuthenticated } = useAuth0(); // Get isAuthenticated from AuthContext
+  const { user } = useAuth0(); // Get isAuthenticated from AuthContext
 
   const handleDropdownToggle = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -28,7 +28,7 @@ function Dropdown_3() {
   };
 
   // Conditionally render the dropdown based on isAuthenticated
-  if (isAuthenticated) {
+  if (!user) {
     return null; // Do not render the dropdown if the user is not authenticated
   }
 

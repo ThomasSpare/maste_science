@@ -74,6 +74,8 @@ function Home() {
                     alt={article.title}
                     className="news-image"
                     onError={(e) => {
+                      console.error(`Error loading image for article ${article.id}:`, e);
+                      console.log(`Image URL: ${article.image_url}`);
                       e.target.onerror = null;
                       e.target.src = "https://via.placeholder.com/150";
                     }}

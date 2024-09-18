@@ -1,9 +1,15 @@
 import React, { useState } from "react";
 import { useAuth } from "../Auth/useAuth";
 import axios from "axios";
+import "./Settings.css";
+import "@cds/core/icon/register.js";
+import "@cds/core/button/register.js";
+import { ClarityIcons, contractIcon } from "@cds/core/icon";
+
+ClarityIcons.addIcons(contractIcon);
 
 const Dashboard = () => {
-  const { user, logout, hasRole } = useAuth();
+  const { user, hasRole } = useAuth();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
@@ -41,43 +47,49 @@ const Dashboard = () => {
   };
 
   return (
-    <div>
+    <div className="Settings">
       <h1>Dashboard</h1>
-      <p>Welcome, {user ? user.name : "Guest"}</p>
-      <p>You have the role: {hasRole("admin") ? "Admin" : "User"}</p>
+      <div className="status">
+        <p>Welcome, {user ? user.name : "Guest"}</p>
+        <p>You have the role: {hasRole("admin") ? "Admin" : "User"}</p>
+      </div>
       {
         <div>
-          <p>You have admin access</p>
-          <form onSubmit={handleNewsSubmit}>
-            <div>
-              <label>Title</label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </div>
-            <div>
-              <label>Content</label>
-              <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-              />
-            </div>
-            <div>
-              <label>Image</label>
-              <input
-                type="file"
-                onChange={(e) => setImage(e.target.files[0])}
-              />
-            </div>
-            <button type="submit">Add News</button>
-          </form>
+          <p>You have admin access and can post news</p>
+          <div className="news-form">
+            <h2>Write some News</h2>
+            <form onSubmit={handleNewsSubmit}>
+              <div>
+                <label style={{ padding: "20px", color: "black" }}>
+                  <cds-icon shape="contract" size="lg"></cds-icon>
+                  &nbsp;&nbsp;&nbsp;&nbsp; News Title
+                </label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
+              <div>
+                <textarea
+                  placeholder="News Content"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                />
+              </div>
+              <div>
+                <label>News Image</label>
+                <input
+                  style={{ color: "#000000cf, !important" }}
+                  type="file"
+                  onChange={(e) => setImage(e.target.files[0])}
+                />
+              </div>
+              <button type="submit">Add News Post</button>
+            </form>
+          </div>
         </div>
       }
-      <button onClick={() => logout({ returnTo: window.location.origin })}>
-        Logout
-      </button>
     </div>
   );
 };

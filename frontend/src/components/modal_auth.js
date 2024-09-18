@@ -16,8 +16,9 @@ import "../App.css";
 
 ClarityIcons.addIcons(loginIcon);
 
-const ModalAuth = ({ isLoggedIn, setIsLoggedIn }) => {
-  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
+const ModalAuth = ({ setIsLoggedIn }) => {
+  const { loginWithRedirect, logout, user, isLoading, isAuthenticated } =
+    useAuth0();
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isRegistrationOpen, setRegistrationOpen] = useState(false);
   const [username, setUsername] = useState("");
@@ -46,7 +47,6 @@ const ModalAuth = ({ isLoggedIn, setIsLoggedIn }) => {
     e.preventDefault();
     try {
       await loginWithRedirect();
-      console.log({ currentUser: email });
       closeModal();
       alert("Login successful!");
     } catch (error) {
@@ -59,7 +59,7 @@ const ModalAuth = ({ isLoggedIn, setIsLoggedIn }) => {
     if (typeof setIsLoggedIn === "function") {
       setIsLoggedIn(isAuthenticated);
     }
-  }, [isAuthenticated, setIsLoggedIn]);
+  }, [isLoading, setIsLoggedIn, isAuthenticated]);
 
   const handleLogout = async () => {
     try {
@@ -100,7 +100,7 @@ const ModalAuth = ({ isLoggedIn, setIsLoggedIn }) => {
         clrModalOpen={isLoginOpen || isRegistrationOpen ? "opened" : undefined}
         clrModalSize="sm"
       >
-        {isLoginOpen && (
+        {isLoginOpen && !isAuthenticated && (
           <div>
             <h2>Login</h2>
             <form onSubmit={handleLogin}>
@@ -182,7 +182,7 @@ const ModalAuth = ({ isLoggedIn, setIsLoggedIn }) => {
               Login
             </button>
           )}
-          {!isAuthenticated && (
+          {isAuthenticated && (
             <button className="btn btn-link" onClick={handleLogout}>
               Logout
             </button>

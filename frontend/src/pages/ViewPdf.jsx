@@ -2,32 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../Auth/useAuth'; // Ensure this path is correct
 
-
 const ViewPdf = () => {
-  const { file, fileId } = useParams();
+  const { fileId, fileKey } = useParams();
   const navigate = useNavigate();
   const [fileUrl, setFileUrl] = useState('');
   useAuth(); // Ensure this path is correct
 
-  useEffect((isLoggedIn) => {
+  useEffect(() => {
     const abortController = new AbortController();
     const signal = abortController.signal;
 
-    console.log("Params:", { file, fileId });
-    if (!file) {
+    console.log("Params:", { fileId, fileKey });
+    if (!fileKey) {
       console.error("File parameter is undefined.");
       return;
     }
-    const serverAddress = 'https://maste-science.onrender.com'; 
-    const url = `${serverAddress}/api/uploads/${file}`;
+    const serverAddress = 'http://localhost:10000'; // Update this to your server address
+    const url = `${serverAddress}/api/uploads/${fileKey}`;
     
     fetch(url, { signal })
-      .then(response => response.blob())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.blob();
+      })
       .then(blob => {
-        // Rename the variable to avoid conflict with the `file` parameter
-        const pdfFile = new File([blob], `${file}.pdf`, { type: 'application/pdf' });
-        // Create an object URL from the File object
-        const objectUrl = URL.createObjectURL(pdfFile);
+        // Create an object URL from the Blob object
+        const objectUrl = URL.createObjectURL(blob);
         setFileUrl(objectUrl);
       })
       .catch(error => {
@@ -38,11 +40,6 @@ const ViewPdf = () => {
         }
       });
 
-    // This navigation seems redundant if you're already on the page you want to be, consider removing it
-    // or ensure it's necessary for your app's flow
-    const newUrl = `/view-pdf/${fileId}/${file}`;
-    navigate(newUrl);
-
     return () => {
       abortController.abort();
       // Clean up the object URL to avoid memory leaks
@@ -50,14 +47,14 @@ const ViewPdf = () => {
         URL.revokeObjectURL(fileUrl);
       }
     };
-  }, [file, fileId]);
+  }, []);
 
   return (
-        <iframe
-          title="PDF Viewer"
-          src={fileUrl}
-          style={{ width: '100%', height: '100vh'}}
-        />
+    <iframe
+      title="PDF Viewer"
+      src={fileUrl}
+      style={{ width: '100%', height: '100vh'}}
+    />
   );
 }
 

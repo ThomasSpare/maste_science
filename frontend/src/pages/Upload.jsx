@@ -10,12 +10,14 @@ const Upload = () => {
   const [uploadDate, setUploadDate] = useState('');
   const [country, setCountry] = useState('');
   const [category, setCategory] = useState('');
+  const [isAuthenticatedState, setIsAuthenticatedState] = useState(false);
 
-  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
 
   useEffect(() => {
     setUploadDate(new Date().toISOString().split('T')[0]);
-  }, []);
+    setIsAuthenticatedState(isAuthenticated);
+  }, [isAuthenticated]);
 
   const handleUpload = async (event) => {
     event.preventDefault();
@@ -31,12 +33,24 @@ const Upload = () => {
     formData.append('country', country);
     formData.append('category', category);
 
+    console.log("Form data being sent:", {
+      file,
+      author,
+      uploadDate,
+      country,
+      category,
+    });
+
     try {
-      if (!isAuthenticated) {
-        throw new Error('User is not authenticated');
+      if (!isAuthenticatedState) {
+        console.error('User is not authenticated');
+        alert('You need to be logged in to upload files.');
+        await loginWithRedirect();
+        return;
       }
 
       const token = await getAccessTokenSilently();
+
       const response = await fetch('/api/uploads', {
         method: 'POST',
         headers: {
@@ -53,7 +67,7 @@ const Upload = () => {
       console.log(data);
       alert('File uploaded successfully');
     } catch (error) {
-      console.error(error);
+      console.error('Error during upload:', error);
     }
   };
 
@@ -71,9 +85,8 @@ const Upload = () => {
           type="file"
           id="file"
           name='file'
-          accept="pdf/*, pdf, ppt/*, ppt, pptx/*, pptx"
+          accept=".pdf, .ppt, .pptx"
           onChange={e => setFile(e.target.files[0])}
-          autoFocus
         />
 
         <label htmlFor="author">Author</label>

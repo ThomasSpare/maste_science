@@ -9,13 +9,16 @@ export const useAuth = () => {
     getAccessTokenSilently,
   } = useAuth0();
 
+  const getRoles = () => {
+    if (user && user[`${process.env.REACT_APP_AUTH0_NAMESPACE}/roles`]) {
+      return user[`${process.env.REACT_APP_AUTH0_NAMESPACE}/roles`];
+    }
+    return [];
+  };
+
   const hasRole = (role) => {
-    return (
-      user &&
-      user[
-        "https://manage.auth0.com/dashboard/us/dev-h6b2f6mjco5pu6wz/roles"
-      ]?.includes(role)
-    );
+    const roles = getRoles();
+    return roles.includes(role);
   };
 
   return {

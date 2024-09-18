@@ -1,6 +1,7 @@
-{
+  {
     "domain": "dev-h6b2f6mjco5pu6wz.us.auth0.com",
     "clientId": "ouh0VjCH7hpDYqvqLGWOBFxLVhcT7Onf",
     "audience": "http://localhost:10000",
-    "redirectUri": "http://localhost:3000"
+    "redirectUri": "http://localhost:3000",
+    "logoutRedirectUri": "http://localhost:3000"
   }

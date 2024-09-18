@@ -36,56 +36,103 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+// Function to alter the table and add the file_key column
+const alterTable = async () => {
+  try {
+    const query =
+      "ALTER TABLE uploads ADD COLUMN IF NOT EXISTS file_key VARCHAR(255)";
+    await pool.query(query);
+    console.log("Table altered successfully");
+  } catch (error) {
+    console.error("Error altering table:", error);
+  }
+};
+
+// Call the function to alter the table
+alterTable();
+
 // Multer setup for file uploads
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// Endpoint to add news
-app.post("/api/news", upload.single("image"), async (req, res) => {
-  const { title, content } = req.body;
-  const image = req.file;
+// Endpoint to upload files
+app.post("/api/uploads", upload.single("file"), async (req, res) => {
+  const { author, uploadDate, country, category } = req.body;
+  const file = req.file;
 
-  if (!title || !content || !image) {
+  console.log("Received data:", {
+    author,
+    uploadDate,
+    country,
+    category,
+    file,
+  });
+
+  if (!file || !author || !uploadDate || !country || !category) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const imageKey = `${Date.now()}_${image.originalname}`;
+  const fileKey = `${Date.now()}_${file.originalname}`;
+  console.log("Generated fileKey:", fileKey);
+
   const params = {
     Bucket: bucketName,
-    Key: imageKey,
-    Body: image.buffer,
-    ContentType: image.mimetype,
+    Key: fileKey,
+    Body: file.buffer,
+    ContentType: file.mimetype,
   };
 
   try {
-    // Upload image to S3
+    // Upload file to S3
     const uploadResult = await s3.upload(params).promise();
-    const imageUrl = uploadResult.Location;
+    const fileUrl = uploadResult.Location;
 
-    // Insert news metadata into PostgreSQL
+    // Insert file metadata into PostgreSQL
     const query =
-      "INSERT INTO news (title, content, image_url, created_at) VALUES ($1, $2, $3, NOW()) RETURNING *";
-    const values = [title, content, imageUrl];
+      "INSERT INTO uploads (author, upload_date, country, category, file_url, file_key) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
+    const values = [author, uploadDate, country, category, fileUrl, fileKey];
     const result = await pool.query(query, values);
 
+    console.log("File metadata saved to database:", result.rows[0]);
+
     res.status(201).json({
-      message: "News article added successfully",
-      news: result.rows[0],
+      message: "File uploaded successfully",
+      upload: result.rows[0],
     });
   } catch (error) {
-    console.error("Error adding news article:", error);
+    console.error("Error uploading file:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
-// Endpoint to get news
-app.get("/api/news", async (req, res) => {
+// Endpoint to get list of uploaded files
+app.get("/api/uploads", async (req, res) => {
   try {
-    const query = "SELECT * FROM news ORDER BY created_at DESC LIMIT 3";
+    const query = "SELECT * FROM uploads ORDER BY upload_date DESC";
     const result = await pool.query(query);
     res.json(result.rows);
   } catch (error) {
-    console.error("Error fetching news:", error);
+    console.error("Error fetching uploads:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Endpoint to serve uploaded files
+app.get("/api/uploads/:fileKey", async (req, res) => {
+  const { fileKey } = req.params;
+  console.log("Fetching file with key:", fileKey);
+
+  const params = {
+    Bucket: bucketName,
+    Key: fileKey,
+  };
+
+  try {
+    const file = await s3.getObject(params).promise();
+    res.setHeader("Content-Type", file.ContentType);
+    res.send(file.Body);
+  } catch (error) {
+    console.error("Error fetching file:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
