@@ -110,7 +110,13 @@ const pool = new Pool({
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://maste-science-frontend.onrender.com",
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization",
+  })
+);
 
 app.get("/protected", (req, res) => {
   res.send({
