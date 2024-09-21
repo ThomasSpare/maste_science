@@ -4,6 +4,7 @@ import "@cds/core/dropdown/register.js";
 import "@cds/core/icon/register.js";
 import "@cds/core/button/register.js";
 import "@cds/core/divider/register.js";
+import { Link } from "react-router-dom";
 
 function Dropdown_1() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -31,9 +32,9 @@ function Dropdown_1() {
         </button>
         <div className="dropdown-menu">
           <h4 className="dropdown-header">ABOUT MÅSTE</h4>
-          <a href="/What_is_Maste" className="dropdown-item">What is Måste ?</a>
-          <a href="/Aims" className="dropdown-item">What is our Aim ?</a>
-          <a href="/workstructure" className="dropdown-item">Work Structure</a>
+          <Link to="/What_is_Maste" className="dropdown-item">What is Måste ?</Link>
+          <Link to="/Aims" className="dropdown-item">What is our Aim ?</Link>
+          <Link to="/workstructure" className="dropdown-item">Work Structure</Link>
         </div>
       </div>
     </React.Fragment>
