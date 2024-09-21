@@ -15,11 +15,14 @@ import "./Home.css";
 
 function Home() {
   const [news, setNews] = useState([]);
+  const api = axios.create({
+    baseURL: process.env.REACT_APP_API_URL,
+  });
 
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get("https://maste-science.onrender.com/api/news");
+        const response = await api.get("/api/news");
         setNews(response.data);
       } catch (error) {
         console.error("Error fetching news:", error);

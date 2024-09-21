@@ -16,15 +16,17 @@ const Dashboard = () => {
   const [posts, setPosts] = useState([]);
   const [editPostId, setEditPostId] = useState(null);
 
+  const api = axios.create({
+    baseURL: process.env.REACT_APP_API_URL,
+  });
+
   useEffect(() => {
     fetchLastThreePosts();
   }, []);
 
   const fetchLastThreePosts = async () => {
     try {
-      const response = await axios.get(
-        "https://maste-science.onrender.com/api/news?limit=3"
-      );
+      const response = await api.get("/api/news?limit=3");
       setPosts(response.data);
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -44,15 +46,11 @@ const Dashboard = () => {
     formData.append("image", image);
 
     try {
-      const response = await axios.post(
-        "https://maste-science.onrender.com/api/news",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await api.post("/api/news", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       alert("News article added successfully");
       setTitle("");
       setContent("");
@@ -67,9 +65,7 @@ const Dashboard = () => {
   const handleDeletePost = async (postId) => {
     console.log("Deleting post with ID:", postId); // Log the postId
     try {
-      await axios.delete(
-        `https://maste-science.onrender.com/api/news/${postId}`
-      );
+      await api.delete(`/api/news/${postId}`);
       alert("Post deleted successfully");
       fetchLastThreePosts(); // Refresh the posts
     } catch (error) {
@@ -100,15 +96,11 @@ const Dashboard = () => {
     }
 
     try {
-      await axios.put(
-        `https://maste-science.onrender.com/api/news/${editPostId}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      await api.put(`/api/news/${editPostId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       alert("Post updated successfully");
       setTitle("");
       setContent("");

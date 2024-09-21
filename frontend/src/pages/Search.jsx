@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { CdsButton } from '@cds/react/button'; // Ensure this is the correct import for your button component
 import { useNavigate } from 'react-router-dom';
 import ReactCountryFlag from 'react-country-flag';
@@ -15,12 +16,16 @@ const Search = () => {
   const itemsPerPage = 10;
   const navigate = useNavigate();
 
+  const api = axios.create({
+    baseURL: process.env.REACT_APP_API_BASE_URL,
+  });
+
   useEffect(() => {
     // Fetch uploads from the server
     const fetchUploads = async () => {
       try {
-        const response = await fetch('https://maste-science.onrender.com/api/uploads');
-        const data = await response.json();
+        const response = await api.get('/api/uploads');
+        const data = response.data;
         console.log("Fetched uploads:", data); // Add this line
         setUploads(data);
       } catch (error) {
@@ -29,7 +34,7 @@ const Search = () => {
     };
 
     fetchUploads();
-  }, []);
+  }, [api]);
 
   const handleFileClick = (upload) => {
     console.log("Navigating to:", `/view-pdf/${upload.id}/${upload.file_key}`);

@@ -3,6 +3,7 @@ import "./Upload.css";
 import "../App.css";
 import { CdsButton } from '@cds/react/button';
 import { useAuth0 } from '@auth0/auth0-react';
+import axios from 'axios';
 
 const Upload = () => {
   const [file, setFile] = useState(null);
@@ -13,6 +14,10 @@ const Upload = () => {
   const [isAuthenticatedState, setIsAuthenticatedState] = useState(false);
 
   const { getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
+
+  const api = axios.create({
+    baseURL: process.env.REACT_APP_API_BASE_URL,
+  });
 
   useEffect(() => {
     setUploadDate(new Date().toISOString().split('T')[0]);
@@ -51,7 +56,7 @@ const Upload = () => {
 
       const token = await getAccessTokenSilently();
 
-      const response = await fetch('/api/uploads', {
+      const response = await api.post('/api/uploads', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`
