@@ -1,6 +1,7 @@
 const fs = require("fs");
 const dotenv = require("dotenv");
 const express = require("express");
+const path = require("path"); // Import the path module
 var axios = require("axios").default;
 const multer = require("multer");
 const cors = require("cors");
@@ -8,6 +9,7 @@ const { Pool } = require("pg");
 const AWS = require("aws-sdk");
 const jwt = require("jsonwebtoken"); // Import jsonwebtoken
 const jwksRsa = require("jwks-rsa");
+
 const { expressjwt: jwtMiddleware } = require("express-jwt");
 
 dotenv.config();
