@@ -1,19 +1,83 @@
 const fs = require("fs");
-const path = require("path");
-const axios = require("axios");
 const dotenv = require("dotenv");
 const express = require("express");
+var axios = require("axios").default;
 const multer = require("multer");
 const cors = require("cors");
 const { Pool } = require("pg");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { google } = require("googleapis");
 const AWS = require("aws-sdk");
+const jwt = require("jsonwebtoken"); // Import jsonwebtoken
+const jwksRsa = require("jwks-rsa");
+const { expressjwt: jwtMiddleware } = require("express-jwt");
 
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 10000;
+
+// Middleware to verify JWT token using Auth0 public key
+const checkJwt = jwtMiddleware({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`,
+  }),
+  audience: process.env.AUTH0_AUDIENCE,
+  issuer: `https://${process.env.AUTH0_DOMAIN}/`,
+  algorithms: ["RS256"],
+});
+
+// Function to decode JWT token
+const decodeToken = (token) => {
+  try {
+    const decoded = jwt.decode(token, { complete: true });
+    console.log("Decoded JWT Token:", decoded);
+  } catch (error) {
+    console.error("Error decoding token:", error);
+  }
+};
+
+var options = {
+  method: "POST",
+  url: "https://dev-h6b2f6mjco5pu6wz.us.auth0.com/oauth/token",
+  headers: { "content-type": "application/x-www-form-urlencoded" },
+  data: new URLSearchParams({
+    grant_type: "client_credentials",
+    client_id: "AUTH0_CLIENT_ID",
+    client_secret: "AUTH0_CLIENT_SECRET",
+    audience: "AUTH0_AUDIENCE",
+  }),
+};
+
+axios
+  .request(options)
+  .then(function (response) {})
+  .catch(function (error) {});
+
+// Endpoint to get Auth0 access token
+app.get("/api/auth/token", async (req, res) => {
+  var options = {
+    method: "POST",
+    url: `https://${process.env.AUTH0_DOMAIN}/oauth/token`,
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    data: new URLSearchParams({
+      grant_type: "client_credentials",
+      client_id: process.env.AUTH0_CLIENT_ID,
+      client_secret: process.env.AUTH0_CLIENT_SECRET,
+      audience: process.env.AUTH0_AUDIENCE,
+    }),
+  };
+
+  try {
+    const response = await axios.request(options);
+    const token = response.data.access_token;
+    decodeToken(token); // Decode the token
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error getting access token:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 // AWS S3 Configuration
 const s3 = new AWS.S3({
@@ -36,20 +100,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// Function to alter the table and add the file_key column
-const alterTable = async () => {
-  try {
-    const query =
-      "ALTER TABLE uploads ADD COLUMN IF NOT EXISTS file_key VARCHAR(255)";
-    await pool.query(query);
-    console.log("Table altered successfully");
-  } catch (error) {
-    console.error("Error altering table:", error);
-  }
-};
-
-// Call the function to alter the table
-alterTable();
+app.get("/protected", (req, res) => {
+  res.send({
+    msg: "Your access token was successfully validated!",
+  });
+});
 
 // Multer setup for file uploads
 const storage = multer.memoryStorage();
@@ -133,6 +188,136 @@ app.get("/api/uploads/:fileKey", async (req, res) => {
     res.send(file.Body);
   } catch (error) {
     console.error("Error fetching file:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Endpoint to post news articles
+app.post("/api/news", upload.single("image"), async (req, res) => {
+  const { title, content } = req.body;
+  const image = req.file;
+
+  if (!title || !content) {
+    return res.status(400).json({ message: "Title and content are required" });
+  }
+
+  let imageUrl = null;
+  if (image) {
+    const fileKey = `${Date.now()}_${image.originalname}`;
+    const params = {
+      Bucket: bucketName,
+      Key: fileKey,
+      Body: image.buffer,
+      ContentType: image.mimetype,
+    };
+
+    try {
+      const uploadResult = await s3.upload(params).promise();
+      imageUrl = uploadResult.Location;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  try {
+    const query =
+      "INSERT INTO news (title, content, image_url) VALUES ($1, $2, $3) RETURNING *";
+    const values = [title, content, imageUrl];
+    const result = await pool.query(query, values);
+
+    console.log("News article saved to database:", result.rows[0]);
+
+    res.status(201).json({
+      message: "News article posted successfully",
+      news: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error posting news article:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Endpoint to update news articles
+app.put("/api/news/:id", upload.single("image"), async (req, res) => {
+  const { id } = req.params;
+  const { title, content } = req.body;
+  const image = req.file;
+
+  if (!title || !content) {
+    return res.status(400).json({ message: "Title and content are required" });
+  }
+
+  let imageUrl = null;
+  if (image) {
+    const fileKey = `${Date.now()}_${image.originalname}`;
+    const params = {
+      Bucket: bucketName,
+      Key: fileKey,
+      Body: image.buffer,
+      ContentType: image.mimetype,
+    };
+
+    try {
+      const uploadResult = await s3.upload(params).promise();
+      imageUrl = uploadResult.Location;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  try {
+    const query =
+      "UPDATE news SET title = $1, content = $2, image_url = $3 WHERE id = $4 RETURNING *";
+    const values = [title, content, imageUrl, id];
+    const result = await pool.query(query, values);
+
+    console.log("News article updated in database:", result.rows[0]);
+
+    res.status(200).json({
+      message: "News article updated successfully",
+      news: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error updating news article:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Endpoint to delete news articles
+app.delete("/api/news/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = "DELETE FROM news WHERE id = $1 RETURNING *";
+    const values = [id];
+    const result = await pool.query(query, values);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "News article not found" });
+    }
+
+    console.log("News article deleted from database:", result.rows[0]);
+
+    res.status(200).json({
+      message: "News article deleted successfully",
+      news: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error deleting news article:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Endpoint to get list of news articles
+app.get("/api/news", async (req, res) => {
+  try {
+    const query = "SELECT * FROM news ORDER BY created_at DESC LIMIT 3";
+    const result = await pool.query(query);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching news:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
