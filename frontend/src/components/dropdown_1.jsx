@@ -33,9 +33,7 @@ function Dropdown_1() {
           <h4 className="dropdown-header">ABOUT MÅSTE</h4>
           <a href="/What_is_Maste" className="dropdown-item">What is Måste ?</a>
           <a href="/Aims" className="dropdown-item">What is our Aim ?</a>
-          <div className="dropdown-divider"></div>
-          <div className="dropdown-item">WPs</div>
-          <div className="dropdown-item">Project Bodies</div>
+          <a href="/workstructure" className="dropdown-item">Work Structure</a>
         </div>
       </div>
     </React.Fragment>

@@ -48,10 +48,16 @@ function Dropdown_3() {
         <div className="dropdown-menu">
           <h4 className="dropdown-header">MÅSTE DATABASE</h4>
           <a
-            href="/Search"
+            href="/auth-search"
             className="dropdown-item"
           >
             Search PDF Reports
+          </a>
+          <a
+            href="/Search-Powerpoint"
+            className="dropdown-item"
+          >
+            Public Reports
           </a>
           <a
             href="/Search-Powerpoint"

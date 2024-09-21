@@ -53,13 +53,22 @@ h3{
     border: 1px solid #ccc;
     border-radius: 5px;
   }
-  
+
   .news-image {
     width: 250px;
     height: 150px;
     object-fit: contain;
     margin-right: 20px;
   }
+
+.news-list{
+    padding: 44px;
+    background-color: #d8e2c7;
+    width: 50vw;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
   
   .news-content {
     flex: 1;

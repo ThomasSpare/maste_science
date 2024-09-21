@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import { useState } from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { createRoot } from "react-dom/client";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 import LayOut from "./components/LayOut";
 import Aims from "./pages/Aims";
 import Links from "./pages/Links";
@@ -21,53 +26,143 @@ import Settings from "./pages/Settings";
 import ViewPpt from "./pages/ViewPpt";
 
 import Auth0ProviderWithHistory from "./Auth/Auth0Provider";
+import WS from "./pages/WorkStructure";
 
-const domain = process.env.REACT_APP_AUTH0_DOMAIN;
-const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
+function ProtectedRoute({ element, isAuthenticated }) {
+  return isAuthenticated ? element : <Navigate to="/auth" />;
+}
 
-export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+function AuthForm({ onPasswordSubmit }) {
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onPasswordSubmit(password);
+  };
+
   return (
-    <Router>
-      <Auth0ProviderWithHistory
-        domain={domain}
-        clientId={clientId}
-        redirectUri={window.location.origin}
-      >
-        <Routes>
-          <Route path="/" element={<LayOut />}>
-            <Route index element={<Home />} />
-            <Route path="What_is_Maste" element={<WhatIs />} />
-            <Route path="Aims" element={<Aims />} />
-            <Route path="links" element={<Links />} />
-            <Route path="partners" element={<Partners />} />
-            <Route path="contacts" element={<Aims />} />
-
-            <Route path="search" element={<Search />} />
-            <Route path="search-powerpoint" element={<SearchPowerPoint />} />
-            <Route path="upload" element={<Upload />} />
-            <Route path="/view-pdf/:fileId/:fileKey" element={<ViewPdf />} />
-            <Route path="view-ppt/:fileId/:file" element={<ViewPpt />} />
-            <Route path="settings" element={<Settings />} />
-            <Route
-              path="auth"
-              element={
-                <ModalAuth
-                  isLoggedIn={isLoggedIn}
-                  setIsLoggedIn={setIsLoggedIn}
-                />
-              }
-            />
-          </Route>
-        </Routes>
-      </Auth0ProviderWithHistory>
-    </Router>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <form onSubmit={handleSubmit}>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Enter password"
+        />
+        <button type="submit">Submit</button>
+      </form>
+    </div>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate(); // Use the useNavigate hook
+
+  const handlePasswordSubmit = (password) => {
+    const correctPassword = process.env.REACT_APP_PASSWORD;
+    if (password === correctPassword) {
+      setIsAuthenticated(true);
+      navigate("/Upload"); // Redirect to /Upload upon successful password submission
+    } else {
+      alert("Incorrect password");
+    }
+  };
+
+  const handleSearchPasswordSubmit = (password) => {
+    const correctSearchPassword = process.env.REACT_APP_SEARCH_PASSWORD;
+    if (password === correctSearchPassword) {
+      setIsAuthenticated(true);
+      navigate("search"); // Redirect to /search upon successful password submission
+    } else {
+      alert("Incorrect password");
+    }
+  };
+
+  const handleSettingsPasswordSubmit = (password) => {
+    const correctSettingsPassword = process.env.REACT_APP_SETTINGS_PASSWORD;
+    if (password === correctSettingsPassword) {
+      setIsAuthenticated(true);
+      navigate("settings"); // Redirect to /settings upon successful password submission
+    } else {
+      alert("Incorrect password");
+    }
+  };
+
+  return (
+    <Routes>
+      <Route path="/" element={<LayOut />}>
+        <Route index element={<Home />} />
+        <Route path="What_is_Maste" element={<WhatIs />} />
+        <Route path="Aims" element={<Aims />} />
+        <Route path="links" element={<Links />} />
+        <Route path="partners" element={<Partners />} />
+        <Route path="contacts" element={<Aims />} />
+        <Route path="workstructure" element={<WS />} />
+
+        <Route
+          path="search"
+          element={
+            <ProtectedRoute
+              element={<Search />}
+              isAuthenticated={isAuthenticated}
+            />
+          }
+        />
+        <Route path="search-powerpoint" element={<SearchPowerPoint />} />
+        <Route path="/view-pdf/:fileId/:fileKey" element={<ViewPdf />} />
+        <Route path="view-ppt/:fileId/:file" element={<ViewPpt />} />
+        <Route
+          path="settings"
+          element={
+            <ProtectedRoute
+              element={<Settings />}
+              isAuthenticated={isAuthenticated}
+            />
+          }
+        />
+        <Route
+          path="auth"
+          element={<AuthForm onPasswordSubmit={handlePasswordSubmit} />}
+        />
+        <Route
+          path="auth-search"
+          element={<AuthForm onPasswordSubmit={handleSearchPasswordSubmit} />}
+        />
+        <Route
+          path="auth-settings"
+          element={<AuthForm onPasswordSubmit={handleSettingsPasswordSubmit} />}
+        />
+        <Route
+          path="Upload"
+          element={
+            <ProtectedRoute
+              element={<Upload />}
+              isAuthenticated={isAuthenticated}
+            />
+          }
+        />
+      </Route>
+    </Routes>
+  );
+}
+
+createRoot(document.getElementById("root")).render(
+  <Router>
+    <Auth0ProviderWithHistory>
+      <App />
+    </Auth0ProviderWithHistory>
+  </Router>
+);
 
 // If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
+// to log results (for example: reportWebVitals.console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

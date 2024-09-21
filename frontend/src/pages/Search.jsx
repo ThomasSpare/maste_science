@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { CdsButton } from '@cds/react/button'; // Ensure this is the correct import for your button component
 import { useNavigate } from 'react-router-dom';
+import ReactCountryFlag from 'react-country-flag';
+import { getCountryCode } from '../countrycodes/countryCodes'; // Import the utility function
+import "./Search.css";
+import "../App.css"; 
 
 const Search = () => {
   const [uploads, setUploads] = useState([]);
@@ -75,10 +79,10 @@ const Search = () => {
   const paginatedUploads = sortedUploads.slice(startIndex, endIndex);
 
   return (
-    <div>
-      <h1>Search</h1>
+    <div className='search-main-div'>
+      <h1 className='search-h1'>Search PDF</h1>
       <div>
-        <input
+        <input className='search-input'
           type="text"
           placeholder="Search by Title, country, or author"
           value={searchTerm}
@@ -107,22 +111,23 @@ const Search = () => {
         </div>
         <ol>
           {paginatedUploads.map((upload, index) => (
-            <li key={index} onClick={() => handleFileClick(upload)}>
-              <p style={{ display: 'inline-block', marginRight: '50px' }}>
-                Upload Date: {upload.upload_date}
-              </p>
-              <p style={{ display: 'inline-block', marginRight: '50px' }}>
-                Title: {upload.category}
-              </p>
-              <p style={{ display: 'inline-block', marginRight: '50px' }}>
-                Country: {upload.country}
-              </p>
-              <p style={{ display: 'inline-block', marginRight: '50px' }}>
-                Author: {upload.author}
-              </p>
-              <p style={{ display: 'inline-block', marginRight: '50px' }}>
-                ID: {upload.id}
-              </p>
+            <li className="search-list-item" key={index} onClick={() => handleFileClick(upload)}>
+              <div className='top'>
+                <p style={{ display: 'inline-block', marginRight: '50px' }}>
+                  Title: {upload.category}
+                </p>
+                <p style={{ display: 'inline-block', marginRight: '50px' }}>
+                  Author: {upload.author}
+                </p>
+              </div>
+              <div className='bottom'>
+                <p style={{ display: 'inline-block', marginRight: '50px' }}>
+                  Upload Date: {new Date(upload.upload_date).toLocaleDateString()}
+                </p>
+                <p style={{ display: 'inline-block', marginRight: '50px' }}>
+                  Country: {upload.country} <ReactCountryFlag countryCode={getCountryCode(upload.country)} svg />
+                </p>
+              </div>
             </li>
           ))}
         </ol>

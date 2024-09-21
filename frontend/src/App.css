@@ -139,8 +139,6 @@ body {
 }
 
 
-
-
 body.dark {background-color: #424242 !important;}
 .App-header.dark {background-color: #70767b !important;}
 body.dark p {color: rgb(127, 225, 255);}
@@ -160,6 +158,7 @@ body.dark #chalmers{ background-color: #aff9d3; border-radius: 25px;}
 body.dark #lund{ background-color: #aff9d3; border-radius: 25px;}
 body.dark #kth{ background-color: #aff9d3; border-radius: 25px;}
 body.dark #uppsala{ background-color: #aff9d3; border-radius: 25px;}
+/* Dark mode img WP page */
 
 
 .checkbox {

@@ -37,11 +37,14 @@ ClarityIcons.addIcons(searchIcon);
 ClarityIcons.addIcons(thumbsUpIcon);
 
 function NavBar() {
-  const { isLoading, user } = useAuth0();
+  const { isLoading, user, getAccessTokenSilently } = useAuth0();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [showLogo, setShowLogo] = useState(true);
+  const [roles, setRoles] = useState([]);
   const location = useLocation();
   const email = user ? user.email : "Guest";
+  
 
   useEffect(() => {
     if (!(location.pathname === '/')) {
@@ -50,6 +53,34 @@ function NavBar() {
       setShowLogo(true);
     }
   }, [location]);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      if (user) {
+        try {
+          const token = await getAccessTokenSilently({
+            audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+            scope: 'read:roles read:users',
+          });
+          const response = await fetch(`https://${process.env.REACT_APP_AUTH0_DOMAIN}/api/v2/users/${user.sub}/roles`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          setRoles(data);
+          console.log('Fetched roles:', data);
+        } catch (error) {
+          console.error('Error fetching roles:', error);
+        }
+      }
+    };
+
+    fetchRoles();
+  }, [user, getAccessTokenSilently]);
 
   const checkboxRef = useRef(null);
 
@@ -100,7 +131,8 @@ function NavBar() {
               <cds-icon shape="thumbs-up"></cds-icon>
               <span className="display_email">
                 Logged in as {email || "Guest"}
-              </span>
+                </span>
+                {console.log('Logged with role:', roles)}
             </div>
           )}
           <ModalAuth isLoggedIn={isLoading} />
@@ -121,7 +153,7 @@ function NavBar() {
               <cds-icon shape="home"></cds-icon>
             </a>
             {!isLoading && user &&(
-              <a href="/settings" className="nav-link nav-icon">
+              <a href="/auth-settings" className="nav-link nav-icon">
                 <cds-icon shape="cog"></cds-icon>
               </a>
             )}

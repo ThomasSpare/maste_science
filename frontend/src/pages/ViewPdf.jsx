@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../Auth/useAuth'; // Ensure this path is correct
+import { useAuth0 } from '@auth0/auth0-react';
 
 const ViewPdf = () => {
   const { fileId, fileKey } = useParams();
   const navigate = useNavigate();
   const [fileUrl, setFileUrl] = useState('');
-  useAuth(); // Ensure this path is correct
+  useAuth0(); // Ensure this path is correct
 
   useEffect(() => {
     const abortController = new AbortController();
