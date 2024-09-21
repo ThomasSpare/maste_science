@@ -68,6 +68,8 @@ function App() {
 
   const handlePasswordSubmit = (password) => {
     const correctPassword = process.env.REACT_APP_PASSWORD;
+    console.log("Submitted Password:", password);
+    console.log("Correct Password:", correctPassword);
     if (password === correctPassword) {
       setIsAuthenticated(true);
       navigate("/Upload"); // Redirect to /Upload upon successful password submission
@@ -78,6 +80,8 @@ function App() {
 
   const handleSearchPasswordSubmit = (password) => {
     const correctSearchPassword = process.env.REACT_APP_SEARCH_PASSWORD;
+    console.log("Submitted Search Password:", password);
+    console.log("Correct Search Password:", correctSearchPassword);
     if (password === correctSearchPassword) {
       setIsAuthenticated(true);
       navigate("search"); // Redirect to /search upon successful password submission
@@ -88,6 +92,8 @@ function App() {
 
   const handleSettingsPasswordSubmit = (password) => {
     const correctSettingsPassword = process.env.REACT_APP_SETTINGS_PASSWORD;
+    console.log("Submitted Settings Password:", password);
+    console.log("Correct Settings Password:", correctSettingsPassword);
     if (password === correctSettingsPassword) {
       setIsAuthenticated(true);
       navigate("settings"); // Redirect to /settings upon successful password submission
