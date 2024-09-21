@@ -18,15 +18,10 @@ return (
             <section className="text-section">
             </section>
            <div className="partners">
-        <img id="chalmers" height={230} width={200} src="https://res.cloudinary.com/djunroohl/image/upload/c_crop,h_185,w_152/v1724065539/Chalmers_University_of_Technology_bdskot.svg" alt="Chalmers Tekniska Högskola Aktiebolag logo" />
-            <select id="first_select">
-                    <option place value="1">Coordinator: Chalmers Tekniska Högskola Aktiebolag</option>
-                    <option value="2">Prof. Astrophysics</option>
-                    <option value="3">Dr. Molecular Biology</option>
-                    <option value="4">Prof. Environmental Science</option>
-                    <option value="5">Dr. Computational Chemistry</option>
-                    <option value="6">Prof. Theoretical Physics</option>
-            </select>
+        <img id="chalmers" height={230} width={200} src="https://res.cloudinary.com/djunroohl/ima</a>ge/upload/c_cr</a>op,h_185,w_152/v1724065539/Chalmers_University_of_Technology_bdskot.svg" alt="Chalmers Tekniska Högskola Aktiebolag logo" />
+            <a href="https://www.chalmers.se/en/departments/chem/research/energy-and-materials/nuclear-chemistry/">
+            Department of Chemistry and Chemical Engineering, Energy and Materials –
+Nuclear Chemistry</a>
                 <img id="lund" height={200} width={200} src="https://res.cloudinary.com/djunroohl/image/upload/c_crop,g_west,h_152,w_114,x_27/v1726434289/lund_logo_dpnac2.svg" alt="Lunds Universitet logo" />
             <select id="first_select" cds-select>
                     <option value="1">Lunds universitet</option>

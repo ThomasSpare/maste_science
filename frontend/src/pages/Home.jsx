@@ -20,6 +20,8 @@ function Home() {
   });
 
   useEffect(() => {
+    console.log("API Base URL:", process.env.REACT_APP_API_URL); // Debugging line
+
     const fetchNews = async () => {
       try {
         const response = await api.get("/api/news");
