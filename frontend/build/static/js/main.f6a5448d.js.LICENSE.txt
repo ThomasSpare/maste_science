@@ -1,0 +1,162 @@
+/*! ../utils/descriptor-config */
+
+/*! ../utils/svg-tag-generator */
+
+/*! ./chart-shapes */
+
+/*! ./commerce-shapes */
+
+/*! ./core-shapes */
+
+/*! ./essential-shapes */
+
+/*! ./media-shapes */
+
+/*! ./social-shapes */
+
+/*! ./technology-shapes */
+
+/*! ./text-edit-shapes */
+
+/*! ./travel-shapes */
+
+/*! no static exports found */
+
+/*!*************************************************!*\
+      !*** ./projects/icons/src/shapes/all-shapes.ts ***!
+      \*************************************************/
+
+/*!**************************************************!*\
+      !*** ./projects/icons/src/shapes/core-shapes.ts ***!
+      \**************************************************/
+
+/*!***************************************************!*\
+      !*** ./projects/icons/src/shapes/chart-shapes.ts ***!
+      \***************************************************/
+
+/*!***************************************************!*\
+      !*** ./projects/icons/src/shapes/media-shapes.ts ***!
+      \***************************************************/
+
+/*!****************************************************!*\
+      !*** ./projects/icons/src/shapes/social-shapes.ts ***!
+      \****************************************************/
+
+/*!****************************************************!*\
+      !*** ./projects/icons/src/shapes/travel-shapes.ts ***!
+      \****************************************************/
+
+/*!******************************************************!*\
+      !*** ./projects/icons/src/shapes/commerce-shapes.ts ***!
+      \******************************************************/
+
+/*!*******************************************************!*\
+      !*** ./projects/icons/src/shapes/essential-shapes.ts ***!
+      \*******************************************************/
+
+/*!*******************************************************!*\
+      !*** ./projects/icons/src/shapes/text-edit-shapes.ts ***!
+      \*******************************************************/
+
+/*!*******************************************************!*\
+      !*** ./projects/icons/src/utils/descriptor-config.ts ***!
+      \*******************************************************/
+
+/*!*******************************************************!*\
+      !*** ./projects/icons/src/utils/svg-tag-generator.ts ***!
+      \*******************************************************/
+
+/*!********************************************************!*\
+      !*** ./projects/icons/src/shapes/technology-shapes.ts ***!
+      \********************************************************/
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+/**
+ * @license
+ * Copyright 2018 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+/**
+ * @license React
+ * react-dom.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/**
+ * @license React
+ * react-jsx-runtime.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/**
+ * @license React
+ * react.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/**
+ * @license React
+ * scheduler.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/**
+ * @remix-run/router v1.17.1
+ *
+ * Copyright (c) Remix Software Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE.md file in the root directory of this source tree.
+ *
+ * @license MIT
+ */
+
+/**
+ * React Router DOM v6.24.1
+ *
+ * Copyright (c) Remix Software Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE.md file in the root directory of this source tree.
+ *
+ * @license MIT
+ */
+
+/**
+ * React Router v6.24.1
+ *
+ * Copyright (c) Remix Software Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE.md file in the root directory of this source tree.
+ *
+ * @license MIT
+ */

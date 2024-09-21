@@ -28,10 +28,10 @@ function Dropdown_3() {
     setIsDropdownOpen(false);
   };
 
-  // Conditionally render the dropdown based on isAuthenticated
-  if (!user) {
-    return null; // Do not render the dropdown if the user is not authenticated
-  }
+  // Temporarily disable the user authentication check
+  // if (!user) {
+  //   return null; // Do not render the dropdown if the user is not authenticated
+  // }
 
   return (
     <React.Fragment>

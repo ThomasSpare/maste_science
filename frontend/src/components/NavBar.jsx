@@ -152,11 +152,11 @@ function NavBar() {
             <Link to="/" className="nav-link nav-icon">
               <cds-icon shape="home"></cds-icon>
             </Link>
-            {!isLoading && user &&(
+            {/* {!isLoading && user &&( */}
               <Link to="/auth-settings" className="nav-link nav-icon">
                 <cds-icon shape="cog"></cds-icon>
               </Link>
-            )}
+            {/* )} */}
           </div>
         </header>
         <nav className="subnav">
