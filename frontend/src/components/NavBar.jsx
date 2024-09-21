@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Link, useLocation } from "react-router-dom";
 import "../App.css";
 import "../components/NavBar.css";
-import { useLocation } from "react-router-dom";
 import "clarity-ui/clarity-ui.min.css";
 import "clarity-icons/clarity-icons.min.css";
 import "clarity-icons/shapes/technology-shapes.js";
@@ -110,7 +110,7 @@ function NavBar() {
       <div className="main">
         <header className="header header-6">
           <div className="branding">
-            <a href="/" className="title">MÅSTE</a>
+            <Link to="/" className="title">MÅSTE</Link>
           </div>
           <form className="search" onSubmit={handleSearch}>
             <input
@@ -149,13 +149,13 @@ function NavBar() {
               <i className="fas fa-sun"></i>
               <div className="ball"></div>
             </label>
-            <a href="/" className="nav-link nav-icon">
+            <Link to="/" className="nav-link nav-icon">
               <cds-icon shape="home"></cds-icon>
-            </a>
+            </Link>
             {!isLoading && user &&(
-              <a href="/auth-settings" className="nav-link nav-icon">
+              <Link to="/auth-settings" className="nav-link nav-icon">
                 <cds-icon shape="cog"></cds-icon>
-              </a>
+              </Link>
             )}
           </div>
         </header>
@@ -164,9 +164,9 @@ function NavBar() {
             <Dropdown1 />
             <Dropdown2 />
             <Dropdown3 isLoggedIn={!isLoading} />
-            <a href="links">LINKS</a>
-            <a href="partners">PARTNERS</a>
-            <a href="contacts">CONTACTS</a>
+            <Link to="/links">LINKS</Link>
+            <Link to="/partners">PARTNERS</Link>
+            <Link to="/contacts">CONTACTS</Link>
           </ul>
           {showLogo && (
             <img

@@ -8,6 +8,7 @@ import "@cds/core/icon/shapes/arrow.js";
 import "clarity-icons/clarity-icons.min.css";
 import { ClarityIcons, arrowIcon } from "@cds/core/icon";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Link } from "react-router-dom";
 
 import "@cds/core/dropdown/register.js";
 import "@cds/core/button/register.js";
@@ -47,36 +48,36 @@ function Dropdown_3() {
         </button>
         <div className="dropdown-menu">
           <h4 className="dropdown-header">MÅSTE DATABASE</h4>
-          <a
-            href="/auth-search"
+          <Link
+            to="/auth-search"
             className="dropdown-item"
           >
             Search PDF Reports
-          </a>
-          <a
-            href="/Search-Powerpoint"
+          </Link>
+          <Link
+            to="/Search-Powerpoint"
             className="dropdown-item"
           >
             Public Reports
-          </a>
-          <a
-            href="/Search-Powerpoint"
+          </Link>
+          <Link
+            to="/Search-Powerpoint"
             className="dropdown-item"
           >
             Search Powerpoints
-          </a>
-          <a
-            href="/"
+          </Link>
+          <Link
+            to="/"
             className="dropdown-item"
           >
             Search Images
-          </a>
-          <a
-            href="/Upload"
+          </Link>
+          <Link
+            to="/Upload"
             className="dropdown-item"
           >
             Upload
-          </a>
+          </Link>
           <div className="dropdown-divider"></div>
           <div className="dropdown-item">
             Link 1
