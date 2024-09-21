@@ -11,7 +11,6 @@ const jwksRsa = require("jwks-rsa");
 const { expressjwt: jwtMiddleware } = require("express-jwt");
 
 dotenv.config();
-const express = require("express");
 const app = express();
 const port = process.env.PORT || 10000;
 
