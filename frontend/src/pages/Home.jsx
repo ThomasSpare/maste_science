@@ -19,7 +19,7 @@ function Home() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get("http://localhost:10000/api/news");
+        const response = await axios.get("https://maste-science.onrender.com/api/news");
         setNews(response.data);
       } catch (error) {
         console.error("Error fetching news:", error);

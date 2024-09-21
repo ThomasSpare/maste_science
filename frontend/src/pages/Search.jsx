@@ -19,7 +19,7 @@ const Search = () => {
     // Fetch uploads from the server
     const fetchUploads = async () => {
       try {
-        const response = await fetch('http://localhost:10000/api/uploads');
+        const response = await fetch('https://maste-science.onrender.com/api/uploads');
         const data = await response.json();
         console.log("Fetched uploads:", data); // Add this line
         setUploads(data);

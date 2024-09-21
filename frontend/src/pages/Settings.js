@@ -23,7 +23,7 @@ const Dashboard = () => {
   const fetchLastThreePosts = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:10000/api/news?limit=3"
+        "https://maste-science.onrender.com/api/news?limit=3"
       );
       setPosts(response.data);
     } catch (error) {
@@ -45,7 +45,7 @@ const Dashboard = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:10000/api/news",
+        "https://maste-science.onrender.com/api/news",
         formData,
         {
           headers: {
@@ -67,7 +67,9 @@ const Dashboard = () => {
   const handleDeletePost = async (postId) => {
     console.log("Deleting post with ID:", postId); // Log the postId
     try {
-      await axios.delete(`http://localhost:10000/api/news/${postId}`);
+      await axios.delete(
+        `https://maste-science.onrender.com/api/news/${postId}`
+      );
       alert("Post deleted successfully");
       fetchLastThreePosts(); // Refresh the posts
     } catch (error) {
@@ -99,7 +101,7 @@ const Dashboard = () => {
 
     try {
       await axios.put(
-        `http://localhost:10000/api/news/${editPostId}`,
+        `https://maste-science.onrender.com/api/news/${editPostId}`,
         formData,
         {
           headers: {
