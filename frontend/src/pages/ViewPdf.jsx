@@ -46,7 +46,7 @@ const ViewPdf = () => {
         URL.revokeObjectURL(fileUrl);
       }
     };
-  }, []);
+  }, [fileKey]); // Add fileKey to the dependency array
 
   return (
     <iframe
