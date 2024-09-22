@@ -62,8 +62,6 @@ const Upload = () => {
           'Content-Type': 'multipart/form-data'
         }
       });
-
-      console.log(response.data);
       alert('File uploaded successfully');
     } catch (error) {
       console.error('Error during upload:', error);

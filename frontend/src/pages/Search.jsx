@@ -36,7 +36,6 @@ const Search = () => {
   }, [api]);
 
   const handleFileClick = (upload) => {
-    console.log("Navigating to:", `/view-pdf/${upload.id}/${upload.file_key}`);
     navigate(`/view-pdf/${upload.id}/${upload.file_key}`);
   };
 

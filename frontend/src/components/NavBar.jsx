@@ -72,7 +72,6 @@ function NavBar() {
           }
           const data = await response.json();
           setRoles(data);
-          console.log('Fetched roles:', data);
         } catch (error) {
           console.error('Error fetching roles:', error);
         }

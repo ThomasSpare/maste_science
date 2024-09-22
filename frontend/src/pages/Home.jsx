@@ -17,12 +17,9 @@ function Home() {
   });
 
   useEffect(() => {
-    console.log("API Base URL:", api.defaults.baseURL); // Debugging line
-  
     const fetchNews = async () => {
       try {
         const response = await api.get("/api/news");
-        console.log("API Response:", response.data); // Debugging line
         setNews(response.data);
       } catch (error) {
         console.error("Error fetching news:", error);
@@ -78,8 +75,6 @@ function Home() {
                           alt={article.title}
                           className="news-image"
                           onError={(e) => {
-                            console.error(`Error loading image for article ${article.id}:`, e);
-                            console.log(`Image URL: ${article.image_url}`);
                             e.target.onerror = null;
                             e.target.src = "https://via.placeholder.com/150";
                           }}
