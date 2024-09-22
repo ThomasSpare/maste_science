@@ -6,7 +6,7 @@ const ViewPdf = () => {
   const { fileId, fileKey } = useParams();
   const navigate = useNavigate();
   const [fileUrl, setFileUrl] = useState('');
-  useAuth0(); // Ensure this path is correct
+  const { getAccessTokenSilently } = useAuth0(); // Ensure this path is correct
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -17,28 +17,37 @@ const ViewPdf = () => {
       console.error("File parameter is undefined.");
       return;
     }
-    const serverAddress = process.env.REACT_APP_API_BASE_URL; // Update this to your server address
-    const url = `${serverAddress}/api/uploads/${fileKey}`;
-    
-    fetch(url, { signal })
-      .then(response => {
+
+    const fetchPdf = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        const serverAddress = process.env.REACT_APP_API_BASE_URL; // Update this to your server address
+        const url = `${serverAddress}/api/uploads/${fileKey}`;
+        
+        const response = await fetch(url, {
+          signal,
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        return response.blob();
-      })
-      .then(blob => {
-        // Create an object URL from the Blob object
+
+        const blob = await response.blob();
         const objectUrl = URL.createObjectURL(blob);
         setFileUrl(objectUrl);
-      })
-      .catch(error => {
+      } catch (error) {
         if (error.name === 'AbortError') {
           console.log('Fetch aborted');
         } else {
           console.error('Fetch error:', error);
         }
-      });
+      }
+    };
+
+    fetchPdf();
 
     return () => {
       abortController.abort();
@@ -47,7 +56,7 @@ const ViewPdf = () => {
         URL.revokeObjectURL(fileUrl);
       }
     };
-  }, []);
+  }, [fileKey, getAccessTokenSilently, fileUrl]);
 
   return (
     <iframe

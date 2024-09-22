@@ -184,11 +184,14 @@ app.get("/api/uploads/:fileKey", async (req, res) => {
 
   try {
     const file = await s3.getObject(params).promise();
+    console.log("File fetched successfully:", file);
     res.setHeader("Content-Type", file.ContentType);
     res.send(file.Body);
   } catch (error) {
     console.error("Error fetching file:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 });
 
