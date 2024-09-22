@@ -9,7 +9,7 @@ import { ClarityIcons, contractIcon } from "@cds/core/icon";
 ClarityIcons.addIcons(contractIcon);
 
 const Dashboard = () => {
-  const { user } = useAuth0();
+  const { user, getAccessTokenSilently } = useAuth0();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
@@ -67,8 +67,14 @@ const Dashboard = () => {
   const handleDeletePost = async (postId) => {
     console.log("Deleting post with ID:", postId); // Log the postId
     try {
+      const token = await getAccessTokenSilently();
       await axios.delete(
-        `${process.env.REACT_APP_API_BASE_URL}/api/news/${postId}`
+        `${process.env.REACT_APP_API_BASE_URL}/api/news/${postId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       alert("Post deleted successfully");
       fetchLastThreePosts(); // Refresh the posts
@@ -100,12 +106,14 @@ const Dashboard = () => {
     }
 
     try {
+      const token = await getAccessTokenSilently();
       await axios.put(
         `${process.env.REACT_APP_API_BASE_URL}/api/news/${editPostId}`,
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
