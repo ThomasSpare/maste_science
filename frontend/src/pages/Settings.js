@@ -67,7 +67,7 @@ const Dashboard = () => {
   const handleDeletePost = async (postId) => {
     console.log("Deleting post with ID:", postId); // Log the postId
     try {
-      await api.delete(`/api/news/${postId}`);
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/news/${postId}`);
       alert("Post deleted successfully");
       fetchLastThreePosts(); // Refresh the posts
     } catch (error) {
@@ -98,11 +98,15 @@ const Dashboard = () => {
     }
 
     try {
-      await api.put(`/api/news/${editPostId}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await axios.put(
+        `${process.env.REACT_APP_API_URL}/api/news/${editPostId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       alert("Post updated successfully");
       setTitle("");
       setContent("");
