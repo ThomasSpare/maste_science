@@ -26,7 +26,6 @@ const Search = () => {
       try {
         const response = await api.get('/api/uploads');
         const data = response.data;
-        console.log("Fetched uploads:", data); // Add this line
         setUploads(data);
       } catch (error) {
         console.error('Error fetching uploads:', error);
