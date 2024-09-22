@@ -23,14 +23,10 @@ return (
             Department of Chemistry and Chemical Engineering, Energy and Materials –
 Nuclear Chemistry</a>
                 <img id="lund" height={200} width={200} src="https://res.cloudinary.com/djunroohl/image/upload/c_crop,g_west,h_152,w_114,x_27/v1726434289/lund_logo_dpnac2.svg" alt="Lunds Universitet logo" />
-            <select id="first_select" cds-select>
-                    <option value="1">Lunds universitet</option>
-                    <option value="2">Prof. Astrophysics</option>
-                    <option value="3">Dr. Molecular Biology</option>
-                    <option value="4">Prof. Environmental Science</option>
-                    <option value="5">Dr. Computational Chemistry</option>
-                    <option value="6">Prof. Theoretical Physics</option>
-            </select>
+            <a href="https://www.chalmers.se/en/departments/chem/research/energy-and-materials/nuclear-chemistry/">
+            Department of Chemistry and Chemical Engineering, Energy and Materials –
+Nuclear Chemistry</a>
+            
                 <img id="kth" height={200} width={200} src="https://res.cloudinary.com/djunroohl/image/upload/v1726435166/kth_jqmkiz.svg" alt="Kungliga Tekniska Högskolan logo" />
             <select id="first_select" cds-select>
                     <option value="1">Kungliga Tekniska Högskolan</option>
