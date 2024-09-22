@@ -13,10 +13,10 @@ const jwksRsa = require("jwks-rsa");
 const { expressjwt: jwtMiddleware } = require("express-jwt");
 
 dotenv.config();
+const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const app = express();
 const port = process.env.PORT || 10000;
 
 // Middleware to verify JWT token using Auth0 public key
