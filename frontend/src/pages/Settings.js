@@ -16,17 +16,15 @@ const Dashboard = () => {
   const [posts, setPosts] = useState([]);
   const [editPostId, setEditPostId] = useState(null);
 
-  const api = axios.create({
-    baseURL: process.env.REACT_APP_API_URL,
-  });
-
   useEffect(() => {
     fetchLastThreePosts();
   }, []);
 
   const fetchLastThreePosts = async () => {
     try {
-      const response = await api.get("/api/news?limit=3");
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/news?limit=3`
+      );
       setPosts(response.data);
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -46,11 +44,15 @@ const Dashboard = () => {
     formData.append("image", image);
 
     try {
-      const response = await api.post("/api/news", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/news`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       alert("News article added successfully");
       setTitle("");
       setContent("");
