@@ -16,11 +16,11 @@ import "./Home.css";
 function Home() {
   const [news, setNews] = useState([]);
   const api = axios.create({
-    baseURL: process.env.REACT_APP_API_URL,
+    baseURL: "https://maste-science.onrender.com",
   });
 
   useEffect(() => {
-    console.log("API Base URL:", process.env.REACT_APP_API_URL); // Debugging line
+    console.log("API Base URL:", api.defaults.baseURL); // Debugging line
 
     const fetchNews = async () => {
       try {
