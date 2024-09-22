@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "clarity-ui/clarity-ui.min.css"; // Import Clarity UI CSS
-import "clarity-icons/clarity-icons.min.css"; // Import Clarity Icons CSS
-import "clarity-icons/shapes/technology-shapes.js"; // Import Clarity Icons shapes
 import "@cds/core/button/register.js"; // Import Clarity Button component
 import "@cds/core/icon/register.js"; // Import Clarity Icon component
 import "@cds/core/dropdown/register.js"; // Import Clarity Dropdown component
@@ -25,6 +22,7 @@ function Home() {
     const fetchNews = async () => {
       try {
         const response = await api.get("/api/news");
+        console.log("API Response:", response.data); // Debugging line
         setNews(response.data);
       } catch (error) {
         console.error("Error fetching news:", error);
@@ -32,7 +30,7 @@ function Home() {
     };
 
     fetchNews();
-  }, []);
+  }, [api]);
 
   return (
     <div className="App">
@@ -70,31 +68,35 @@ function Home() {
                     researchers will retire in the next 1-2 decades.
                   </p>
                 </div>
-            <section className="news-section">
-              <h2>Latest News</h2>
-              {news.map((article) => (
-                <div key={article.id} className="news-article">
-                  <img
-                    src={article.image_url}
-                    alt={article.title}
-                    className="news-image"
-                    onError={(e) => {
-                      console.error(`Error loading image for article ${article.id}:`, e);
-                      console.log(`Image URL: ${article.image_url}`);
-                      e.target.onerror = null;
-                      e.target.src = "https://via.placeholder.com/150";
-                    }}
-                  />
-                  <div className="news-content">
-                    <h3>{article.title}</h3>
-                    <p>{article.content}</p>
-                    <p className="news-date">
-                      {new Date(article.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </section>
+                <section className="news-section">
+                  <h2>Latest News</h2>
+                  {Array.isArray(news) ? (
+                    news.map((article) => (
+                      <div key={article.id} className="news-article">
+                        <img
+                          src={article.image_url}
+                          alt={article.title}
+                          className="news-image"
+                          onError={(e) => {
+                            console.error(`Error loading image for article ${article.id}:`, e);
+                            console.log(`Image URL: ${article.image_url}`);
+                            e.target.onerror = null;
+                            e.target.src = "https://via.placeholder.com/150";
+                          }}
+                        />
+                        <div className="news-content">
+                          <h3>{article.title}</h3>
+                          <p>{article.content}</p>
+                          <p className="news-date">
+                            {new Date(article.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No news available</p>
+                  )}
+                </section>
               </div>
               <div className="column">
                 <img
