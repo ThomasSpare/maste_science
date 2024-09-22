@@ -23,7 +23,7 @@ const Dashboard = () => {
   const fetchLastThreePosts = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/news?limit=3`
+        `${process.env.REACT_APP_API_BASE_URL}/api/news?limit=3`
       );
       setPosts(response.data);
     } catch (error) {
@@ -45,7 +45,7 @@ const Dashboard = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/news`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/news`,
         formData,
         {
           headers: {
@@ -67,7 +67,9 @@ const Dashboard = () => {
   const handleDeletePost = async (postId) => {
     console.log("Deleting post with ID:", postId); // Log the postId
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/api/news/${postId}`);
+      await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}/api/news/${postId}`
+      );
       alert("Post deleted successfully");
       fetchLastThreePosts(); // Refresh the posts
     } catch (error) {
@@ -99,7 +101,7 @@ const Dashboard = () => {
 
     try {
       await axios.put(
-        `${process.env.REACT_APP_API_URL}/api/news/${editPostId}`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/news/${editPostId}`,
         formData,
         {
           headers: {
