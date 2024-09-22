@@ -18,7 +18,7 @@ function Home() {
 
   useEffect(() => {
     console.log("API Base URL:", api.defaults.baseURL); // Debugging line
-
+  
     const fetchNews = async () => {
       try {
         const response = await api.get("/api/news");
@@ -28,7 +28,7 @@ function Home() {
         console.error("Error fetching news:", error);
       }
     };
-
+  
     fetchNews();
   }, [api]);
 
