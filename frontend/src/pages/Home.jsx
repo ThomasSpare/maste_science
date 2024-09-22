@@ -12,22 +12,19 @@ import "./Home.css";
 
 function Home() {
   const [news, setNews] = useState([]);
-  const api = axios.create({
-    baseURL: "https://maste-science.onrender.com",
-  });
 
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await api.get("/api/news");
+        const response = await axios.get("https://maste-science.onrender.com/api/news");
         setNews(response.data);
       } catch (error) {
         console.error("Error fetching news:", error);
       }
     };
-  
+
     fetchNews();
-  }, [api]);
+  }, []);
 
   return (
     <div className="App">
@@ -39,7 +36,7 @@ function Home() {
                 <img
                   className="home_image1"
                   src="https://res.cloudinary.com/djunroohl/image/upload/c_crop,h_1701,w_600/v1720396474/greenfields_jcajzf.jpg"
-                  alt="Image 1"
+                  alt="Green fields"
                 />
               </div>
               <div className="column">
@@ -97,7 +94,7 @@ function Home() {
                 <img
                   className="home_image2"
                   src="https://res.cloudinary.com/djunroohl/image/upload/c_crop,e_improve,g_auto,h_1707,w_600,x_0/v1720396474/greenfields_jcajzf.jpg"
-                  alt="Image 2"
+                  alt="Green fields"
                 />
               </div>
             </section>
