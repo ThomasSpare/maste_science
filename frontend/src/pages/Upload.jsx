@@ -56,20 +56,14 @@ const Upload = () => {
 
       const token = await getAccessTokenSilently();
 
-      const response = await api.post('/api/uploads', {
-        method: 'POST',
+      const response = await api.post('/api/uploads', formData, {
         headers: {
-          Authorization: `Bearer ${token}`
-        },
-        body: formData
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
       });
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
-      console.log(data);
+      console.log(response.data);
       alert('File uploaded successfully');
     } catch (error) {
       console.error('Error during upload:', error);
