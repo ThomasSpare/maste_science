@@ -41,7 +41,7 @@ function Home() {
               </div>
               <div className="column">
                 <div>
-                  <p>
+                  <p className="home-text">
                     The project Multidisciplinära Åtaganden för Sveriges gen-IV
                     Teknologi och Expertis (Multidisciplinary Commitments for
                     Sweden&#39;s Gene IV Technology and Expertise), MÅSTE, lays

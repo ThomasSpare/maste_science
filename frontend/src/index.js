@@ -24,9 +24,10 @@ import SearchPowerPoint from "./pages/SearchPowerPoint";
 import WhatIs from "./pages/WhatIs";
 import Settings from "./pages/Settings";
 import ViewPpt from "./pages/ViewPpt";
+import WS from "./pages/WorkStructure";
+import PublicDocs from "./pages/PublicDocs";
 
 import Auth0ProviderWithHistory from "./Auth/Auth0Provider";
-import WS from "./pages/WorkStructure";
 
 function ProtectedRoute({ element, isAuthenticated }) {
   return isAuthenticated ? element : <Navigate to="/auth" />;
@@ -106,6 +107,7 @@ function App() {
         <Route path="partners" element={<Partners />} />
         <Route path="contacts" element={<Aims />} />
         <Route path="workstructure" element={<WS />} />
+        <Route path="public_docs" element={<PublicDocs />} />
 
         <Route
           path="search"

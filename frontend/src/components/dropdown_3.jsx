@@ -49,7 +49,7 @@ function Dropdown_3() {
         <div className="dropdown-menu">
           <h4 className="dropdown-header">MÅSTE DATABASE</h4>
           <Link
-            to="/"
+            to="/public_docs"
             className="dropdown-item"
           >
             Public Documents

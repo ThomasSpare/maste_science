@@ -13,7 +13,7 @@ const Search = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
   const navigate = useNavigate();
 
   const api = axios.create({
@@ -115,26 +115,24 @@ const Search = () => {
         <ol>
           {paginatedUploads.map((upload, index) => (
             <li className="search-list-item" key={index} onClick={() => handleFileClick(upload)}>
-              <div className='top'>
-                <p style={{ display: 'inline-block', marginRight: '50px' }}>
+              <div className='list-info' style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <p style={{ flex: '1' }}>
                   Title: {upload.category}
                 </p>
-                <p style={{ display: 'inline-block', marginRight: '50px' }}>
+                <p style={{ flex: '1' }}>
                   Author: {upload.author}
                 </p>
-              </div>
-              <div className='bottom'>
-                <p style={{ display: 'inline-block', marginRight: '50px' }}>
+                <p style={{ flex: '1' }}>
                   Upload Date: {new Date(upload.upload_date).toLocaleDateString()}
                 </p>
-                <p style={{ display: 'inline-block', marginRight: '50px' }}>
+                <p style={{ flex: '1', display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '0px !important' }}>
                   Country: {upload.country} <ReactCountryFlag countryCode={getCountryCode(upload.country)} svg />
                 </p>
               </div>
             </li>
           ))}
         </ol>
-        <div style={{ marginTop: '10px' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '5px' }}>
           <CdsButton onClick={handlePreviousPage} disabled={currentPage === 1}>
             Previous
           </CdsButton>
