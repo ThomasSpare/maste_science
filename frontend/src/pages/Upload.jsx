@@ -12,6 +12,15 @@ const Upload = () => {
   const [country, setCountry] = useState('');
   const [category, setCategory] = useState('');
   const [isAuthenticatedState, setIsAuthenticatedState] = useState(false);
+  const [isPublic, setIsPublic] = useState(false);
+  const [workpackage, setWorkpackage] = useState('');
+  const [isMeeting, setIsMeeting] = useState(false);
+  const [isDeliverable, setIsDeliverable] = useState(false);
+  const [isContactList, setIsContactList] = useState(false);
+  const [isPromotion, setIsPromotion] = useState(false);
+  const [isReport, setIsReport] = useState(false);
+  const [isPublication, setIsPublication] = useState(false);
+  const [isTemplate, setIsTemplate] = useState(false);
 
   const { getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
 
@@ -37,6 +46,15 @@ const Upload = () => {
     formData.append('uploadDate', uploadDate);
     formData.append('country', country);
     formData.append('category', category);
+    formData.append('isPublic', isPublic);
+    formData.append('workpackage', workpackage);
+    formData.append('isMeeting', isMeeting);
+    formData.append('isDeliverable', isDeliverable);
+    formData.append('isContactList', isContactList);
+    formData.append('isPromotion', isPromotion);
+    formData.append('isReport', isReport);
+    formData.append('isPublication', isPublication);
+    formData.append('isTemplate', isTemplate);
 
     console.log("Form data being sent:", {
       file,
@@ -44,6 +62,15 @@ const Upload = () => {
       uploadDate,
       country,
       category,
+      isPublic,
+      workpackage,
+      isMeeting,
+      isDeliverable,
+      isContactList,
+      isPromotion,
+      isReport,
+      isPublication,
+      isTemplate,
     });
 
     try {
@@ -85,7 +112,117 @@ const Upload = () => {
           accept=".pdf, .ppt, .pptx"
           onChange={e => setFile(e.target.files[0])}
         />
+        <div className="horizontal-container">
+          <select
+            id="workpackage"
+            value={workpackage}
+            onChange={e => setWorkpackage(e.target.value)}
+          >
+            <option value="">None</option>
+            <option value="WP1">WP1</option>
+            <option value="WP2">WP2</option>
+            <option value="WP3">WP3</option>
+            <option value="WP4">WP4</option>
+            <option value="WP5">WP5</option>
+            <option value="WP6">WP6</option>
+          </select>
+          <label style={{ color: 'white' }} htmlFor="workpackage">-- Select Workpackage for this upload</label>
+        </div>
+        <hr className="divider" />
+        <div style={{ color: 'white', marginBottom: '5px', textDecorationStyle: 'solid' }}>
+          Check any selection relevant for this file
+        </div>
+        <div className="checkbox-container">
+          <input
+            type="checkbox"
+            id="isPublic"
+            value={isPublic}
+            name="isPublic"
+            onChange={e => setIsPublic(e.target.checked)}
+          />
+          <label style={{ color: 'white' }} htmlFor="isPublic">- Public Document</label>
+        </div>
+        <div className="clr-checkbox">
+          <input
+            type="checkbox"
+            value={isMeeting}
+            id="isMeeting"
+            name="isMeeting"
+            onChange={e => setIsMeeting(e.target.checked)}
+          />
+          <label style={{ color: 'white' }} htmlFor="isMeeting">- Meeting</label>
+        </div>
+        <div className="clr-checkbox">
+          <input
+            type="checkbox"
+            value={isDeliverable}
+            id="isDeliverable"
+            name="isDeliverable"
+            onChange={e => setIsDeliverable(e.target.checked)}
+          />
+          <label style={{ color: 'white' }} htmlFor="isDeliverable">- Deliverable</label>
+        </div>
+        <div className="clr-checkbox">
+          <input
+            type="checkbox"
+            value={isContactList}
+            id="contactList"
+            name="contactList"
+            onChange={e => setIsContactList(e.target.checked)}
+          />
+          <label style={{ color: 'white' }} htmlFor="contactList">- Contact List</label>
+        </div>
+        <div className="clr-checkbox">
+          <input
+            type="checkbox"
+            value={isPromotion}
+            id="isPromotion"
+            name="isPromotion"
+            onChange={e => setIsPromotion(e.target.checked)}
+          />
+          <label style={{ color: 'white' }} htmlFor="isPromotion">- Promotion Material</label>
+        </div>
+        <div className="clr-checkbox">
+          <input
+            type="checkbox"
+            value={isReport}
+            id="isReport"
+            name="isReport"
+            onChange={e => setIsReport(e.target.checked)}
+          />
+          <label style={{ color: 'white' }} htmlFor="isReport">- Report</label>
+        </div>
+        <div className="clr-checkbox">
+          <input
+            type="checkbox"
+            value={isPublication}
+            id="isPublication"
+            name="isPublication"
+            onChange={e => setIsPublication(e.target.checked)}
+          />
+          <label style={{ color: 'white' }} htmlFor="isPublication">- Publication</label>
+        </div>
+        <div className="clr-checkbox">
+          <input
+            type="checkbox"
+            value={isTemplate}
+            id="isTemplate"
+            name="isTemplate"
+            onChange={e => setIsTemplate(e.target.checked)}
+          />
+          <label style={{ color: 'white' }} htmlFor="isTemplate">- Template</label>
+        </div>
 
+
+        <label htmlFor="category">Title</label>
+        <input
+          type="text"
+          id="category"
+          placeholder="Title"
+          value={category}
+          onChange={e => setCategory(e.target.value)}
+          autoFocus
+        />
         <label htmlFor="author">Author</label>
         <input
           type="text"
@@ -120,17 +257,13 @@ const Upload = () => {
           ))}
         </select>
 
-        <label htmlFor="category">Title</label>
-        <input
-          type="text"
-          id="category"
-          placeholder="Title"
-          value={category}
-          onChange={e => setCategory(e.target.value)}
-          autoFocus
-        />
 
-        <CdsButton className="clr-button" type='submit'>
+        <CdsButton className="clr-button" type='submit' onClick={(e) => {
+            if (isPublic && !window.confirm('You have choosen to make this file public, are you sure ?')) {
+            e.preventDefault();
+            setIsPublic(false);
+            }
+        }}>
           Upload
         </CdsButton>
       </form>

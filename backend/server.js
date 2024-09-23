@@ -112,7 +112,21 @@ const upload = multer({ storage });
 
 // Endpoint to upload files
 app.post("/api/uploads", upload.single("file"), async (req, res) => {
-  const { author, uploadDate, country, category } = req.body;
+  const {
+    author,
+    uploadDate,
+    country,
+    category,
+    isPublic,
+    workpackage,
+    isMeeting,
+    isDeliverable,
+    isContactList,
+    isPromotion,
+    isReport,
+    isPublication,
+    isTemplate,
+  } = req.body;
   const file = req.file;
 
   console.log("Received data:", {
@@ -121,6 +135,15 @@ app.post("/api/uploads", upload.single("file"), async (req, res) => {
     country,
     category,
     file,
+    isPublic,
+    workpackage,
+    isMeeting,
+    isDeliverable,
+    isContactList,
+    isPromotion,
+    isReport,
+    isPublication,
+    isTemplate,
   });
 
   if (!file || !author || !uploadDate || !country || !category) {
@@ -128,7 +151,6 @@ app.post("/api/uploads", upload.single("file"), async (req, res) => {
   }
 
   const fileKey = `${Date.now()}_${file.originalname}`;
-  console.log("Generated fileKey:", fileKey);
 
   const params = {
     Bucket: bucketName,
@@ -144,8 +166,24 @@ app.post("/api/uploads", upload.single("file"), async (req, res) => {
 
     // Insert file metadata into PostgreSQL
     const query =
-      "INSERT INTO uploads (author, upload_date, country, category, file_url, file_key) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
-    const values = [author, uploadDate, country, category, fileUrl, fileKey];
+      "INSERT INTO uploads (author, upload_date, country, category, file_url, file_key, is_public, workpackage, is_meeting, is_deliverable, is_contact_list, is_promotion, is_report, is_publication, is_template) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *";
+    const values = [
+      author,
+      uploadDate,
+      country,
+      category,
+      fileUrl,
+      fileKey,
+      isPublic,
+      workpackage,
+      isMeeting,
+      isDeliverable,
+      isContactList,
+      isPromotion,
+      isReport,
+      isPublication,
+      isTemplate,
+    ];
     const result = await pool.query(query, values);
 
     console.log("File metadata saved to database:", result.rows[0]);

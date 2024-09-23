@@ -49,28 +49,65 @@ function Dropdown_3() {
         <div className="dropdown-menu">
           <h4 className="dropdown-header">MÅSTE DATABASE</h4>
           <Link
-            to="/auth-search"
+            to="/"
             className="dropdown-item"
           >
-            Search PDF Reports
-          </Link>
-          <Link
-            to="/Search-Powerpoint"
-            className="dropdown-item"
-          >
-            Public Reports
-          </Link>
-          <Link
-            to="/Search-Powerpoint"
-            className="dropdown-item"
-          >
-            Search Powerpoints
+            Public Documents
           </Link>
           <Link
             to="/"
             className="dropdown-item"
           >
-            Search Images
+            Deliverables (public ones)
+          </Link>
+          <div className="dropdown-divider"></div>
+          <Link
+            to="/auth-search"
+            className="dropdown-item"
+          >
+            Search Database
+          </Link>
+          <Link
+            to="/Search-Powerpoint"
+            className="dropdown-item"
+          >
+            Contact Lists
+          </Link>
+          <Link
+            to="/Search-Powerpoint"
+            className="dropdown-item"
+          >
+            Deliverables
+          </Link>
+          <Link
+            to="/"
+            className="dropdown-item"
+          >
+            Meetings
+          </Link>
+          <Link
+            to="/"
+            className="dropdown-item"
+          >
+            Promotion materials
+          </Link>
+          <Link
+            to="/"
+            className="dropdown-item"
+          >
+            Publications
+          </Link>
+          <Link
+            to="/"
+            className="dropdown-item"
+          >
+            Reports
+          </Link>
+          <Link
+            to="/"
+            className="dropdown-item"
+          >
+            Templates
           </Link>
           <Link
             to="/Upload"
@@ -78,13 +115,6 @@ function Dropdown_3() {
           >
             Upload
           </Link>
-          <div className="dropdown-divider"></div>
-          <div className="dropdown-item">
-            Link 1
-          </div>
-          <div className="dropdown-item">
-            Link 2
-          </div>
         </div>
       </div>
     </React.Fragment>
