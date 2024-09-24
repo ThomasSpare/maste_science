@@ -36,7 +36,11 @@ const Search = () => {
   }, [api]);
 
   const handleFileClick = (upload) => {
-    navigate(`/view-pdf/${upload.id}/${upload.file_key}`);
+    if (upload.file_url && (upload.file_url.split('.').pop() === 'ppt' || upload.file_url.split('.').pop() === 'pptx')) {
+      navigate(`/view-ppt/${upload.id}/${upload.file_key}`);
+    } else {
+      navigate(`/view-pdf/${upload.id}/${upload.file_key}`);
+    }
   };
 
   const handlePreviousPage = () => {
@@ -112,21 +116,31 @@ const Search = () => {
             />
           </label>
         </div>
+        <div className="list-header" style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', backgroundColor: '#f0f0f0', fontWeight: 'bold' }}>
+          <span style={{ flex: '2' }}>Title</span>
+          <span style={{ flex: '2' }}>Author</span>
+          <span style={{ flex: '0.75' }}>Upload Date</span>
+          <span style={{ flex: '0.75' }}>File Type</span>
+          <span style={{ flex: '0.75', textAlign: 'right' }}>Country</span>
+        </div>
         <ol>
           {paginatedUploads.map((upload, index) => (
             <li className="search-list-item" key={index} onClick={() => handleFileClick(upload)}>
               <div className='list-info' style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <p style={{ flex: '1' }}>
-                  Title: {upload.category}
+                <p style={{ flex: '2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {upload.category.length > 65 ? `${upload.category.substring(0, 65)}...` : upload.category}
                 </p>
-                <p style={{ flex: '1' }}>
-                  Author: {upload.author}
+                <p style={{ flex: '2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {upload.author.length > 60 ? `${upload.author.substring(0, 60)}...` : upload.author}
                 </p>
-                <p style={{ flex: '1' }}>
-                  Upload Date: {new Date(upload.upload_date).toLocaleDateString()}
+                <p style={{ flex: '0.75' }}>
+                  {new Date(upload.upload_date).toLocaleDateString()}
                 </p>
-                <p style={{ flex: '1', display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '0px !important' }}>
-                  Country: {upload.country} <ReactCountryFlag countryCode={getCountryCode(upload.country)} svg />
+                <p style={{ flex: '0.75' }}>
+                  {upload.file_url ? upload.file_url.split('.').pop() : 'N/A'}
+                </p>
+                <p style={{ flex: '0.75', display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '0px !important' }}>
+                  {upload.country} <ReactCountryFlag countryCode={getCountryCode(upload.country)} svg />
                 </p>
               </div>
             </li>

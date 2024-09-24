@@ -1,5 +1,9 @@
 
 #Useful_Links{
-font-size: x-large !important;
-    color: #007cbb  !important;
+    font-size: medium !important;
+    color: #007cbb !important;
+}
+
+.link-item{
+    list-style: none !important;
 }

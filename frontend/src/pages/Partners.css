@@ -4,6 +4,10 @@ h1{
     margin-left: 26vw;
 }
 
+a {
+    margin-bottom: 4vh;
+}
+
 #root > div > main > div > select {
     background: #cbe6d3;
     background-size: cover;
@@ -17,8 +21,8 @@ h1{
     margin-top: 87px;
 }
 img{
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 0px;
 }
 
 #first_select {
@@ -26,7 +30,14 @@ img{
 }
 #last_select {
     margin-top: 38px !important;
-    margin-bottom: 0px !important;
+    margin-bottom: 10vh !important;
+}
+
+.partner-box{
+    background-color: #f3f9f4;
+    border-radius: 15px;
+    padding: 10px;
+    margin-bottom: 2vh;
 }
 
 .partners{
@@ -34,7 +45,14 @@ img{
     width: 45vw;
     justify-content: center;
     justify-items: center;
-
+}
+.partners-links{
+    display: grid;
+    width: 45vw;
+    justify-content: center;
+    justify-items: center;
+    margin-top: 2vh;
+    margin-bottom: 5vh;
 }
 .Partner_text-page {
     display: flex;

@@ -28,9 +28,12 @@ import WS from "./pages/WorkStructure";
 import PublicDocs from "./pages/PublicDocs";
 
 import Auth0ProviderWithHistory from "./Auth/Auth0Provider";
+import DeliverabelsPublic from "./pages/DeliverablesPublic";
+import Deliverabels from "./pages/Deliverables";
+import Contacts from "./pages/Contacts";
 
 function ProtectedRoute({ element, isAuthenticated }) {
-  return isAuthenticated ? element : <Navigate to="/auth" />;
+  return isAuthenticated ? element : <Navigate to="/auth-settings" />;
 }
 
 function AuthForm({ onPasswordSubmit }) {
@@ -67,26 +70,6 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate(); // Use the useNavigate hook
 
-  const handlePasswordSubmit = (password) => {
-    const correctPassword = process.env.REACT_APP_PASSWORD;
-    if (password === correctPassword) {
-      setIsAuthenticated(true);
-      navigate("/Upload"); // Redirect to /Upload upon successful password submission
-    } else {
-      alert("Incorrect password");
-    }
-  };
-
-  const handleSearchPasswordSubmit = (password) => {
-    const correctSearchPassword = process.env.REACT_APP_SEARCH_PASSWORD;
-    if (password === correctSearchPassword) {
-      setIsAuthenticated(true);
-      navigate("search"); // Redirect to /search upon successful password submission
-    } else {
-      alert("Incorrect password");
-    }
-  };
-
   const handleSettingsPasswordSubmit = (password) => {
     const correctSettingsPassword = process.env.REACT_APP_SETTINGS_PASSWORD;
     if (password === correctSettingsPassword) {
@@ -105,22 +88,17 @@ function App() {
         <Route path="Aims" element={<Aims />} />
         <Route path="links" element={<Links />} />
         <Route path="partners" element={<Partners />} />
-        <Route path="contacts" element={<Aims />} />
         <Route path="workstructure" element={<WS />} />
         <Route path="public_docs" element={<PublicDocs />} />
-
-        <Route
-          path="search"
-          element={
-            <ProtectedRoute
-              element={<Search />}
-              isAuthenticated={isAuthenticated}
-            />
-          }
-        />
+        <Route path="search" element={<Search />} />
         <Route path="search-powerpoint" element={<SearchPowerPoint />} />
         <Route path="/view-pdf/:fileId/:fileKey" element={<ViewPdf />} />
+        <Route path="/view-ppt/:fileId/:fileKey" element={<ViewPpt />} />
         <Route path="view-ppt/:fileId/:file" element={<ViewPpt />} />
+        <Route path="deliverables_public" element={<DeliverabelsPublic />} />
+        <Route path="deliverables" element={<Deliverabels />} />
+        <Route path="contacts" element={<Contacts />} />
+
         <Route
           path="settings"
           element={
@@ -131,26 +109,10 @@ function App() {
           }
         />
         <Route
-          path="auth"
-          element={<AuthForm onPasswordSubmit={handlePasswordSubmit} />}
-        />
-        <Route
-          path="auth-search"
-          element={<AuthForm onPasswordSubmit={handleSearchPasswordSubmit} />}
-        />
-        <Route
           path="auth-settings"
           element={<AuthForm onPasswordSubmit={handleSettingsPasswordSubmit} />}
         />
-        <Route
-          path="Upload"
-          element={
-            <ProtectedRoute
-              element={<Upload />}
-              isAuthenticated={isAuthenticated}
-            />
-          }
-        />
+        <Route path="Upload" element={<Upload />} />
       </Route>
     </Routes>
   );

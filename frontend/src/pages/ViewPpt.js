@@ -1,55 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../Auth/useAuth"; // Ensure this path is correct
+import { useParams } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react"; // Ensure this path is correct
 
 const ViewPpt = () => {
-  const { file, fileId } = useParams();
-  const navigate = useNavigate();
+  const { fileId, fileKey } = useParams();
   const [fileUrl, setFileUrl] = useState("");
-  useAuth(); // Ensure this path is correct
+  useAuth0(); // Ensure this path is correct
 
   useEffect(() => {
-    const abortController = new AbortController();
-    const signal = abortController.signal;
-
-    console.log("Params:", { file, fileId });
-    if (!file) {
+    console.log("Params:", { fileId, fileKey });
+    if (!fileKey) {
       console.error("File parameter is undefined.");
       return;
     }
-    const serverAddress = "https://maste-science.onrender.com";
-    const url = `${serverAddress}/ppt/${file}`;
+    const serverAddress = process.env.REACT_APP_API_BASE_URL; // Update this to your server address
+    const url = `${serverAddress}/api/uploads/${fileKey}`;
 
-    fetch(url, { signal })
-      .then((response) => response.blob())
-      .then((blob) => {
-        const objectUrl = URL.createObjectURL(blob);
-        setFileUrl(objectUrl);
-      })
-      .catch((error) => {
-        if (error.name === "AbortError") {
-          console.log("Fetch aborted");
-        } else {
-          console.error("Fetch error:", error);
-        }
-      });
+    setFileUrl(url);
+  }, [fileKey]);
 
-    const newUrl = `/view-ppt/${fileId}/${file}`;
-    navigate(newUrl);
-
-    return () => {
-      abortController.abort();
-      // Clean up the object URL to avoid memory leaks
-      if (fileUrl) {
-        URL.revokeObjectURL(fileUrl);
-      }
-    };
-  }, [file, fileId]);
+  const apiKey = "AIzaSyAfPJ2vUMgwsbVLtr9uz4nP55l4AZNMfYA";
 
   return (
     <iframe
       title="PPT Viewer"
-      src={`https://docs.google.com/gview?url=${fileUrl}&embedded=true`}
+      src={`https://docs.google.com/gview?key=${apiKey}&embedded=true&url=${fileUrl}`}
       style={{ width: "100%", height: "100vh" }}
     />
   );

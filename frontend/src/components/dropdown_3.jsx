@@ -55,63 +55,63 @@ function Dropdown_3() {
             Public Documents
           </Link>
           <Link
-            to="/"
+            to="/deliverables_public"
             className="dropdown-item"
           >
             Deliverables (public ones)
           </Link>
           <div className="dropdown-divider"></div>
           <Link
-            to="/auth-search"
-            className="dropdown-item"
+            to="/search"
+            className={`dropdown-item ${!user ? "disabled" : ""}`}
           >
             Search Database
           </Link>
           <Link
             to="/Search-Powerpoint"
-            className="dropdown-item"
+            className={`dropdown-item ${!user ? "disabled" : ""}`}
           >
             Contact Lists
           </Link>
           <Link
-            to="/Search-Powerpoint"
-            className="dropdown-item"
+            to="/deliverables"
+            className={`dropdown-item ${!user ? "disabled" : ""}`}
           >
             Deliverables
           </Link>
           <Link
             to="/"
-            className="dropdown-item"
+            className={`dropdown-item ${!user ? "disabled" : ""}`}
           >
             Meetings
           </Link>
           <Link
             to="/"
-            className="dropdown-item"
+            className={`dropdown-item ${!user ? "disabled" : ""}`}
           >
             Promotion materials
           </Link>
           <Link
             to="/"
-            className="dropdown-item"
+            className={`dropdown-item ${!user ? "disabled" : ""}`}
           >
             Publications
           </Link>
           <Link
             to="/"
-            className="dropdown-item"
+            className={`dropdown-item ${!user ? "disabled" : ""}`}
           >
             Reports
           </Link>
           <Link
             to="/"
-            className="dropdown-item"
+            className={`dropdown-item ${!user ? "disabled" : ""}`}
           >
             Templates
           </Link>
           <Link
             to="/Upload"
-            className="dropdown-item"
+            className={`dropdown-item ${!user ? "disabled" : ""}`}
           >
             Upload
           </Link>

@@ -8,10 +8,6 @@
 }
 
 
-#Footer{
-    display: none;
-}
-
 #root > footer > section:nth-child(1) > div > div > div{
     text-align: left;
 }

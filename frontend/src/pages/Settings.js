@@ -131,7 +131,7 @@ const Dashboard = () => {
 
   return (
     <div className="Settings">
-      <h1>Dashboard</h1>
+      <h1>NEWS</h1>
       <div className="status">
         <p>Welcome, {user ? user.name : "Guest"}</p>
         <p>You have the role: Admin</p>

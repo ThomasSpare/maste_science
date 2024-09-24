@@ -158,7 +158,8 @@ body.dark #chalmers{ background-color: #aff9d3; border-radius: 25px;}
 body.dark #lund{ background-color: #aff9d3; border-radius: 25px;}
 body.dark #kth{ background-color: #aff9d3; border-radius: 25px;}
 body.dark #uppsala{ background-color: #aff9d3; border-radius: 25px;}
-/* Dark mode img WP page */
+/* Dark mode partners page */
+body.dark .partner-box {background-color: #3b3b3b; color: #bee7ff;}
 
 
 .checkbox {

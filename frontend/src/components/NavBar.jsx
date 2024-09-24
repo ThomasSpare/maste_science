@@ -95,14 +95,14 @@ function NavBar() {
     }
   }, []);
 
-  const handleSearchInputChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
+  // const handleSearchInputChange = (event) => {
+  //   setSearchQuery(event.target.value);
+  // };
 
-  const handleSearch = (event) => {
-    event.preventDefault();
-    console.log('Searching for:', searchQuery);
-  };
+  // const handleSearch = (event) => {
+  //   event.preventDefault();
+  //   console.log('Searching for:', searchQuery);
+  // };
 
   return (
     <header className="App-header">
@@ -111,7 +111,7 @@ function NavBar() {
           <div className="branding">
             <Link to="/" className="title">MÅSTE</Link>
           </div>
-          <form className="search" onSubmit={handleSearch}>
+          {/* <form className="search" onSubmit={handleSearch}>
             <input
               id="search-input-sidenav-ng"
               type="text"
@@ -124,14 +124,14 @@ function NavBar() {
                 Search
               </cds-icon>
             </button>
-          </form>
+          </form> */}
           {!isLoading && user &&(
             <div className="currentUser">
               <cds-icon shape="thumbs-up"></cds-icon>
               <span className="display_email">
-                Logged in as {email || "Guest"}
+                Logged in as {" " + email || "Guest"}
                 </span>
-                {console.log('Logged with role:', roles)}
+                {/* {console.log('Logged with role:', roles)} */}
             </div>
           )}
           <ModalAuth isLoggedIn={isLoading} />

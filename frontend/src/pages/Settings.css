@@ -1,6 +1,5 @@
 .Settings{
     height: 100vh;
-    background-image: url(https://res.cloudinary.com/djunroohl/image/upload/v1720394704/grass_mweova.jpg);
     background-size: cover;
     font-family: "Metropolis", sans-serif;
     font-size: medium;
@@ -36,7 +35,7 @@ h3{
 
 .news-form {
     padding: 20px;
-    background-color: #adbd8e;
+    background-color: #3a87d5;
     opacity: 0.7;
     color: black;
     font-family: 'Metropolis';
@@ -61,13 +60,17 @@ h3{
     margin-right: 20px;
   }
 
+  .news-item{
+    margin-bottom: 3vh;
+    background-color: #75abe1;
+  }
+
 .news-list{
-    padding: 44px;
-    background-color: #d8e2c7;
-    width: 50vw;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+  padding: 44px;
+  width: 50vw;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column-reverse;
 }
   
   .news-content {
