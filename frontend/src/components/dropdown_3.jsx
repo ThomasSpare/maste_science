@@ -67,8 +67,44 @@ function Dropdown_3() {
           >
             Search Database
           </Link>
+            <Link
+            to="/WP1"
+            className={`dropdown-item ${!user ? "disabled" : ""}`}
+            >
+            WP1
+            </Link>
+            <Link
+            to="/WP2"
+            className={`dropdown-item ${!user ? "disabled" : ""}`}
+            >
+            WP2
+            </Link>
+            <Link
+            to="/WP3"
+            className={`dropdown-item ${!user ? "disabled" : ""}`}
+            >
+            WP3
+            </Link>
+            <Link
+            to="/WP4"
+            className={`dropdown-item ${!user ? "disabled" : ""}`}
+            >
+            WP4
+            </Link>
+            <Link
+            to="/WP5"
+            className={`dropdown-item ${!user ? "disabled" : ""}`}
+            >
+            WP5
+            </Link>
+            <Link
+            to="/WP6"
+            className={`dropdown-item ${!user ? "disabled" : ""}`}
+            >
+            WP6
+            </Link>
           <Link
-            to="/Search-Powerpoint"
+            to="/contactlists"
             className={`dropdown-item ${!user ? "disabled" : ""}`}
           >
             Contact Lists
@@ -80,31 +116,31 @@ function Dropdown_3() {
             Deliverables
           </Link>
           <Link
-            to="/"
+            to="/meetings"
             className={`dropdown-item ${!user ? "disabled" : ""}`}
           >
             Meetings
           </Link>
           <Link
-            to="/"
+            to="/promotion"
             className={`dropdown-item ${!user ? "disabled" : ""}`}
           >
             Promotion materials
           </Link>
           <Link
-            to="/"
+            to="/publications"
             className={`dropdown-item ${!user ? "disabled" : ""}`}
           >
             Publications
           </Link>
           <Link
-            to="/"
+            to="/reports"
             className={`dropdown-item ${!user ? "disabled" : ""}`}
           >
             Reports
           </Link>
           <Link
-            to="/"
+            to="/templates"
             className={`dropdown-item ${!user ? "disabled" : ""}`}
           >
             Templates

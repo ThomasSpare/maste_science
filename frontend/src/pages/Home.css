@@ -10,8 +10,13 @@ p{
   margin-top: 10vh !important;
 }
 
+.news-headline{
+  font-family: 'Metropolis';
+  margin-left: 12vw;
+}
+
 .news-section {
-    margin-top: 20px;
+    margin-top: 10vh;
     justify-content: center;
     flex-wrap: wrap;
   }
@@ -23,6 +28,8 @@ p{
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    margin-left: 12vw;
+
   }
   
   .news-image {

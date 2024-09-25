@@ -7,7 +7,7 @@ import { getCountryCode } from '../countrycodes/countryCodes'; // Import the uti
 import "./Search.css";
 import "../App.css"; 
 
-const Search = () => {
+const Promotion = () => {
   const [uploads, setUploads] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -35,13 +35,16 @@ const Search = () => {
     fetchUploads();
   }, [api]);
 
-  const handleFileClick = (upload) => {
-    if (upload.file_url && (upload.file_url.split('.').pop() === 'ppt' || upload.file_url.split('.').pop() === 'pptx')) {
-      navigate(`/view-ppt/${upload.id}/${upload.file_key}`);
+const handleFileClick = (upload) => {
+    const fileExtension = upload.file_url ? upload.file_url.split('.').pop() : '';
+    if (fileExtension === 'ppt' || fileExtension === 'pptx') {
+        navigate(`/view-ppt/${upload.id}/${upload.file_key}`);
+    } else if (fileExtension === 'jpg' || fileExtension === 'jpeg' || fileExtension === 'png' || fileExtension === 'gif') {
+        navigate(`/view-img/${upload.id}/${upload.file_key}`);
     } else {
-      navigate(`/view-pdf/${upload.id}/${upload.file_key}`);
+        navigate(`/view-pdf/${upload.id}/${upload.file_key}`);
     }
-  };
+};
 
   const handlePreviousPage = () => {
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
@@ -75,7 +78,7 @@ const Search = () => {
       upload.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
       upload.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
       upload.author.toLowerCase().includes(searchTerm.toLowerCase());
-    return isWithinDateRange && matchesSearchTerm;
+    return isWithinDateRange && matchesSearchTerm && upload.is_promotion;
   });
 
   // Sort the filtered uploads by upload date in descending order
@@ -87,7 +90,7 @@ const Search = () => {
 
   return (
     <div className='search-main-div'>
-      <h1 className='search-h1'>Search all files in the Database</h1>
+      <h1 className='search-h1'>Search Promotion Materials</h1>
       <div>
         <input className='search-input'
           type="text"
@@ -159,4 +162,4 @@ const Search = () => {
   );
 };
 
-export default Search;
+export default Promotion;

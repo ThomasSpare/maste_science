@@ -1,132 +1,167 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { CdsButton } from '@cds/react/button';
 import { useNavigate } from 'react-router-dom';
-import '@cds/core/select/register.js';
-import './Search.css';
+import ReactCountryFlag from 'react-country-flag';
+import { getCountryCode } from '../countrycodes/countryCodes';
+import './SearchPowerPoint.css';
+import '../App.css';
 
-function SearchPowerPoint() {
+const api = axios.create({
+  baseURL: process.env.REACT_APP_API_BASE_URL,
+});
+
+const SearchPowerPoint = () => {
   const navigate = useNavigate();
-  const [uploads, setPptx] = useState([]);
-  const [filter, setFilter] = useState({
-    category: '',
-    uploadDate: '',
-    author: '',
-    country: ''
-  });
+  const [uploads, setUploads] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
   useEffect(() => {
-    fetch('https://maste-science.onrender.com/pptx')
-      .then(response => response.json())
-      .then(data => setPptx(data))
-      .catch(error => console.error('Error:', error));
+    // Fetch uploads from the server
+    const fetchUploads = async () => {
+      try {
+        const response = await api.get('/api/uploads');
+        const data = response.data;
+        setUploads(data.filter(upload => upload.category === 'template'));
+      } catch (error) {
+        console.error('Error fetching uploads:', error);
+      }
+    };
+
+    fetchUploads();
   }, []);
 
-  const handleFilterChange = (event) => {
-    const { name, value } = event.target;
-    setFilter(prevFilter => ({
-      ...prevFilter,
-      [name]: value
-    }));
+  const handleFileClick = (upload) => {
+    const fileExtension = upload.file_url.split('.').pop().toLowerCase();
+    if (fileExtension === 'ppt' || fileExtension === 'pptx') {
+      navigate(`/view-ppt/${upload.id}/${upload.file_key}`);
+    } else if (fileExtension === 'pdf') {
+      navigate(`/view-pdf/${upload.id}/${upload.file_key}`);
+    } else if (['txt', 'doc', 'docx', 'rtf', 'odt'].includes(fileExtension)) {
+      navigate(`/view-text/${upload.id}/${upload.file_key}`);
+    } else {
+      console.error('Unsupported file type:', fileExtension);
+    }
   };
 
-  const filteredUploads = uploads.filter(pptx => {
-    const { category, uploadDate, author, country } = filter;
-    return (
-      (category === '' || pptx.category === category) &&
-      (uploadDate === '' || pptx.uploaddate === uploadDate) &&
-      (author === '' || pptx.author === author) &&
-      (country === '' || pptx.country === country)
-    );
+  const handlePreviousPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+    setCurrentPage(1); // Reset to the first page on search
+  };
+
+  const handleStartDateChange = (event) => {
+    setStartDate(event.target.value);
+    setCurrentPage(1); // Reset to the first page on date change
+  };
+
+  const handleEndDateChange = (event) => {
+    setEndDate(event.target.value);
+    setCurrentPage(1); // Reset to the first page on date change
+  };
+
+  const filteredUploads = uploads.filter((upload) => {
+    const uploadDate = new Date(upload.upload_date);
+    const isWithinDateRange =
+      (!startDate || uploadDate >= new Date(startDate)) &&
+      (!endDate || uploadDate <= new Date(endDate));
+    const matchesSearchTerm =
+      upload.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      upload.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      upload.author.toLowerCase().includes(searchTerm.toLowerCase());
+    return isWithinDateRange && matchesSearchTerm;
   });
 
-  const handleFileClick = (pptx) => {
-    const fileId = pptx.id; // Adjust based on your data structure
-    navigate(`/view-ppt/${fileId}/${pptx.file}`);
-  };
+  // Sort the filtered uploads by upload date in descending order
+  const sortedUploads = filteredUploads.sort((a, b) => new Date(b.upload_date) - new Date(a.upload_date));
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedUploads = sortedUploads.slice(startIndex, endIndex);
 
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
-      <div style={{ textAlign: "left" }}>
-        <div style={{ marginBottom: "10px" }}>
-          <label style={{ display: "inline-block", width: "100px" }}>Category:</label>
-          <input type="text" name="category" value={filter.category} onChange={handleFilterChange} />
+    <div className='search-main-div'>
+      <h1 className='search-h1'>Search PowerPoint Templates</h1>
+      <div>
+        <input className='search-input'
+          type="text"
+          placeholder="Search by Title, country, or author"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          style={{ marginBottom: '20px', padding: '10px', width: '100%' }}
+        />
+        <div style={{ marginBottom: '20px' }}>
+          <label>
+            Start Date:
+            <input
+              type="date"
+              value={startDate}
+              onChange={handleStartDateChange}
+              style={{ marginLeft: '10px', marginRight: '20px' }}
+            />
+          </label>
+          <label>
+            End Date:
+            <input
+              type="date"
+              value={endDate}
+              onChange={handleEndDateChange}
+              style={{ marginLeft: '10px' }}
+            />
+          </label>
         </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label style={{ display: "inline-block", width: "100px" }}>Upload Date:</label>
-          <input type="date" name="uploadDate" value={filter.uploadDate} onChange={handleFilterChange} />
-        </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label style={{ display: "inline-block", width: "100px" }}>Author:</label>
-          <input type="text" name="author" value={filter.author} onChange={handleFilterChange} />
-        </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label style={{ display: "inline-block", width: "100px" }}>Country:</label>
-          <select name="country" value={filter.country} onChange={handleFilterChange}>
-            <option value="">All</option>
-            <option value="USA">USA</option>
-            <option value="Canada">Canada</option>
-            <option value="UK">UK</option>
-            <option value="Albania">Albania</option>
-            <option value="Andorra">Andorra</option>
-            <option value="Austria">Austria</option>
-            <option value="Belarus">Belarus</option>
-            <option value="Belgium">Belgium</option>
-            <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
-            <option value="Bulgaria">Bulgaria</option>
-            <option value="Croatia">Croatia</option>
-            <option value="Cyprus">Cyprus</option>
-            <option value="Czech Republic">Czech Republic</option>
-            <option value="Denmark">Denmark</option>
-            <option value="Estonia">Estonia</option>
-            <option value="Finland">Finland</option>
-            <option value="France">France</option>
-            <option value="Germany">Germany</option>
-            <option value="Greece">Greece</option>
-            <option value="Hungary">Hungary</option>
-            <option value="Iceland">Iceland</option>
-            <option value="Ireland">Ireland</option>
-            <option value="Italy">Italy</option>
-            <option value="Kosovo">Kosovo</option>
-            <option value="Latvia">Latvia</option>
-            <option value="Liechtenstein">Liechtenstein</option>
-            <option value="Lithuania">Lithuania</option>
-            <option value="Luxembourg">Luxembourg</option>
-            <option value="Malta">Malta</option>
-            <option value="Moldova">Moldova</option>
-            <option value="Monaco">Monaco</option>
-            <option value="Montenegro">Montenegro</option>
-            <option value="Netherlands">Netherlands</option>
-            <option value="North Macedonia (formerly Macedonia)">North Macedonia (formerly Macedonia)</option>
-            <option value="Norway">Norway</option>
-            <option value="Poland">Poland</option>
-            <option value="Portugal">Portugal</option>
-            <option value="Romania">Romania</option>
-            <option value="Russia">Russia</option>
-            <option value="San Marino">San Marino</option>
-            <option value="Serbia">Serbia</option>
-            <option value="Slovakia">Slovakia</option>
-            <option value="Slovenia">Slovenia</option>
-            <option value="Spain">Spain</option>
-            <option value="Sweden">Sweden</option>
-            <option value="Switzerland">Switzerland</option>
-            <option value="Ukraine">Ukraine</option>
-            <option value="United Kingdom (UK)">United Kingdom (UK)</option>
-            <option value="Vatican City (Holy See)">Vatican City (Holy See)</option>
-          </select>
+        <div className="list-header" style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', backgroundColor: '#f0f0f0', fontWeight: 'bold' }}>
+          <span style={{ flex: '2' }}>Title</span>
+          <span style={{ flex: '2' }}>Author</span>
+          <span style={{ flex: '0.75' }}>Upload Date</span>
+          <span style={{ flex: '0.75' }}>File Type</span>
+          <span style={{ flex: '0.75', textAlign: 'right' }}>Country</span>
         </div>
         <ol>
-          {filteredUploads.sort((a, b) => new Date(b.uploaddate) - new Date(a.uploaddate)).map((pptx, index) => (
-            <li key={index} onClick={() => handleFileClick(pptx)}>
-              <p style={{ display: "inline-block", marginRight: "50px" }}>Upload Date: {pptx.uploaddate}</p>
-              <p style={{ display: "inline-block", marginRight: "50px" }}>Category: {pptx.category}</p>
-              <p style={{ display: "inline-block", marginRight: "50px" }}>Country: {pptx.country}</p>
-              <p style={{ display: "inline-block", marginRight: "50px" }}>Author: {pptx.author}</p>
-              <p style={{ display: "inline-block", marginRight: "50px" }}>ID: {pptx.id}</p>
+          {paginatedUploads.map((upload, index) => (
+            <li className="search-list-item" key={index} onClick={() => handleFileClick(upload)}>
+              <div className='list-info' style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <p style={{ flex: '2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {upload.category.length > 65 ? `${upload.category.substring(0, 65)}...` : upload.category}
+                </p>
+                <p style={{ flex: '2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {upload.author.length > 60 ? `${upload.author.substring(0, 60)}...` : upload.author}
+                </p>
+                <p style={{ flex: '0.75' }}>
+                  {new Date(upload.upload_date).toLocaleDateString()}
+                </p>
+                <p style={{ flex: '0.75' }}>
+                  {upload.file_url ? upload.file_url.split('.').pop() : 'N/A'}
+                </p>
+                <p style={{ flex: '0.75', display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '0px !important' }}>
+                  {upload.country} <ReactCountryFlag countryCode={getCountryCode(upload.country)} svg />
+                </p>
+              </div>
             </li>
           ))}
         </ol>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '5px' , minHeight: '100vh' }}>
+          <CdsButton onClick={handlePreviousPage} disabled={currentPage === 1}>
+            Previous
+          </CdsButton>
+          <CdsButton onClick={handleNextPage} disabled={endIndex >= sortedUploads.length}>
+            Next
+          </CdsButton>
+        </div>
       </div>
     </div>
   );
-}
+};
 
 export default SearchPowerPoint;

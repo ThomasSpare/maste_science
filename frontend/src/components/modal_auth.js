@@ -14,14 +14,8 @@ import axios from "axios"; // Import axios
 ClarityIcons.addIcons(loginIcon);
 
 const ModalAuth = () => {
-  const {
-    loginWithRedirect,
-    logout,
-    isLoading,
-    user,
-    isAuthenticated,
-    getAccessTokenSilently,
-  } = useAuth0();
+  const { loginWithRedirect, logout, isAuthenticated, getAccessTokenSilently } =
+    useAuth0();
 
   async function handleLogin() {
     try {
@@ -32,20 +26,6 @@ const ModalAuth = () => {
       alert(`Login failed: ${error.message}`);
     }
   }
-
-  const handleRegister = async () => {
-    try {
-      await loginWithRedirect({
-        screen_hint: "signup",
-        audience: process.env.REACT_APP_AUTH0_AUDIENCE,
-        scope:
-          "read:users update:users delete:users create:users read:roles create:roles delete:roles update:roles", // Add other scopes as needed
-      });
-    } catch (error) {
-      console.error("Registration failed:", error);
-      alert(`Registration failed: ${error.message}`);
-    }
-  };
 
   const handleLogout = async () => {
     try {
@@ -63,11 +43,6 @@ const ModalAuth = () => {
           {!isAuthenticated && (
             <button className="btn btn-link" onClick={loginWithRedirect}>
               Login
-            </button>
-          )}
-          {!isAuthenticated && (
-            <button className="btn btn-link" onClick={handleRegister}>
-              Register
             </button>
           )}
           {isAuthenticated && (

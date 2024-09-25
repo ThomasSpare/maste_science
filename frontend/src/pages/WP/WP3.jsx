@@ -3,11 +3,11 @@ import axios from 'axios';
 import { CdsButton } from '@cds/react/button'; // Ensure this is the correct import for your button component
 import { useNavigate } from 'react-router-dom';
 import ReactCountryFlag from 'react-country-flag';
-import { getCountryCode } from '../countrycodes/countryCodes'; // Import the utility function
-import "./Search.css";
-import "../App.css"; 
+import { getCountryCode } from '../../countrycodes/countryCodes'; // Import the utility function
+import "../Search.css";
+import "../../App.css"; 
 
-const Search = () => {
+const WP3 = () => {
   const [uploads, setUploads] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -75,7 +75,7 @@ const Search = () => {
       upload.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
       upload.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
       upload.author.toLowerCase().includes(searchTerm.toLowerCase());
-    return isWithinDateRange && matchesSearchTerm;
+    return isWithinDateRange && matchesSearchTerm && upload.work_package === 'WP3';
   });
 
   // Sort the filtered uploads by upload date in descending order
@@ -87,7 +87,7 @@ const Search = () => {
 
   return (
     <div className='search-main-div'>
-      <h1 className='search-h1'>Search all files in the Database</h1>
+      <h1 className='search-h1'>Search Publications</h1>
       <div>
         <input className='search-input'
           type="text"
@@ -159,4 +159,4 @@ const Search = () => {
   );
 };
 
-export default Search;
+export default WP3;

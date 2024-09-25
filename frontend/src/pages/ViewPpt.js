@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react"; // Ensure this path is correct
+import { useAuth0 } from "@auth0/auth0-react";
+import PptxGenJS from "pptxgenjs";
 
 const ViewPpt = () => {
   const { fileId, fileKey } = useParams();
-  const [fileUrl, setFileUrl] = useState("");
+  const [fileContent, setFileContent] = useState("");
   useAuth0(); // Ensure this path is correct
 
   useEffect(() => {
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+
     console.log("Params:", { fileId, fileKey });
     if (!fileKey) {
       console.error("File parameter is undefined.");
@@ -16,17 +20,67 @@ const ViewPpt = () => {
     const serverAddress = process.env.REACT_APP_API_BASE_URL; // Update this to your server address
     const url = `${serverAddress}/api/uploads/${fileKey}`;
 
-    setFileUrl(url);
-  }, [fileKey]);
+    fetch(url, { signal })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.blob();
+      })
+      .then((blob) => {
+        const fileReader = new FileReader();
+        fileReader.onload = (e) => {
+          const content = e.target.result;
+          setFileContent(content);
+        };
+        if (
+          blob.type ===
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        ) {
+          fileReader.readAsArrayBuffer(blob);
+        } else {
+          fileReader.readAsText(blob);
+        }
+      })
+      .catch((error) => {
+        if (error.name === "AbortError") {
+          console.log("Fetch aborted");
+        } else {
+          console.error("Fetch error:", error);
+        }
+      });
 
-  const apiKey = "AIzaSyAfPJ2vUMgwsbVLtr9uz4nP55l4AZNMfYA";
+    return () => {
+      abortController.abort();
+    };
+  }, [fileKey]); // Add fileKey to the dependency array
+
+  const renderContent = () => {
+    if (fileContent instanceof ArrayBuffer) {
+      const pptx = new PptxGenJS();
+      pptx.load(fileContent);
+      const slides = pptx.getSlides();
+      return slides.map((slide, index) => (
+        <div key={index}>
+          {slide.getElements().map((element, elemIndex) => (
+            <div key={elemIndex}>
+              {element.type === "text" && <p>{element.text}</p>}
+              {element.type === "image" && (
+                <img src={element.data} alt="slide image" />
+              )}
+            </div>
+          ))}
+        </div>
+      ));
+    } else {
+      return <pre>{fileContent}</pre>;
+    }
+  };
 
   return (
-    <iframe
-      title="PPT Viewer"
-      src={`https://docs.google.com/gview?key=${apiKey}&embedded=true&url=${fileUrl}`}
-      style={{ width: "100%", height: "100vh" }}
-    />
+    <div style={{ padding: "20px", whiteSpace: "pre-wrap" }}>
+      {renderContent()}
+    </div>
   );
 };
 

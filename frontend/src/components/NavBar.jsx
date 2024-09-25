@@ -39,9 +39,7 @@ ClarityIcons.addIcons(thumbsUpIcon);
 function NavBar() {
   const { isLoading, user, getAccessTokenSilently } = useAuth0();
 
-  const [searchQuery, setSearchQuery] = useState('');
   const [showLogo, setShowLogo] = useState(true);
-  const [roles, setRoles] = useState([]);
   const location = useLocation();
   const email = user ? user.email : "Guest";
   
@@ -54,32 +52,6 @@ function NavBar() {
     }
   }, [location]);
 
-  useEffect(() => {
-    const fetchRoles = async () => {
-      if (user) {
-        try {
-          const token = await getAccessTokenSilently({
-            audience: process.env.REACT_APP_AUTH0_AUDIENCE,
-            scope: 'read:roles read:users',
-          });
-          const response = await fetch(`https://${process.env.REACT_APP_AUTH0_DOMAIN}/api/v2/users/${user.sub}/roles`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const data = await response.json();
-          setRoles(data);
-        } catch (error) {
-          console.error('Error fetching roles:', error);
-        }
-      }
-    };
-
-    fetchRoles();
-  }, [user, getAccessTokenSilently]);
 
   const checkboxRef = useRef(null);
 
@@ -152,7 +124,7 @@ function NavBar() {
               <cds-icon shape="home"></cds-icon>
             </Link>
             {/* {!isLoading && user &&( */}
-              <Link to="/auth-settings" className="nav-link nav-icon">
+              <Link to="/settings" className="nav-link nav-icon">
                 <cds-icon shape="cog"></cds-icon>
               </Link>
             {/* )} */}

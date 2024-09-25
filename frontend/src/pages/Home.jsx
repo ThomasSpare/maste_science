@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "@cds/core/button/register.js"; // Import Clarity Button component
-import "@cds/core/icon/register.js"; // Import Clarity Icon component
-import "@cds/core/dropdown/register.js"; // Import Clarity Dropdown component
-import "@cds/core/divider/register.js"; // Import Clarity Divider component
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import "@cds/core/button/register.js";
+import "@cds/core/icon/register.js";
+import "@cds/core/dropdown/register.js";
+import "@cds/core/divider/register.js";
 import "@webcomponents/custom-elements/custom-elements.min.js";
 import "@clr/icons/clr-icons.min.css";
 import "@clr/icons/shapes/technology-shapes.js";
@@ -63,7 +64,7 @@ function Home() {
                   </p>
                 </div>
                 <section className="news-section">
-                  <h2>Latest News</h2>
+                  <h2 className="news-headline" >Latest News</h2>
                   {Array.isArray(news) ? (
                     news.map((article) => (
                       <div key={article.id} className="news-article">
@@ -78,7 +79,12 @@ function Home() {
                         />
                         <div className="news-content">
                           <h3>{article.title}</h3>
-                          <p>{article.content}</p>
+                          <p>
+                            {article.content.length > 200
+                              ? `${article.content.substring(0, 200)}...`
+                              : article.content}
+                            <Link to={`/news/${article.id}`}> read more</Link>
+                          </p>
                           <p className="news-date">
                             {new Date(article.created_at).toLocaleDateString()}
                           </p>

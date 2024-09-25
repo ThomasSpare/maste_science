@@ -280,6 +280,26 @@ app.post("/api/news", upload.single("image"), async (req, res) => {
   }
 });
 
+// Endpoint to get a specific news article by ID
+app.get("/api/news/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = "SELECT * FROM news WHERE id = $1";
+    const values = [id];
+    const result = await pool.query(query, values);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "News article not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Error fetching news article:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 // Endpoint to update news articles
 app.put("/api/news/:id", upload.single("image"), async (req, res) => {
   const { id } = req.params;

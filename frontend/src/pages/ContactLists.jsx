@@ -4,16 +4,16 @@ import { CdsButton } from '@cds/react/button'; // Ensure this is the correct imp
 import { useNavigate } from 'react-router-dom';
 import ReactCountryFlag from 'react-country-flag';
 import { getCountryCode } from '../countrycodes/countryCodes'; // Import the utility function
-import "./Deliverables.css";
-// import "../App.css"; 
+import "./ContactLists.css";
+import "../App.css"; 
 
-const Deliverabels = () => {
+const ContactList = () => {
     const [uploads, setUploads] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
+    const itemsPerPage = 20;
     const navigate = useNavigate();
 
     const api = axios.create({
@@ -36,7 +36,16 @@ const Deliverabels = () => {
     }, [api]);
 
     const handleFileClick = (upload) => {
-        navigate(`/view-pdf/${upload.id}/${upload.file_key}`);
+        const fileExtension = upload.file_url.split('.').pop().toLowerCase();
+        if (fileExtension === 'ppt' || fileExtension === 'pptx') {
+            navigate(`/view-ppt/${upload.id}/${upload.file_key}`);
+        } else if (fileExtension === 'pdf') {
+            navigate(`/view-pdf/${upload.id}/${upload.file_key}`);
+        } else if (['txt', 'doc', 'docx', 'rtf', 'odt'].includes(fileExtension)) {
+            navigate(`/view-text/${upload.id}/${upload.file_key}`);
+        } else {
+            console.error('Unsupported file type:', fileExtension);
+        }
     };
 
     const handlePreviousPage = () => {
@@ -71,9 +80,8 @@ const Deliverabels = () => {
             upload.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
             upload.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
             upload.author.toLowerCase().includes(searchTerm.toLowerCase());
-        const isPublic = upload.is_public === true;
-        const isDeliverable = upload.is_deliverable === true;
-        return isWithinDateRange && matchesSearchTerm && isDeliverable && !isPublic;
+        const isContactList = upload.is_contact_list === true;
+        return isWithinDateRange && matchesSearchTerm && isContactList;
     });
 
     // Sort the filtered uploads by upload date in descending order
@@ -85,7 +93,7 @@ const Deliverabels = () => {
 
     return (
         <div className='search-main-div'>
-            <h1 className='search-h1'>Search All Deliverables</h1>
+            <h1 className='search-h1'>Search Contact Lists</h1>
             <div>
                 <input className='search-input'
                     type="text"
@@ -114,35 +122,37 @@ const Deliverabels = () => {
                         />
                     </label>
                 </div>
+                <div className="list-header" style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', backgroundColor: '#f0f0f0', fontWeight: 'bold' }}>
+                    <span style={{ flex: '2' }}>Title</span>
+                    <span style={{ flex: '2' }}>Author</span>
+                    <span style={{ flex: '0.75' }}>Upload Date</span>
+                    <span style={{ flex: '0.75' }}>File Type</span>
+                    <span style={{ flex: '0.75', textAlign: 'right' }}>Country</span>
+                </div>
                 <ol>
                     {paginatedUploads.map((upload, index) => (
-                        <li style={{
-                            listStyle: 'none',
-                            height: '50px',
-                            width: '75vw',
-                            fontSize: 'medium',
-                            fontWeight: 500,
-                            lineHeight: 1.5,
-                            borderStyle: 'none'
-                        }} className="pubdocs_search-list-item" key={index} onClick={() => handleFileClick(upload)}>
-                            <div className='list-info'>
-                                <p style={{ display: 'inline-block', marginRight: '50px' }}>
-                                    Title: {upload.category}
+                        <li className="search-list-item" key={index} onClick={() => handleFileClick(upload)}>
+                            <div className='list-info' style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <p style={{ flex: '2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {upload.category.length > 65 ? `${upload.category.substring(0, 65)}...` : upload.category}
                                 </p>
-                                <p style={{ display: 'inline-block', marginRight: '50px' }}>
-                                    Author: {upload.author}
+                                <p style={{ flex: '2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {upload.author.length > 60 ? `${upload.author.substring(0, 60)}...` : upload.author}
                                 </p>
-                                <p style={{ display: 'inline-block', marginRight: '50px' }}>
-                                    Upload Date: {new Date(upload.upload_date).toLocaleDateString()}
+                                <p style={{ flex: '0.75' }}>
+                                    {new Date(upload.upload_date).toLocaleDateString()}
                                 </p>
-                                <p style={{ display: 'inline-block', marginRight: '50px' }}>
-                                    Country: {upload.country} <ReactCountryFlag countryCode={getCountryCode(upload.country)} svg />
+                                <p style={{ flex: '0.75' }}>
+                                    {upload.file_url ? upload.file_url.split('.').pop() : 'N/A'}
+                                </p>
+                                <p style={{ flex: '0.75', display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '0px !important' }}>
+                                    {upload.country} <ReactCountryFlag countryCode={getCountryCode(upload.country)} svg />
                                 </p>
                             </div>
                         </li>
                     ))}
                 </ol>
-                <div style={{ marginTop: '10px' }}></div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '5px' }}>
                     <CdsButton onClick={handlePreviousPage} disabled={currentPage === 1}>
                         Previous
                     </CdsButton>
@@ -151,7 +161,8 @@ const Deliverabels = () => {
                     </CdsButton>
                 </div>
             </div>
+        </div>
     );
 };
 
-export default Deliverabels;
+export default ContactList;

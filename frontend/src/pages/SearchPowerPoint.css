@@ -1,0 +1,83 @@
+p {
+    color: rgb(32, 84, 32);
+    flex: 1 1 0%;
+    margin-top: 0 !important;
+}
+.list-header{
+    display: flex;
+    padding: 10px;
+    background-color: rgb(240, 240, 240);
+    font-weight: bold;
+    width: 90vw;
+    text-align: left;
+}
+
+#Footer{
+    min-height: 100vh;
+}
+
+.search-h1{
+    text-align: justify;
+}
+
+.search-input{
+    text-align: center;
+}
+
+.Search-div{
+    margin-top: 3vh;
+    min-height: 100vh;
+}
+
+.list-info{
+    display: ruby-text;
+}
+
+.search-list-item{
+        border-width: 1px;
+        border-radius: 5px;
+        padding: 5px;
+        margin: 5px;
+        border-color: #72ffa666;
+        width: 60vw;
+        padding-inline: 20px;
+        list-style: none !important;
+        background-color: #2be2ad38;
+        border-radius: 15px;
+        width: 90vw !important;
+        flex-direction: column;
+        align-items: center;
+        max-height: 40px;
+        text-align: justify;
+}
+
+
+li:hover
+{
+    background-color: rgba(0, 255, 255, 0.13);
+    transition: 0.1s;
+}
+
+@media screen and (max-width: 1440px){
+ /* Search Categories  */
+    .Search-div{
+        margin-top: 10vh;
+    }
+  }
+
+@media screen and (max-width: 768px) {
+    #root > div > div > div:nth-child(1){
+        margin-top: 10vh;
+    }
+    button{
+        display: none;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    /* CSS code for screens between 768px and 1024px */
+}
+
+@media screen and (min-width: 1024px) {
+    /* CSS code for screens larger than 1024px */
+}

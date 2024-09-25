@@ -5,20 +5,55 @@ import "./Settings.css";
 import "@cds/core/icon/register.js";
 import "@cds/core/button/register.js";
 import { ClarityIcons, contractIcon } from "@cds/core/icon";
+import { useNavigate } from "react-router-dom";
 
 ClarityIcons.addIcons(contractIcon);
 
 const Dashboard = () => {
-  const { user, getAccessTokenSilently } = useAuth0();
+  const { user, getAccessTokenSilently, isAuthenticated, loginWithRedirect } =
+    useAuth0();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
   const [posts, setPosts] = useState([]);
   const [editPostId, setEditPostId] = useState(null);
+  const [isAuthenticatedState, setIsAuthenticatedState] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const navigate = useNavigate();
+
+  const allowedEmails = [
+    "che@chalmers.se",
+    "tretegan@chalmers.se",
+    "demaz@chalmers.se",
+    "sophie.grape@physics.uu.se",
+    "mattias.thuvander@chalmers.se",
+    "charlotta.nilsson@fysik.lu.se",
+    "jana.peroutkova@evalion.cz",
+    "petr.koran@evalion.cz",
+  ]; // Add allowed email addresses here
 
   useEffect(() => {
-    fetchLastThreePosts();
-  }, []);
+    const checkAuthentication = async () => {
+      if (!isAuthenticated) {
+        await loginWithRedirect();
+      } else {
+        setIsAuthenticatedState(true);
+      }
+    };
+    checkAuthentication();
+  }, [isAuthenticated, loginWithRedirect]);
+
+  useEffect(() => {
+    if (isAuthenticatedState) {
+      if (user && allowedEmails.includes(user.email)) {
+        setIsAuthorized(true);
+        fetchLastThreePosts();
+      } else {
+        setIsAuthorized(false);
+        navigate("/unauthorized"); // Redirect to an unauthorized page or show a message
+      }
+    }
+  }, [isAuthenticatedState, user, navigate]);
 
   const fetchLastThreePosts = async () => {
     try {
@@ -68,7 +103,8 @@ const Dashboard = () => {
     console.log("Deleting post with ID:", postId); // Log the postId
     try {
       const token = await getAccessTokenSilently();
-      await axios.delete(
+      console.log("Authorization token:", token); // Log the token
+      const response = await axios.delete(
         `${process.env.REACT_APP_API_BASE_URL}/api/news/${postId}`,
         {
           headers: {
@@ -76,6 +112,7 @@ const Dashboard = () => {
           },
         }
       );
+      console.log("Delete response:", response); // Log the response
       alert("Post deleted successfully");
       fetchLastThreePosts(); // Refresh the posts
     } catch (error) {
@@ -85,7 +122,7 @@ const Dashboard = () => {
   };
 
   const handleEditPost = (post) => {
-    setEditPostId(post._id);
+    setEditPostId(post.id);
     setTitle(post.title);
     setContent(post.content);
     setImage(null); // Reset image as we don't have the image file
@@ -128,6 +165,10 @@ const Dashboard = () => {
       alert("Failed to update post");
     }
   };
+
+  if (!isAuthorized) {
+    return <div>Unauthorized access</div>; // Show unauthorized message if not authorized
+  }
 
   return (
     <div className="Settings">
@@ -180,7 +221,7 @@ const Dashboard = () => {
               <p>{post.content}</p>
               {post.image && <img src={post.image} alt={post.title} />}
               <button onClick={() => handleEditPost(post)}>Edit</button>
-              <button onClick={() => handleDeletePost(post._id)}>Delete</button>
+              <button onClick={() => handleDeletePost(post.id)}>Delete</button>
             </div>
           ))}
         </div>

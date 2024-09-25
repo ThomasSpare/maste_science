@@ -17,6 +17,7 @@
 
 footer{
   font-family: Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh !important;
 }
 
 .App {

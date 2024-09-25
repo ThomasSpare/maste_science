@@ -1,0 +1,90 @@
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
+import { Document, Packer, Paragraph, TextRun } from 'docx';
+import { saveAs } from 'file-saver';
+
+const ViewText = () => {
+    const { fileId, fileKey } = useParams();
+    const [fileContent, setFileContent] = useState('');
+    useAuth0(); // Ensure this path is correct
+
+    useEffect(() => {
+        const abortController = new AbortController();
+        const signal = abortController.signal;
+
+        console.log("Params:", { fileId, fileKey });
+        if (!fileKey) {
+            console.error("File parameter is undefined.");
+            return;
+        }
+        const serverAddress = process.env.REACT_APP_API_BASE_URL; // Update this to your server address
+        const url = `${serverAddress}/api/uploads/${fileKey}`;
+        
+        fetch(url, { signal })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const fileReader = new FileReader();
+                fileReader.onload = (e) => {
+                    const content = e.target.result;
+                    setFileContent(content);
+                };
+                if (blob.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+                    fileReader.readAsArrayBuffer(blob);
+                } else {
+                    fileReader.readAsText(blob);
+                }
+            })
+            .catch(error => {
+                if (error.name === 'AbortError') {
+                    console.log('Fetch aborted');
+                } else {
+                    console.error('Fetch error:', error);
+                }
+            });
+
+        return () => {
+            abortController.abort();
+        };
+    }, [fileKey]); // Add fileKey to the dependency array
+
+    const renderContent = () => {
+        if (fileContent instanceof ArrayBuffer) {
+            const doc = new Document();
+            doc.load(fileContent);
+            const paragraphs = doc.getParagraphs();
+            return paragraphs.map((paragraph, index) => (
+                <p key={index}>{paragraph.getText()}</p>
+            ));
+        } else {
+            return <pre>{fileContent}</pre>;
+        }
+    };
+
+    const handleDownload = () => {
+        if (fileContent instanceof ArrayBuffer) {
+            const doc = new Document();
+            doc.load(fileContent);
+            Packer.toBlob(doc).then(blob => {
+                saveAs(blob, 'document.docx');
+            });
+        } else {
+            const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
+            saveAs(blob, 'document.txt');
+        }
+    };
+
+    return (
+        <div style={{ padding: '20px', whiteSpace: 'pre-wrap' }}>
+            {renderContent()}
+            <button onClick={handleDownload}>Download</button>
+        </div>
+    );
+}
+
+export default ViewText;
