@@ -75,7 +75,7 @@ const WP3 = () => {
       upload.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
       upload.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
       upload.author.toLowerCase().includes(searchTerm.toLowerCase());
-    return isWithinDateRange && matchesSearchTerm && upload.work_package === 'WP3';
+    return isWithinDateRange && matchesSearchTerm && upload.workpackage === 'WP3';
   });
 
   // Sort the filtered uploads by upload date in descending order
@@ -146,7 +146,7 @@ const WP3 = () => {
             </li>
           ))}
         </ol>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '5px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' }}>
           <CdsButton onClick={handlePreviousPage} disabled={currentPage === 1}>
             Previous
           </CdsButton>

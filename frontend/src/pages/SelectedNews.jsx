@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { CdsButton } from '@cds/react/button';
 import axios from "axios";
 import "./SelectedNews.css"; // Import the CSS file for styling
 
 const SelectedNews = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [article, setArticle] = useState(null);
 
   useEffect(() => {
@@ -31,6 +33,7 @@ const SelectedNews = () => {
       </header>
       <main className="content">
         <img
+          style={{ borderStyle: "double", padding: "2px", borderRadius: "5px" }}
           src={article.image_url}
           alt={article.title}
           className="news-image"
@@ -39,11 +42,19 @@ const SelectedNews = () => {
             e.target.src = "https://via.placeholder.com/150";
           }}
         />
-        <h2>{article.title}</h2>
-        <p className="news-card" >{article.content}</p>
-        <p className="news-date">
-          {new Date(article.created_at).toLocaleDateString()}
-        </p>
+        <div
+          className="news-card"
+          dangerouslySetInnerHTML={{ __html: article.content }}
+        />
+        <div className="news-info">
+          <p className="news-date">
+            {new Date(article.created_at).toLocaleDateString()}
+          </p>
+          <p className="news-author">
+            By {article.author}
+          </p>
+<CdsButton onClick={() => navigate(-1)} className="back-button">Back</CdsButton>
+        </div>
       </main>
     </div>
   );

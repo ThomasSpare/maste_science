@@ -4,14 +4,21 @@
     text-align: justify;
     padding: 20px;
     border-radius: 15px;
+    border-style: outset;
+}
+
+.news-article{
+    background-color: #f8fbf8;
+    margin-left: 0px;
 }
 
 img{
-    max-width: 42vw;
+    max-width: 35vw;
+    margin-bottom: 10px;
 }
 
 .news-info{
-    margin-left: 35vw;
+    margin-left: 30vw;
 }
 
 .news-date{

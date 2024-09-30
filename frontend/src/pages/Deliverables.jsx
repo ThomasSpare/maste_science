@@ -142,7 +142,7 @@ const Deliverabels = () => {
                         </li>
                     ))}
                 </ol>
-                <div style={{ marginTop: '10px' }}></div>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' }}></div>
                     <CdsButton onClick={handlePreviousPage} disabled={currentPage === 1}>
                         Previous
                     </CdsButton>

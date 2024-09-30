@@ -11,7 +11,6 @@ const ViewPdf = () => {
     const abortController = new AbortController();
     const signal = abortController.signal;
 
-    console.log("Params:", { fileId, fileKey });
     if (!fileKey) {
       console.error("File parameter is undefined.");
       return;

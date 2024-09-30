@@ -64,10 +64,10 @@ function Home() {
                   </p>
                 </div>
                 <section className="news-section">
-                  <h2 className="news-headline" >Latest News</h2>
+                  <h2 className="news-headline">Latest News</h2>
                   {Array.isArray(news) ? (
                     news.map((article) => (
-                      <div key={article.id} className="news-article">
+                      <div key={article.id} className="news-article" style={{marginLeft: "12vw"}} >  
                         <img
                           src={article.image_url}
                           alt={article.title}
@@ -79,12 +79,14 @@ function Home() {
                         />
                         <div className="news-content">
                           <h3>{article.title}</h3>
-                          <p>
-                            {article.content.length > 200
-                              ? `${article.content.substring(0, 200)}...`
-                              : article.content}
-                            <Link to={`/news/${article.id}`}> read more</Link>
-                          </p>
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: article.content.length > 200
+                                ? `${article.content.substring(0, 200)}...`
+                                : article.content,
+                            }}
+                          />
+                          <Link to={`/news/${article.id}`}> read more</Link>
                           <p className="news-date">
                             {new Date(article.created_at).toLocaleDateString()}
                           </p>

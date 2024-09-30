@@ -7,6 +7,11 @@
   }
 }
 
+svg{
+  width: 420px !important;
+    height: 420px !important;
+}
+
 .ws-text-page {
   display: flex;
   flex-direction: column;
@@ -29,6 +34,8 @@
 
 .ws-img-container {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .WP-img {
@@ -36,15 +43,15 @@
   margin-top: 10px;
   margin-bottom: 0px;
   border: none;
+  height: 40vh;
 }
 
 .ws-text-box {
   flex: 1 1;
   padding-left: 20px;
-  border-left: 1px solid #ccc;
   min-width: 50vw;
   padding-left: 10vw;
-  margin-top: 9vh;
+  margin-top: 5vh;
   animation: fadeIn 2s ease-in-out;
 }
 
@@ -62,7 +69,12 @@
 .ws-content {
   flex: 1;
   padding: 20px;
-  background-color: #f9f9f9;
+  animation: fadeIn 2s ease-in-out;
+  background-image: url(https://res.cloudinary.com/djunroohl/image/upload/v1726410687/tp244-bg1-08_iibjso.jpg) !important;
+  background-repeat: repeat-y;
+  background-size: cover;
+  overflow-x: hidden;
+  height: 101vh;
   animation: fadeIn 2s ease-in-out;
 }
 
@@ -75,7 +87,7 @@
   justify-content: center;
   text-align: justify;
   line-height: normal;
-  margin-top: 91px;
+  margin-top: 35px;
   animation: fadeIn 2s ease-in-out;
 }
 
@@ -95,5 +107,5 @@
 .WP-img {
   margin-top: 20px;
   margin-bottom: 20px;
-  height: 56vh;
+  height: 40vh;
 }

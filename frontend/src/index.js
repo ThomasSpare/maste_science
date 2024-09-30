@@ -39,6 +39,7 @@ import WP3 from "./pages/WP/WP3";
 import WP4 from "./pages/WP/WP4";
 import WP5 from "./pages/WP/Wp5";
 import WP6 from "./pages/WP/WP6";
+import AllNews from "./pages/AllNews";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -66,6 +67,7 @@ function App() {
         <Route path="deliverables" element={<Deliverabels />} />
         <Route path="contacts" element={<Contacts />} />
         <Route path="/news/:id" element={<SelectedNews />} />
+        <Route path="allnews" element={<AllNews />} />
         <Route path="contactlists" element={<ContactList />} />
         <Route path="meetings" element={<Meetings />} />
         <Route path="reports" element={<Report />} />

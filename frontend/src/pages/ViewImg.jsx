@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { saveAs } from 'file-saver';
+import { CdsButton } from '@cds/react/button';
+
 
 const ViewImg = () => {
     const { fileId, fileKey } = useParams();
@@ -12,7 +14,6 @@ const ViewImg = () => {
         const abortController = new AbortController();
         const signal = abortController.signal;
 
-        console.log("Params:", { fileId, fileKey });
         if (!fileKey) {
             console.error("File parameter is undefined.");
             return;
@@ -55,7 +56,7 @@ const ViewImg = () => {
     return (
         <div style={{ padding: '20px', textAlign: 'center' }}>
             {imageSrc ? <img src={imageSrc} alt="Fetched content" style={{ maxWidth: '100%' }} /> : <p>Loading...</p>}
-            <button onClick={handleDownload} style={{ marginTop: '20px' }}>Download</button>
+            <CdsButton className="clr-button" onClick={handleDownload} style={{ marginTop: '20px' }}>Download</CdsButton>
         </div>
     );
 }

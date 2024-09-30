@@ -1,6 +1,7 @@
 const fs = require("fs");
 const dotenv = require("dotenv");
 const express = require("express");
+const { google } = require("googleapis");
 const path = require("path"); // Import the path module
 var axios = require("axios").default;
 const multer = require("multer");
@@ -58,6 +59,71 @@ axios
   .request(options)
   .then(function (response) {})
   .catch(function (error) {});
+
+// Authorize URL for Google Analytics
+
+// const oauth2Client = new google.auth.OAuth2(
+//   "GOOGLE_ANALYTICS_CLIENT_ID",
+//   "GOOGLE_ANALYTICS_CLIENT_SECRET",
+//   "GOOGLE_ANALYTICS_REDIRECT_URI"
+// );
+
+// const scopes = ["https://www.googleapis.com/auth/analytics.readonly"];
+
+// const authorizationUrl = oauth2Client.generateAuthUrl({
+//   access_type: "offline",
+//   scope: scopes,
+// });
+
+// console.log("Authorize this app by visiting this url:", authorizationUrl);
+
+// Endpoint to fetch Google Analytics data
+// app.get("/api/analytics", async (req, res) => {
+//   const {
+//     GOOGLE_ANALYTICS_CLIENT_ID,
+//     GOOGLE_ANALYTICS_CLIENT_SECRET,
+//     GOOGLE_ANALYTICS_REDIRECT_URI,
+//     GOOGLE_ANALYTICS_VIEW_ID,
+//   } = process.env;
+
+//   const oauth2Client = new google.auth.OAuth2(
+//     GOOGLE_ANALYTICS_CLIENT_ID,
+//     GOOGLE_ANALYTICS_CLIENT_SECRET,
+//     GOOGLE_ANALYTICS_REDIRECT_URI
+//   );
+
+//   oauth2Client.setCredentials({
+//     refresh_token: "your_refresh_token",
+//   });
+
+//   const analytics = google.analyticsreporting({
+//     version: "v4",
+//     auth: oauth2Client,
+//   });
+
+//   try {
+//     const response = await analytics.reports.batchGet({
+//       requestBody: {
+//         reportRequests: [
+//           {
+//             viewId: GOOGLE_ANALYTICS_VIEW_ID,
+//             dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+//             metrics: [
+//               { expression: "ga:sessions" },
+//               { expression: "ga:pageviews" },
+//             ],
+//             dimensions: [{ name: "ga:date" }],
+//           },
+//         ],
+//       },
+//     });
+
+//     res.json(response.data);
+//   } catch (error) {
+//     console.error("Error fetching Google Analytics data:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// });
 
 // Endpoint to get Auth0 access token
 app.get("/api/auth/token", async (req, res) => {
@@ -236,11 +302,14 @@ app.get("/api/uploads/:fileKey", async (req, res) => {
 
 // Endpoint to post news articles
 app.post("/api/news", upload.single("image"), async (req, res) => {
-  const { title, content } = req.body;
+  const { title, content, author } = req.body; // Extract author from request body
   const image = req.file;
 
-  if (!title || !content) {
-    return res.status(400).json({ message: "Title and content are required" });
+  if (!title || !content || !author) {
+    // Check if author is provided
+    return res
+      .status(400)
+      .json({ message: "Title, content, and author are required" });
   }
 
   let imageUrl = null;
@@ -264,8 +333,8 @@ app.post("/api/news", upload.single("image"), async (req, res) => {
 
   try {
     const query =
-      "INSERT INTO news (title, content, image_url) VALUES ($1, $2, $3) RETURNING *";
-    const values = [title, content, imageUrl];
+      "INSERT INTO news (title, content, author, image_url) VALUES ($1, $2, $3, $4) RETURNING *";
+    const values = [title, content, author, imageUrl];
     const result = await pool.query(query, values);
 
     console.log("News article saved to database:", result.rows[0]);
@@ -310,29 +379,40 @@ app.put("/api/news/:id", upload.single("image"), async (req, res) => {
     return res.status(400).json({ message: "Title and content are required" });
   }
 
-  let imageUrl = null;
-  if (image) {
-    const fileKey = `${Date.now()}_${image.originalname}`;
-    const params = {
-      Bucket: bucketName,
-      Key: fileKey,
-      Body: image.buffer,
-      ContentType: image.mimetype,
-    };
-
-    try {
-      const uploadResult = await s3.upload(params).promise();
-      imageUrl = uploadResult.Location;
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-  }
-
   try {
+    // Fetch the existing post data
+    const existingPostQuery = "SELECT * FROM news WHERE id = $1";
+    const existingPostResult = await pool.query(existingPostQuery, [id]);
+
+    if (existingPostResult.rowCount === 0) {
+      return res.status(404).json({ message: "News article not found" });
+    }
+
+    const existingPost = existingPostResult.rows[0];
+    const uploadDate = existingPost.upload_date; // Preserve the original upload date
+
+    let imageUrl = existingPost.image_url; // Use existing image URL if no new image is provided
+    if (image) {
+      const fileKey = `${Date.now()}_${image.originalname}`;
+      const params = {
+        Bucket: bucketName,
+        Key: fileKey,
+        Body: image.buffer,
+        ContentType: image.mimetype,
+      };
+
+      try {
+        const uploadResult = await s3.upload(params).promise();
+        imageUrl = uploadResult.Location;
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+    }
+
     const query =
-      "UPDATE news SET title = $1, content = $2, image_url = $3 WHERE id = $4 RETURNING *";
-    const values = [title, content, imageUrl, id];
+      "UPDATE news SET title = $1, content = $2, image_url = $3, upload_date = $4 WHERE id = $5 RETURNING *";
+    const values = [title, content, imageUrl, uploadDate, id];
     const result = await pool.query(query, values);
 
     console.log("News article updated in database:", result.rows[0]);

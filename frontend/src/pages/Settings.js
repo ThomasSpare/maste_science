@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import "./Settings.css";
 import "@cds/core/icon/register.js";
 import "@cds/core/button/register.js";
@@ -19,18 +21,23 @@ const Dashboard = () => {
   const [editPostId, setEditPostId] = useState(null);
   const [isAuthenticatedState, setIsAuthenticatedState] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [author, setAuthor] = useState("");
   const navigate = useNavigate();
 
-  const allowedEmails = [
-    "che@chalmers.se",
-    "tretegan@chalmers.se",
-    "demaz@chalmers.se",
-    "sophie.grape@physics.uu.se",
-    "mattias.thuvander@chalmers.se",
-    "charlotta.nilsson@fysik.lu.se",
-    "jana.peroutkova@evalion.cz",
-    "petr.koran@evalion.cz",
-  ]; // Add allowed email addresses here
+  const allowedEmails = useMemo(
+    () => ({
+      "che@chalmers.se": "Christian Ekberg",
+      "tretegan@chalmers.se": "Teodora Retegan Vollmer",
+      "demaz@chalmers.se": "Christophe Demazière",
+      "sophie.grape@physics.uu.se": "Sophie Grape",
+      "mattias.thuvander@chalmers.se": "Mattias Thuvander",
+      "charlotta.nilsson@fysik.lu.se": "Charlotta Nilsson",
+      "jana.peroutkova@evalion.cz": "Jana Peroutková",
+      "petr.koran@evalion.cz": "Petr Kořán",
+      "t.spare.jkpg@gmail.com": "Thomas Spåre",
+    }),
+    []
+  );
 
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -45,15 +52,15 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (isAuthenticatedState) {
-      if (user && allowedEmails.includes(user.email)) {
+      if (user && user.email in allowedEmails) {
         setIsAuthorized(true);
         fetchLastThreePosts();
       } else {
         setIsAuthorized(false);
-        navigate("/unauthorized"); // Redirect to an unauthorized page or show a message
+        navigate("/unauthorized");
       }
     }
-  }, [isAuthenticatedState, user, navigate]);
+  }, [isAuthenticatedState, user, navigate, allowedEmails]);
 
   const fetchLastThreePosts = async () => {
     try {
@@ -77,9 +84,10 @@ const Dashboard = () => {
     formData.append("title", title);
     formData.append("content", content);
     formData.append("image", image);
+    formData.append("author", allowedEmails[user.email]);
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/api/news`,
         formData,
         {
@@ -92,7 +100,7 @@ const Dashboard = () => {
       setTitle("");
       setContent("");
       setImage(null);
-      fetchLastThreePosts(); // Refresh the posts
+      fetchLastThreePosts();
     } catch (error) {
       console.error("Error adding news article:", error);
       alert("Failed to add news article");
@@ -100,10 +108,8 @@ const Dashboard = () => {
   };
 
   const handleDeletePost = async (postId) => {
-    console.log("Deleting post with ID:", postId); // Log the postId
     try {
       const token = await getAccessTokenSilently();
-      console.log("Authorization token:", token); // Log the token
       const response = await axios.delete(
         `${process.env.REACT_APP_API_BASE_URL}/api/news/${postId}`,
         {
@@ -112,11 +118,9 @@ const Dashboard = () => {
           },
         }
       );
-      console.log("Delete response:", response); // Log the response
       alert("Post deleted successfully");
-      fetchLastThreePosts(); // Refresh the posts
+      fetchLastThreePosts();
     } catch (error) {
-      console.error("Error deleting post:", error);
       alert("Failed to delete post");
     }
   };
@@ -125,7 +129,8 @@ const Dashboard = () => {
     setEditPostId(post.id);
     setTitle(post.title);
     setContent(post.content);
-    setImage(null); // Reset image as we don't have the image file
+    setAuthor(post.author);
+    setImage(null);
   };
 
   const handleUpdatePost = async (e) => {
@@ -141,6 +146,7 @@ const Dashboard = () => {
     if (image) {
       formData.append("image", image);
     }
+    formData.append("author", user.name);
 
     try {
       const token = await getAccessTokenSilently();
@@ -159,15 +165,14 @@ const Dashboard = () => {
       setContent("");
       setImage(null);
       setEditPostId(null);
-      fetchLastThreePosts(); // Refresh the posts
+      fetchLastThreePosts();
     } catch (error) {
-      console.error("Error updating post:", error);
       alert("Failed to update post");
     }
   };
 
   if (!isAuthorized) {
-    return <div>Unauthorized access</div>; // Show unauthorized message if not authorized
+    return <div>Unauthorized access</div>;
   }
 
   return (
@@ -194,10 +199,41 @@ const Dashboard = () => {
               />
             </div>
             <div>
-              <textarea
-                placeholder="News Content"
+              <ReactQuill
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={setContent}
+                modules={{
+                  toolbar: [
+                    [{ header: "1" }, { header: "2" }, { font: [] }],
+                    [{ size: [] }],
+                    ["bold", "italic", "underline", "strike", "blockquote"],
+                    [
+                      { list: "ordered" },
+                      { list: "bullet" },
+                      { indent: "-1" },
+                      { indent: "+1" },
+                    ],
+                    ["link", "image", "video"],
+                    ["clean"],
+                  ],
+                }}
+                formats={[
+                  "header",
+                  "font",
+                  "size",
+                  "bold",
+                  "italic",
+                  "underline",
+                  "strike",
+                  "blockquote",
+                  "list",
+                  "bullet",
+                  "indent",
+                  "link",
+                  "image",
+                  "video",
+                ]}
+                placeholder="News Content"
               />
             </div>
             <div>
@@ -218,8 +254,9 @@ const Dashboard = () => {
           {posts.map((post) => (
             <div key={post._id} className="news-item">
               <h3>{post.title}</h3>
-              <p>{post.content}</p>
+              <div dangerouslySetInnerHTML={{ __html: post.content }} />
               {post.image && <img src={post.image} alt={post.title} />}
+              <p>Author: {post.author}</p>
               <button onClick={() => handleEditPost(post)}>Edit</button>
               <button onClick={() => handleDeletePost(post.id)}>Delete</button>
             </div>

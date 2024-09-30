@@ -6,6 +6,23 @@
     padding: "20px"
 }
 
+.Settings svg{
+    width: auto !important;
+    height: auto !important;
+}
+
+.ql-toolbar.ql-snow {
+  background-color: #ffffff;
+}
+
+.ql-snow .ql-picker:not(.ql-color-picker):not(.ql-icon-picker) svg {
+    position: absolute;
+    margin-top: -9px !important;
+    right: 0 !important;
+    top: 50% !important;
+    width: 18px !important;
+}
+
 h1{
     font-size: 3rem;
     color: #000000;
@@ -42,6 +59,7 @@ h3{
     font-weight: 700;
     border: black;
     border-style: ridge;
+    width: 40vw;
   }
   
   .news-article {
@@ -55,7 +73,7 @@ h3{
   }
 
   .news-image {
-    width: 250px;
+    width: 300px;
     height: 150px;
     object-fit: contain;
     margin-right: 20px;
@@ -64,14 +82,12 @@ h3{
   .news-item{
     margin-bottom: 3vh;
     background-color: #75abe1;
+    padding: 20px;
   }
 
 .news-list{
   padding: 44px;
-  width: 50vw;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column-reverse;
+    width: 44vw;
 }
   
   .news-content {

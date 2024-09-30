@@ -236,10 +236,9 @@ body.dark .partner-box {background-color: #3b3b3b; color: #bee7ff;}
   display: flex !important;
   width: 22%;
   pointer-events: none;
-  margin-right: 2%;
+  margin-right: 78%;
   border-radius: 15px;
-  margin-top: 12%;
-  z-index: 999;
+  margin-top: 0%;
   opacity: 0;
   animation: fadeIn 1s ease-in-out forwards;
 }

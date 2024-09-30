@@ -1,5 +1,7 @@
 import React from "react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+
 
 import "@cds/core/dropdown/register.js";
 import "@cds/core/icon/register.js";
@@ -32,11 +34,18 @@ function Dropdown_2() {
         </button>
         <div className="dropdown-menu">
           <h4 className="dropdown-header">Dropdown header</h4>
-          <div className="dropdown-item">First Action</div>
-          <div className="dropdown-item">Disabled Action</div>
-          <div className="dropdown-divider"></div>
-          <div className="dropdown-item">Link 1</div>
-          <div className="dropdown-item">Link 2</div>
+          <Link
+            to="/allnews"
+            className="dropdown-item"
+          >
+            News
+          </Link>
+          <Link
+            to="/events"
+            className="dropdown-item"
+          >
+            Events
+          </Link>
         </div>
       </div>
     </React.Fragment>

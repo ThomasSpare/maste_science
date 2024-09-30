@@ -152,7 +152,7 @@ const ContactList = () => {
                         </li>
                     ))}
                 </ol>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '5px' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' }}>
                     <CdsButton onClick={handlePreviousPage} disabled={currentPage === 1}>
                         Previous
                     </CdsButton>

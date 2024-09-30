@@ -151,7 +151,7 @@ const SearchPowerPoint = () => {
             </li>
           ))}
         </ol>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '5px' , minHeight: '100vh' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' , minHeight: '100vh' }}>
           <CdsButton onClick={handlePreviousPage} disabled={currentPage === 1}>
             Previous
           </CdsButton>

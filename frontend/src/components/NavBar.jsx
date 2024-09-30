@@ -81,22 +81,21 @@ function NavBar() {
       <div className="main">
         <header className="header header-6">
           <div className="branding">
-            <Link to="/" className="title">MÅSTE</Link>
           </div>
           {/* <form className="search" onSubmit={handleSearch}>
             <input
-              id="search-input-sidenav-ng"
-              type="text"
-              placeholder="Search for keywords..."
-              value={searchQuery}
-              onChange={handleSearchInputChange}
+            id="search-input-sidenav-ng"
+            type="text"
+            placeholder="Search for keywords..."
+            value={searchQuery}
+            onChange={handleSearchInputChange}
             />
             <button type="submit" className="nav-link nav-icon">
-              <cds-icon shape="search">
-                Search
-              </cds-icon>
+            <cds-icon shape="search">
+            Search
+            </cds-icon>
             </button>
-          </form> */}
+            </form> */}
           {!isLoading && user &&(
             <div className="currentUser">
               <cds-icon shape="thumbs-up"></cds-icon>
@@ -114,7 +113,7 @@ function NavBar() {
               id="checkbox"
               ref={checkboxRef}
               onChange={handleCheckboxChange}
-            />
+              />
             <label htmlFor="checkbox" className="checkbox-label">
               <i className="fas fa-moon"></i>
               <i className="fas fa-sun"></i>
@@ -139,15 +138,15 @@ function NavBar() {
             <Link to="/partners">PARTNERS</Link>
             <Link to="/contacts">CONTACTS</Link>
           </ul>
-          {showLogo && (
-            <img
-              className="logo"
-              src="https://res.cloudinary.com/djunroohl/image/upload/v1726651079/Untitled_zwoq69.svg"
-              alt="logo"
-            />
-          )}
         </nav>
       </div>
+      {showLogo && (
+         <img
+           className="logo"
+           src="https://res.cloudinary.com/djunroohl/image/upload/v1727695386/Untitled_2x_tpfxxy.png"
+           alt="logo"
+         />
+       )} 
     </header>
   );
 }

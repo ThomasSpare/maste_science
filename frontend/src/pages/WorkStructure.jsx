@@ -91,9 +91,8 @@ const WS = () => {
   useEffect(() => {
     const fetchSvg = async () => {
       try {
-        const response = await axios.get("https://res.cloudinary.com/djunroohl/image/upload/v1726912612/Graf_with_Id_goli5h.svg");
+        const response = await axios.get("https://res.cloudinary.com/djunroohl/image/upload/c_scale,w_420/v1727712556/Maste-graf_A_rgb_1_h9g6m2.svg");
         setSvgContent(response.data);
-        console.log("SVG content fetched:", response.data); // Log SVG content
       } catch (error) {
         console.error("Error fetching SVG:", error);
       }
@@ -110,10 +109,21 @@ const WS = () => {
         if (svgElement) {
           const clickableIds = ["WP1", "WP2", "WP3", "WP4", "WP5", "WP6"];
           const clickableElements = Array.from(svgElement.querySelectorAll("[id]")).filter(element => clickableIds.includes(element.id));
-          console.log("Clickable elements:", clickableElements); // Log clickable elements
           clickableElements.forEach((element) => {
             const handleClick = () => {
-              setSelectedElement(element.id);
+              // Reset text opacity to 0
+              const textBox = document.querySelector(".ws-text-box p");
+              if (textBox) {
+                textBox.style.opacity = 0;
+              }
+
+              // Set selected element after a short delay to allow opacity transition
+              setTimeout(() => {
+                setSelectedElement(element.id);
+                if (textBox) {
+                  textBox.style.opacity = 1;
+                }
+              }, 400); // Adjust the delay as needed
             };
             element.addEventListener("click", handleClick);
 
@@ -123,7 +133,7 @@ const WS = () => {
             };
           });
         }
-      }, 100); // Adjust the delay as needed
+      }, 400); // Adjust the delay as needed
     }
   }, [svgContent]);
 

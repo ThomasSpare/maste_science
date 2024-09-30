@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { CdsButton } from '@cds/react/button'; // Ensure this is the correct import for your button component
+import { CdsButton } from '@cds/react/button';
 import { useNavigate } from 'react-router-dom';
 import ReactCountryFlag from 'react-country-flag';
-import { getCountryCode } from '../countrycodes/countryCodes'; // Import the utility function
+import { getCountryCode } from '../countrycodes/countryCodes';
 import "./PublicDocs.css";
-// import "../App.css"; 
+import "../App.css"; 
 
 const PublicDocs = () => {
     const [uploads, setUploads] = useState([]);
@@ -13,7 +13,7 @@ const PublicDocs = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
+    const itemsPerPage = 20;
     const navigate = useNavigate();
 
     const api = axios.create({
@@ -21,7 +21,6 @@ const PublicDocs = () => {
     });
 
     useEffect(() => {
-        // Fetch uploads from the server
         const fetchUploads = async () => {
             try {
                 const response = await api.get('/api/uploads');
@@ -49,17 +48,17 @@ const PublicDocs = () => {
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
-        setCurrentPage(1); // Reset to the first page on search
+        setCurrentPage(1);
     };
 
     const handleStartDateChange = (event) => {
         setStartDate(event.target.value);
-        setCurrentPage(1); // Reset to the first page on date change
+        setCurrentPage(1);
     };
 
     const handleEndDateChange = (event) => {
         setEndDate(event.target.value);
-        setCurrentPage(1); // Reset to the first page on date change
+        setCurrentPage(1);
     };
 
     const filteredUploads = uploads.filter((upload) => {
@@ -75,7 +74,6 @@ const PublicDocs = () => {
         return isWithinDateRange && matchesSearchTerm && isPublic;
     });
 
-    // Sort the filtered uploads by upload date in descending order
     const sortedUploads = filteredUploads.sort((a, b) => new Date(b.upload_date) - new Date(a.upload_date));
 
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -113,35 +111,37 @@ const PublicDocs = () => {
                         />
                     </label>
                 </div>
+                <div className="list-header" style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', backgroundColor: '#f0f0f0', fontWeight: 'bold' }}>
+                    <span style={{ flex: '2' }}>Title</span>
+                    <span style={{ flex: '2' }}>Author</span>
+                    <span style={{ flex: '0.75' }}>Upload Date</span>
+                    <span style={{ flex: '0.75' }}>File Type</span>
+                    <span style={{ flex: '0.75', textAlign: 'right' }}>Country</span>
+                </div>
                 <ol>
                     {paginatedUploads.map((upload, index) => (
-                        <li style={{
-                            listStyle: 'none',
-                            height: '50px',
-                            width: '75vw',
-                            fontSize: 'medium',
-                            fontWeight: 500,
-                            lineHeight: 1.5,
-                            borderStyle: 'none'
-                        }} className="pubdocs_search-list-item" key={index} onClick={() => handleFileClick(upload)}>
-                            <div className='list-info'>
-                                <p style={{ display: 'inline-block', marginRight: '50px' }}>
-                                    Title: {upload.category}
+                        <li className="search-list-item" key={index} onClick={() => handleFileClick(upload)}>
+                            <div className='list-info' style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <p style={{ flex: '2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {upload.category.length > 65 ? `${upload.category.substring(0, 65)}...` : upload.category}
                                 </p>
-                                <p style={{ display: 'inline-block', marginRight: '50px' }}>
-                                    Author: {upload.author}
+                                <p style={{ flex: '2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {upload.author.length > 60 ? `${upload.author.substring(0, 60)}...` : upload.author}
                                 </p>
-                                <p style={{ display: 'inline-block', marginRight: '50px' }}>
-                                    Upload Date: {new Date(upload.upload_date).toLocaleDateString()}
+                                <p style={{ flex: '0.75' }}>
+                                    {new Date(upload.upload_date).toLocaleDateString()}
                                 </p>
-                                <p style={{ display: 'inline-block', marginRight: '50px' }}>
-                                    Country: {upload.country} <ReactCountryFlag countryCode={getCountryCode(upload.country)} svg />
+                                <p style={{ flex: '0.75' }}>
+                                    {upload.file_url ? upload.file_url.split('.').pop() : 'N/A'}
+                                </p>
+                                <p style={{ flex: '0.75', display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '0px !important' }}>
+                                    {upload.country} <ReactCountryFlag countryCode={getCountryCode(upload.country)} svg />
                                 </p>
                             </div>
                         </li>
                     ))}
                 </ol>
-                <div style={{ marginTop: '10px' }}></div>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' }}>
                     <CdsButton onClick={handlePreviousPage} disabled={currentPage === 1}>
                         Previous
                     </CdsButton>
@@ -150,6 +150,7 @@ const PublicDocs = () => {
                     </CdsButton>
                 </div>
             </div>
+        </div>
     );
 };
 

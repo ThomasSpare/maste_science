@@ -5,7 +5,7 @@ import PptxGenJS from "pptxgenjs";
 
 const ViewPpt = () => {
   const { fileId, fileKey } = useParams();
-  const [fileContent, setFileContent] = useState("");
+  const [fileContent, setFileContent] = useState(null);
   useAuth0(); // Ensure this path is correct
 
   useEffect(() => {
@@ -25,22 +25,10 @@ const ViewPpt = () => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        return response.blob();
+        return response.arrayBuffer();
       })
-      .then((blob) => {
-        const fileReader = new FileReader();
-        fileReader.onload = (e) => {
-          const content = e.target.result;
-          setFileContent(content);
-        };
-        if (
-          blob.type ===
-          "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-        ) {
-          fileReader.readAsArrayBuffer(blob);
-        } else {
-          fileReader.readAsText(blob);
-        }
+      .then((arrayBuffer) => {
+        setFileContent(arrayBuffer);
       })
       .catch((error) => {
         if (error.name === "AbortError") {
@@ -53,10 +41,10 @@ const ViewPpt = () => {
     return () => {
       abortController.abort();
     };
-  }, [fileKey]); // Add fileKey to the dependency array
+  }, [fileKey, fileId]); // Add fileKey and fileId to the dependency array
 
   const renderContent = () => {
-    if (fileContent instanceof ArrayBuffer) {
+    if (fileContent) {
       const pptx = new PptxGenJS();
       pptx.load(fileContent);
       const slides = pptx.getSlides();
@@ -66,14 +54,14 @@ const ViewPpt = () => {
             <div key={elemIndex}>
               {element.type === "text" && <p>{element.text}</p>}
               {element.type === "image" && (
-                <img src={element.data} alt="slide image" />
+                <img src={element.data} alt="slide" />
               )}
             </div>
           ))}
         </div>
       ));
     } else {
-      return <pre>{fileContent}</pre>;
+      return <div>Loading...</div>;
     }
   };
 
