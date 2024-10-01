@@ -89,7 +89,6 @@ img{
     .header {
         background-color: #2fb0ff;
         color: white;
-        padding: 20px;
         text-align: center;
     }
 
@@ -97,14 +96,6 @@ img{
     .text-section h2 {
         color: #002538;
     }
- 
-  
-  .header {
-    background-color: #2fb0ff;
-    color: white;
-    padding: 20px;
-    text-align: center;
-  }
   
   .Partner_content {
     flex: 1 1;

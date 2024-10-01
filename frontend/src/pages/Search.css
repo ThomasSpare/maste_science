@@ -56,7 +56,7 @@ li:hover
 
 @media screen and (max-width: 1440px){
  /* Search Categories  */
-    .Search-div{
+    .search-main-div{
         margin-top: 10vh;
     }
   }

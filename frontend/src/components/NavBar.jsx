@@ -38,12 +38,12 @@ ClarityIcons.addIcons(thumbsUpIcon);
 
 function NavBar() {
   const { isLoading, user, getAccessTokenSilently } = useAuth0();
-
+  
   const [showLogo, setShowLogo] = useState(true);
   const location = useLocation();
   const email = user ? user.email : "Guest";
   
-
+  
   useEffect(() => {
     if (!(location.pathname === '/')) {
       setShowLogo(false);
@@ -51,36 +51,43 @@ function NavBar() {
       setShowLogo(true);
     }
   }, [location]);
-
-
+  
+  
   const checkboxRef = useRef(null);
-
+  
   const handleCheckboxChange = () => {
     const isDarkMode = document.body.classList.toggle("dark");
     localStorage.setItem("darkMode", isDarkMode ? "enabled" : "disabled");
   };
-
+  
   useEffect(() => {
     const darkMode = localStorage.getItem("darkMode");
     if (darkMode === "enabled") {
       document.body.classList.add("dark");
     }
   }, []);
-
+  
   // const handleSearchInputChange = (event) => {
-  //   setSearchQuery(event.target.value);
-  // };
+    //   setSearchQuery(event.target.value);
+    // };
+    
+    // const handleSearch = (event) => {
+      //   event.preventDefault();
+      //   console.log('Searching for:', searchQuery);
+      // };
 
-  // const handleSearch = (event) => {
-  //   event.preventDefault();
-  //   console.log('Searching for:', searchQuery);
-  // };
-
-  return (
-    <header className="App-header">
+      return (
+        <header className="App-header">
       <div className="main">
         <header className="header header-6">
           <div className="branding">
+          {showLogo && (
+             <img
+               className="logo"
+               src="https://res.cloudinary.com/djunroohl/image/upload/v1727695386/Untitled_2x_tpfxxy.png"
+               alt="logo"
+             />
+           )} 
           </div>
           {/* <form className="search" onSubmit={handleSearch}>
             <input
@@ -134,19 +141,11 @@ function NavBar() {
             <Dropdown1 />
             <Dropdown2 />
             <Dropdown3 isLoggedIn={!isLoading} />
-            <Link to="/links">LINKS</Link>
             <Link to="/partners">PARTNERS</Link>
             <Link to="/contacts">CONTACTS</Link>
           </ul>
         </nav>
       </div>
-      {showLogo && (
-         <img
-           className="logo"
-           src="https://res.cloudinary.com/djunroohl/image/upload/v1727695386/Untitled_2x_tpfxxy.png"
-           alt="logo"
-         />
-       )} 
     </header>
   );
 }

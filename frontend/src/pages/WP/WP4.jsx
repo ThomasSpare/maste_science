@@ -87,7 +87,7 @@ const WP4 = () => {
 
   return (
     <div className='search-main-div'>
-      <h1 className='search-h1'>Search Publications</h1>
+      <h1 className='search-h1'>Search WP4 documents</h1>
       <div>
         <input className='search-input'
           type="text"

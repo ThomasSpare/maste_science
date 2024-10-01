@@ -15,6 +15,10 @@
        url('./Assets/Fonts/Webfonts/WOFF/Metropolis-Medium.woff') format('woff');
 }
 
+html {
+  display: flex;
+}
+
 footer{
   font-family: Roboto, Helvetica, Arial, sans-serif;
   min-height: 100vh !important;
@@ -232,17 +236,26 @@ body.dark .partner-box {background-color: #3b3b3b; color: #bee7ff;}
   padding-left: 30rem !important;
 }
 
+/* LOGO ---------------------*/
+
+.header .branding, header .branding {
+  display: flex !important;
+  flex: 0 0 auto !important;
+  min-width: 10.5rem !important;
+  height: 16vh !important;
+  z-index: 1000;
+  padding: 0 !important;
+}
+
 .logo {
   display: flex !important;
-  width: 22%;
   pointer-events: none;
-  margin-right: 78%;
-  border-radius: 15px;
+  border-radius: 10px;
   margin-top: 0%;
   opacity: 0;
   animation: fadeIn 1s ease-in-out forwards;
 }
-
+/* ------------------------- */
 
 @keyframes fadeIn {
   0% {
@@ -276,13 +289,35 @@ body.dark .partner-box {background-color: #3b3b3b; color: #bee7ff;}
 
 /* Responsive Design */
 
+
+
 @media screen and (max-width: 1440px){
+
+
+#root > header > div > nav > ul > div:nth-child(1){
+    padding-left: 4rem !important;
+}
+
+.header.header {
+  height: 3.5rem !important;
+    
+}
+.header .branding, header .branding {
+  height: 14vh !important;
+}
+.ws-text-box {
+  padding-left: 20px !important;
+  min-width: 74vw !important;
+  padding-left: 10vw !important;
+  margin-top: 12vh !important;
+}
   .App-header {
     min-height: 10vh;
   }
-  .sub-nav .nav, .subnav .nav {
-    padding-left: 15rem !important;
-}
+    .sub-nav .nav, .subnav .nav {
+        padding-left: 20rem !important;
+    }
+
 .home_image2 {
   height: 100vh;
   display: none;
@@ -306,15 +341,20 @@ body.dark .partner-box {background-color: #3b3b3b; color: #bee7ff;}
 
 @media screen and (max-width: 1024px) {
   .sub-nav .nav, .subnav .nav {
-    padding-left: 4rem !important;
+    padding-left: 7rem !important;
 }
+
+.header .branding, header .branding {
+  height: 10vh !important;
+}
+
 .home_image1 {
   height: 100vh;
   object-fit: cover;
   width: 21vw;
 }
 .dropdown .dropdown-toggle.btn {
-  padding-right: 0rem !important;
+  margin-left: 0rem !important;
 }
 }
 
@@ -322,6 +362,11 @@ body.dark .partner-box {background-color: #3b3b3b; color: #bee7ff;}
   .App-header {
     min-height: 8vh;
   }
+
+  .header .header-actions, .header .settings, header .header-actions, header .settings {
+    justify-content: center;
+    margin-left: 16vw;
+}
 
 
   /* left Button in nav bar */
@@ -336,9 +381,14 @@ body.dark .partner-box {background-color: #3b3b3b; color: #bee7ff;}
         margin-top: 6vh;
 }
 
-.header, header{
+.header .header{
   display: block;
 }
+
+.header.header {
+  height: 2.5rem !important;
+}
+
 
 .checkbox-label {
   background-color: #868686;
@@ -349,9 +399,7 @@ body.dark .partner-box {background-color: #3b3b3b; color: #bee7ff;}
 }
 
 .header .header-actions, .header .settings, header .header-actions, header .settings {
-  display: grid !important;
   justify-content: center;
-  margin-top: 20vh;
 }
 
   .header header-6 {
@@ -437,5 +485,10 @@ li:hover {
     padding-left: 5vw;
     padding-right: 5vw;
   }
-  
+  .home-text{
+  width: 143vw;
+  }
+  .header .branding, header .branding {
+    height: 0vh !important;
+}
 }
