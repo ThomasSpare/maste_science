@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Document, Packer, Paragraph, TextRun } from 'docx';
 import { saveAs } from 'file-saver';
+import DocViewer, { DocViewerRenderers } from 'react-doc-viewer';
 
 const ViewText = () => {
     const { fileId, fileKey } = useParams();
     const [fileContent, setFileContent] = useState('');
+    const [fileType, setFileType] = useState('');
     useAuth0(); // Ensure this path is correct
 
     useEffect(() => {
@@ -26,6 +27,8 @@ const ViewText = () => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
+                const contentType = response.headers.get('Content-Type');
+                setFileType(contentType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ? 'docx' : contentType.split('/')[1]);
                 return response.blob();
             })
             .then(blob => {
@@ -34,7 +37,7 @@ const ViewText = () => {
                     const content = e.target.result;
                     setFileContent(content);
                 };
-                if (blob.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+                if (blob.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || blob.type === 'application/msword') {
                     fileReader.readAsArrayBuffer(blob);
                 } else {
                     fileReader.readAsText(blob);
@@ -51,32 +54,26 @@ const ViewText = () => {
         return () => {
             abortController.abort();
         };
-    }, [fileKey]); // Add fileKey to the dependency array
+    }, [fileKey, fileId]); // Add fileKey to the dependency array
 
     const renderContent = () => {
-        if (fileContent instanceof ArrayBuffer) {
-            const doc = new Document();
-            doc.load(fileContent);
-            const paragraphs = doc.getParagraphs();
-            return paragraphs.map((paragraph, index) => (
-                <p key={index}>{paragraph.getText()}</p>
-            ));
+        if (fileContent) {
+            const docs = [
+                {
+                    uri: URL.createObjectURL(new Blob([fileContent], { type: fileType })),
+                    fileType: fileType // Use the fileType state directly
+                }
+            ];
+            return <DocViewer documents={docs} pluginRenderers={DocViewerRenderers} />;
         } else {
-            return <pre>{fileContent}</pre>;
+            return <p>Loading...</p>;
         }
     };
 
     const handleDownload = () => {
-        if (fileContent instanceof ArrayBuffer) {
-            const doc = new Document();
-            doc.load(fileContent);
-            Packer.toBlob(doc).then(blob => {
-                saveAs(blob, 'document.docx');
-            });
-        } else {
-            const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
-            saveAs(blob, 'document.txt');
-        }
+        const blob = new Blob([fileContent], { type: fileType });
+        const fileName = fileKey.split('/').pop();
+        saveAs(blob, fileName);
     };
 
     return (

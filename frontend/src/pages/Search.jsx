@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { saveAs } from 'file-saver';
 import { CdsButton } from '@cds/react/button'; // Ensure this is the correct import for your button component
 import { useNavigate } from 'react-router-dom';
 import ReactCountryFlag from 'react-country-flag';
 import { getCountryCode } from '../countrycodes/countryCodes'; // Import the utility function
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import "./Search.css";
 import "../App.css"; 
 
@@ -36,12 +39,36 @@ const Search = () => {
   }, [api]);
 
   const handleFileClick = (upload) => {
-    if (upload.file_url && (upload.file_url.split('.').pop() === 'ppt' || upload.file_url.split('.').pop() === 'pptx')) {
+    const fileExtension = upload.file_url.split('.').pop();
+    if (upload.is_promotion || ['jpg', 'png', 'svg'].includes(fileExtension)) {
+      navigate(`/view-img/${upload.id}/${upload.file_key}`);
+    } else if (['ppt', 'pptx'].includes(fileExtension)) {
       navigate(`/view-ppt/${upload.id}/${upload.file_key}`);
+    } else if (['doc', 'docx', 'xls', 'xlsx', 'csv', 'txt'].includes(fileExtension)) {
+      navigate(`/view-text/${upload.id}/${upload.file_key}`);
     } else {
       navigate(`/view-pdf/${upload.id}/${upload.file_key}`);
     }
   };
+
+  const handleDownloadClick = async (upload) => {
+    const confirmDownload = window.confirm('Do you want to download this file?');
+    if (confirmDownload) {
+        try {
+            const endpoint = (upload.file_url.split('.').pop() === 'ppt' || upload.file_url.split('.').pop() === 'pptx') 
+                ? `/api/download-ppt/${upload.file_key}` 
+                : `/api/uploads/${upload.file_key}`;
+            const response = await fetch(endpoint);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const blob = await response.blob();
+            saveAs(blob, upload.file_url.split('/').pop());
+        } catch (error) {
+            console.error('Error downloading file:', error);
+        }
+    }
+};
 
   const handlePreviousPage = () => {
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
@@ -122,10 +149,11 @@ const Search = () => {
           <span style={{ flex: '0.75' }}>Upload Date</span>
           <span style={{ flex: '0.75' }}>File Type</span>
           <span style={{ flex: '0.75', textAlign: 'right' }}>Country</span>
+          <span style={{ flex: '0.5', textAlign: 'right' }}>Download</span>
         </div>
         <ol>
           {paginatedUploads.map((upload, index) => (
-            <li className="search-list-item" key={index} onClick={() => handleFileClick(upload)}>
+            <li className="search-list-item" key={index} onClick={() => !upload.is_template && handleFileClick(upload)}>
               <div className='list-info' style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <p style={{ flex: '2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {upload.category.length > 65 ? `${upload.category.substring(0, 65)}...` : upload.category}
@@ -141,6 +169,11 @@ const Search = () => {
                 </p>
                 <p style={{ flex: '0.75', display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '0px !important' }}>
                   {upload.country} <ReactCountryFlag countryCode={getCountryCode(upload.country)} svg />
+                </p>
+                <p style={{ flex: '0.5', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                  {upload.is_template && (
+                    <FontAwesomeIcon className='download' icon={faDownload} onClick={() => handleDownloadClick(upload)} style={{ cursor: 'pointer' }} />
+                  )}
                 </p>
               </div>
             </li>

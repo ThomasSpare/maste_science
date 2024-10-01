@@ -109,7 +109,7 @@ const Upload = () => {
           type="file"
           id="file"
           name='file'
-          accept=".pdf, .ppt, .pptx"
+          accept=".pdf, .ppt, .pptx, .doc, .docx, .xls, .xlsx, .csv, .txt, .jpg, .jpeg, .png"
           onChange={e => setFile(e.target.files[0])}
         />
         <div className="horizontal-container">

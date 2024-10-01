@@ -37,7 +37,7 @@ const Meetings = () => {
 
 const handleFileClick = (upload) => {
     const fileExtension = upload.file_url ? upload.file_url.split('.').pop() : '';
-    if (fileExtension === 'txt') {
+    if (fileExtension === 'txt', 'doc', 'docx', 'xls', 'xlsx', 'csv') {
         navigate(`/view-text/${upload.id}/${upload.file_key}`);
     } else if (fileExtension === 'pdf') {
         navigate(`/view-pdf/${upload.id}/${upload.file_key}`);

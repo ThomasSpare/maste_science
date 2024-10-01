@@ -291,6 +291,31 @@ app.get("/api/uploads/:fileKey", async (req, res) => {
     const file = await s3.getObject(params).promise();
     console.log("File fetched successfully:", file);
     res.setHeader("Content-Type", file.ContentType);
+    res.setHeader("Content-Disposition", `attachment; filename="${fileKey}"`);
+    res.send(file.Body);
+  } catch (error) {
+    console.error("Error fetching file:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+});
+
+// Endpoint to serve ppt and pptx files
+app.get("/api/download-ppt/:fileKey", async (req, res) => {
+  const { fileKey } = req.params;
+  console.log("Fetching ppt/pptx file with key:", fileKey);
+
+  const params = {
+    Bucket: bucketName,
+    Key: fileKey,
+  };
+
+  try {
+    const file = await s3.getObject(params).promise();
+    console.log("File fetched successfully:", file);
+    res.setHeader("Content-Type", file.ContentType);
+    res.setHeader("Content-Disposition", `attachment; filename="${fileKey}"`);
     res.send(file.Body);
   } catch (error) {
     console.error("Error fetching file:", error);

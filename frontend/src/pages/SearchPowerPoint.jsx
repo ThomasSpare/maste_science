@@ -4,8 +4,11 @@ import { CdsButton } from '@cds/react/button';
 import { useNavigate } from 'react-router-dom';
 import ReactCountryFlag from 'react-country-flag';
 import { getCountryCode } from '../countrycodes/countryCodes';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import './SearchPowerPoint.css';
 import '../App.css';
+
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -26,7 +29,7 @@ const SearchPowerPoint = () => {
       try {
         const response = await api.get('/api/uploads');
         const data = response.data;
-        setUploads(data.filter(upload => upload.category === 'template'));
+        setUploads(data.filter(upload => upload.is_template));
       } catch (error) {
         console.error('Error fetching uploads:', error);
       }
@@ -35,16 +38,23 @@ const SearchPowerPoint = () => {
     fetchUploads();
   }, []);
 
-  const handleFileClick = (upload) => {
-    const fileExtension = upload.file_url.split('.').pop().toLowerCase();
-    if (fileExtension === 'ppt' || fileExtension === 'pptx') {
-      navigate(`/view-ppt/${upload.id}/${upload.file_key}`);
-    } else if (fileExtension === 'pdf') {
-      navigate(`/view-pdf/${upload.id}/${upload.file_key}`);
-    } else if (['txt', 'doc', 'docx', 'rtf', 'odt'].includes(fileExtension)) {
-      navigate(`/view-text/${upload.id}/${upload.file_key}`);
-    } else {
-      console.error('Unsupported file type:', fileExtension);
+  const handleDownloadClick = async (upload) => {
+    const confirmDownload = window.confirm('Do you want to download this file?');
+    if (confirmDownload) {
+      try {
+        const response = await api.get(`/api/uploads/${upload.file_key}`, {
+          responseType: 'blob',
+        });
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', upload.file_url.split('/').pop());
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (error) {
+        console.error('Error downloading file:', error);
+      }
     }
   };
 
@@ -127,10 +137,11 @@ const SearchPowerPoint = () => {
           <span style={{ flex: '0.75' }}>Upload Date</span>
           <span style={{ flex: '0.75' }}>File Type</span>
           <span style={{ flex: '0.75', textAlign: 'right' }}>Country</span>
+          <span style={{ flex: '0.5', textAlign: 'right' }}>Download</span>
         </div>
         <ol>
           {paginatedUploads.map((upload, index) => (
-            <li className="search-list-item" key={index} onClick={() => handleFileClick(upload)}>
+            <li className="search-list-item" key={index}>
               <div className='list-info' style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <p style={{ flex: '2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {upload.category.length > 65 ? `${upload.category.substring(0, 65)}...` : upload.category}
@@ -147,11 +158,14 @@ const SearchPowerPoint = () => {
                 <p style={{ flex: '0.75', display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '0px !important' }}>
                   {upload.country} <ReactCountryFlag countryCode={getCountryCode(upload.country)} svg />
                 </p>
+                <p style={{ flex: '0.5', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                  <FontAwesomeIcon className='download' icon={faDownload} onClick={() => handleDownloadClick(upload)} style={{ cursor: 'pointer' }} />
+                </p>
               </div>
             </li>
           ))}
         </ol>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' , minHeight: '100vh' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '5px', minHeight: '100vh' }}>
           <CdsButton onClick={handlePreviousPage} disabled={currentPage === 1}>
             Previous
           </CdsButton>
