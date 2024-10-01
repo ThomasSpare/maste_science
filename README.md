@@ -1,6 +1,6 @@
 
 ![Mpste Logo](https://res.cloudinary.com/djunroohl/image/upload/v1727695386/Untitled_2x_tpfxxy.png)
-## MÅSTE - Research in Nuclear Recycling
+## MÅSTE - Multidisciplinary Commitments for Sweden's Gene IV Technology and Expertise
 
 [LIVE SITE](https://maste-science-frontend.onrender.com/)
 
