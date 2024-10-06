@@ -27,6 +27,7 @@
 
   #root > div > form > input{
     margin-bottom: 10px;
+    width: 15vw;
   }
 
   #root > div > form {

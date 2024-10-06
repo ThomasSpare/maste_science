@@ -28,3 +28,26 @@ img{
 .news-author{
     font-size: small !important;
 }
+
+
+@media screen and (max-width: 768px){
+    .news-card{
+        width: 80vw;
+    }
+
+    .news-info{
+        margin-left: 0px;
+    }
+    img {
+        max-width: 58vw;
+        margin-bottom: 10px;
+        object-fit: cover;
+    }
+    .partner-box {
+        background-color: #f3f9f4;
+        border-radius: 15px;
+        padding: 10px;
+        margin-bottom: 2vh;
+        width: 32em;
+    }
+}

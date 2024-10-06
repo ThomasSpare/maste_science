@@ -24,6 +24,13 @@ footer{
   min-height: 100vh !important;
 }
 
+#Footer > section.d-flex.justify-content-center.justify-content-lg-between.p-4.border-bottom > div:nth-child(2){
+  display: flex;
+}
+#Footer > section.d-flex.justify-content-center.justify-content-lg-between.p-4.border-bottom > div> a{
+  font-size: x-large;
+}
+
 .App {
   text-align: center;
   font-family: "Metropolis", sans-serif;
@@ -289,19 +296,32 @@ body.dark .partner-box {background-color: #3b3b3b; color: #bee7ff;}
 
 /* Responsive Design */
 
+@media screen and (max-width: 2560px) {
+
+  .hamburger-menu{
+    display: none;
+}
+}
 
 
 @media screen and (max-width: 1440px){
 
+  .hamburger-menu {
+    display: none;
+}
 
 #root > header > div > nav > ul > div:nth-child(1){
     padding-left: 4rem !important;
 }
 
+.hamburger-menu {
+  display: none;
+} 
+
 .header.header {
-  height: 3.5rem !important;
-    
+  height: 3.5rem !important;   
 }
+
 .header .branding, header .branding {
   height: 14vh !important;
 }
@@ -344,6 +364,14 @@ body.dark .partner-box {background-color: #3b3b3b; color: #bee7ff;}
     padding-left: 7rem !important;
 }
 
+.hamburger-menu {
+  display: none;
+}
+
+.header.header {
+  height: 3.5rem !important;
+}
+
 .header .branding, header .branding {
   height: 10vh !important;
 }
@@ -361,6 +389,42 @@ body.dark .partner-box {background-color: #3b3b3b; color: #bee7ff;}
 @media screen and (max-width: 768px) {
   .App-header {
     min-height: 8vh;
+  }
+
+  #Footer > section.d-flex.justify-content-center.justify-content-lg-between.p-4.border-bottom > div> a{
+    font-size: x-large;
+    margin-top: 40px;
+  }
+
+  #Footer {
+    margin-top: 10vh !important;
+    width: 35rem !important;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+  .hamburger-menu {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#root > div.hamburger-menu > button {
+  margin-left: 0rem;
+  margin: 2vh;
+  display: flex;
+}
+
+
+  .header.header {
+    display: none;
+  }
+  
+  .header .branding, header .branding {
+    display: none;
+  }
+  #root > header > div > nav > ul {
+    display: none;
   }
 
   .header .header-actions, .header .settings, header .header-actions, header .settings {
@@ -485,6 +549,11 @@ li:hover {
     padding-left: 5vw;
     padding-right: 5vw;
   }
+
+  #root > div {
+    text-align: -webkit-center;
+    width: 80vh;
+}
   .home-text{
   width: 143vw;
   }
