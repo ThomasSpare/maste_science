@@ -1,5 +1,7 @@
 .hamburger-menu {
     position: relative;
+    z-index: 999;
+    background-color: #daf5c9;
   }
 
   .maste-logo-hamburger{
@@ -49,4 +51,21 @@
   
   .menu ul li a:hover {
     background-color: #f0f0f0;
+  }
+
+  .fa-solid, .fas {
+    font-weight: 900;
+    font-size: xxx-large;
+}
+
+  @media screen and (max-width: 425px){
+    .maste-logo-hamburger {
+    display: flex;
+    margin-right: 6vw;
+    margin-top: 25px;
+    height: 23vh;
+    width: 135vw;
+    /* object-fit: contain; */
+    max-width: none;
+    }
   }

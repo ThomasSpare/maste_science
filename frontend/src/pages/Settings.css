@@ -142,6 +142,7 @@ textarea {
     }
     .ql-editor{
     height: 18vh !important;
+    background-color: aliceblue;
     }
   }
 @media screen and (max-width: 425px){

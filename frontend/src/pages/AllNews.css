@@ -7,6 +7,15 @@
     border-style: outset;
 }
 
+.go-back{
+    display: flex;
+    margin-top: 10vh;
+    font-family: 'Metropolis';
+    font-weight: 700;
+    align-items: baseline;
+    justify-content: center;
+}
+
 .news-article{
     background-color: #f8fbf8;
     margin-left: 0px;

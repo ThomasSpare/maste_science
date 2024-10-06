@@ -391,6 +391,10 @@ body.dark .partner-box {background-color: #3b3b3b; color: #bee7ff;}
     min-height: 8vh;
   }
 
+  .content{
+    background-image: none !important;
+  }
+
   #Footer > section.d-flex.justify-content-center.justify-content-lg-between.p-4.border-bottom > div> a{
     font-size: x-large;
     margin-top: 40px;

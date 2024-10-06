@@ -46,3 +46,15 @@
     font-size: larger;
     margin: 5vh;  
   }
+
+  @media screen and (max-width: 768px){
+    .text-section {
+      display: flex;
+      margin-bottom: 20px;
+      text-align: justify;
+      line-height: normal;
+      margin-top: 91px;
+      flex-wrap: wrap;
+      flex-direction: column;
+  }
+  }

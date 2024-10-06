@@ -33,19 +33,19 @@ function Dropdown_2() {
           <clr-icon shape="caret down"></clr-icon>
         </button>
         <div className="dropdown-menu">
-          <h4 className="dropdown-header">Dropdown header</h4>
+          <h4 className="dropdown-header">WHAT'S GOING ON</h4>
           <Link
             to="/allnews"
             className="dropdown-item"
           >
             News
           </Link>
-          <Link
+          {/* <Link
             to="/events"
             className="dropdown-item"
           >
             Events
-          </Link>
+          </Link> */}
         </div>
       </div>
     </React.Fragment>

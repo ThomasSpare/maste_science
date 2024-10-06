@@ -44,3 +44,28 @@
     background-color: #296783;
     margin-top: 0vh !important;
   }
+
+  @media screen and (max-width: 1024px){
+    #root > div > form {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      border-width: medium;
+      border-color: #002538a6;
+      border-style: groove;
+      border-inline-width: 20px;
+      border-radius: 20px;
+      padding: 20px;
+      width: 75vw;
+      background-color: #296783;
+      margin-top: 3vh !important;
+  } 
+  }
+
+  @media screen and (max-width: 425px){
+    #root > div > form {
+        width: 95vw;
+        margin-top: 16vh !important;
+    }
+
+  }

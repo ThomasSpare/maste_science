@@ -3,6 +3,17 @@
     justify-content: center !important;
 }
 
+#root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+html, body {
+    height: 100%;
+    margin: 0;
+  }
+
 #Footer{
     margin-top: 100vh !important;
 }

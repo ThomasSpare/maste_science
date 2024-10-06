@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useHref } from "react-router-dom";
 import "./AllNews.css"; // Import the CSS file for styling
+import { CdsButton } from "@cds/react/button";
 
 const AllNews = () => {
     const [articles, setArticles] = useState([]);
@@ -34,7 +35,12 @@ const AllNews = () => {
     };
 
     if (articles.length === 0) {
-        return <div>Loading...</div>;
+        return (
+            <div className="go-back">
+                No News here at the moment...
+                <Link to="/"><CdsButton>Go back</CdsButton></Link>
+            </div>
+        );
     }
 
     return (
