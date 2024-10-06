@@ -53,9 +53,12 @@ h1{
  
   
   .header {
-    background-color: #2fb0ff;
+    background-color: #6cadef;
     color: white;
-    text-align: center;
+    display: flex;
+    color: #fafafa;
+    height: 2.5rem;
+    white-space: nowrap;
   }
   
   .content {
@@ -87,5 +90,27 @@ h1{
       width: 95vw !important;
   }
   }
+
+  @media screen and (max-width: 768px) {
+    .text-section {
+        display: flex;
+        margin-bottom: 20px;
+        text-align: justify;
+        line-height: normal;
+        margin-top: 91px;
+        flex-wrap: wrap;
+        flex-direction: column;
+        width: 80%;
+        margin-left: 10%;
+        font-size: xx-large;
+      }
+  
+
+    li {
+      font-size: x-large;  
+  }
+  }
+
+
 
 

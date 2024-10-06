@@ -24,7 +24,7 @@ svg{
 }
 
 .ws-header {
-  background-color: #2fb0ff;
+  background-color: #6cadef;
   color: white;
   padding: 20px;
   text-align: center;
@@ -109,3 +109,19 @@ svg{
   margin-bottom: 20px;
   height: 40vh;
 }
+
+@media screen and (max-width: 768px) {
+  .ws-content {
+    background-image: none !important;
+  }
+  #root > div > main > section > div > div.ws-text-box > p {
+    color: black;
+    animation: fadeIn 2s ease-in-out;
+    width: 111%;
+}
+svg {
+  width: 100% !important;
+  height: 125% !important;
+}
+}
+

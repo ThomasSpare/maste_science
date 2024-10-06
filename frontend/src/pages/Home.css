@@ -48,3 +48,11 @@ p{
     font-size: 0.8em;
     color: #888;
   }
+
+  @media screen and (max-width: 480px) {
+    p {
+        font-size: x-large !important;
+        padding: 30px !important;
+        line-height: 30px !important;
+    }
+}

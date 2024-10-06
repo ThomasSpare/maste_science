@@ -10,7 +10,7 @@
   }
   
   .header {
-    background-color: #2fb0ff;
+    background-color: #6cadef;
     color: white;
     text-align: center;
   }
@@ -47,14 +47,16 @@
     margin: 5vh;  
   }
 
-  @media screen and (max-width: 768px){
+  @media screen and (max-width: 768px) {
     .text-section {
-      display: flex;
-      margin-bottom: 20px;
-      text-align: justify;
-      line-height: normal;
-      margin-top: 91px;
-      flex-wrap: wrap;
-      flex-direction: column;
-  }
-  }
+        display: flex;
+        margin-bottom: 20px;
+        text-align: justify;
+        line-height: normal;
+        margin-top: 91px;
+        flex-wrap: wrap;
+        flex-direction: column;
+        width: 80%;
+        margin-left: 10%;
+    }
+}

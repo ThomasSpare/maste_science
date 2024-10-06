@@ -45,7 +45,14 @@ function NavBar() {
   
   
   useEffect(() => {
-    if (!(location.pathname === '/')) {
+    if (!(location.pathname === '/' || 
+      location.pathname === '/settings' || location.pathname === '/partners' || location.pathname === '/contacts'||
+      location.pathname === '/public_docs' || location.pathname === '/deliverables_public' || location.pathname === '/allnews' ||
+      location.pathname === '/search' || location.pathname === '/WP1' || location.pathname === '/WP2' || location.pathname === '/WP3' ||
+      location.pathname === '/WP4' || location.pathname === '/WP5' || location.pathname === '/WP6' || location.pathname === '/promotion' ||
+      location.pathname === '/publications' || location.pathname === '/reports' || location.pathname === '/contactlists' || location.pathname === '/deliverables' ||
+     location.pathname === '/meetings' || location.pathname === '/templates' || location.pathname === '/Upload' || location.pathname === '/workstructure' ||
+     location.pathname === '/What_is_Maste' || location.pathname === '/Aims' || location.pathname === '/partners' || location.pathname === '/contacts')) {
       setShowLogo(false);
     } else {
       setShowLogo(true);

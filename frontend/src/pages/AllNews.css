@@ -43,6 +43,9 @@ img{
     .news-card{
         width: 80vw;
     }
+    .header-news{
+        height: 4.5rem;
+    }
 
     .news-info{
         margin-left: 0px;

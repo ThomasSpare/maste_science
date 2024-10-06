@@ -19,6 +19,14 @@ html {
   display: flex;
 }
 
+.search-input{
+  color: #181818 !important;
+}
+
+.settings {
+  margin-right: 20px;
+}
+
 footer{
   font-family: Roboto, Helvetica, Arial, sans-serif;
   min-height: 100vh !important;
@@ -389,7 +397,12 @@ body.dark .partner-box {background-color: #3b3b3b; color: #bee7ff;}
 @media screen and (max-width: 768px) {
   .App-header {
     min-height: 8vh;
-  }
+    background-color: #6cadef;
+}
+
+#root > div.search-main-div > div > ol > li> div > p{
+  font-size: 0.5rem !important;
+}
 
   .content{
     background-image: none !important;
@@ -445,7 +458,7 @@ body.dark .partner-box {background-color: #3b3b3b; color: #bee7ff;}
 .home_image1 {
   height: 100vh;
         object-fit: cover;
-        width: 14vw;
+        width: 25vw;
         margin-top: 6vh;
 }
 
@@ -556,7 +569,6 @@ li:hover {
 
   #root > div {
     text-align: -webkit-center;
-    width: 80vh;
 }
   .home-text{
   width: 143vw;

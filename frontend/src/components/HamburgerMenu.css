@@ -2,6 +2,7 @@
     position: relative;
     z-index: 999;
     background-color: #daf5c9;
+    width: 100vw;
   }
 
   .maste-logo-hamburger{
@@ -15,6 +16,11 @@
     font-size: 24px;
     cursor: pointer;
   }
+
+  .fa-solid, .fas {
+    font-size: large;
+    font-weight: 900;
+}
   
   .menu {
     display: none;
@@ -22,7 +28,6 @@
     top: 67px;
     left: 0;
     background-color: white;
-    width: 100%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
@@ -45,27 +50,71 @@
     text-decoration: none;
     color: black !important;
     display: block;
-    font-size: large !important;
-    width: 228px;
+    font-size: x-large !important;
+    width: 270px;
 }
   
   .menu ul li a:hover {
     background-color: #f0f0f0;
   }
 
-  .fa-solid, .fas {
-    font-weight: 900;
-    font-size: xxx-large;
+@media screen and (max-width: 768px){     
+          .fa-solid, .fas {
+            font-weight: 900;
+            font-size: xxx-large;
+        }
+        .maste-logo-hamburger {   
+            display: flex;
+            margin-right: 10vw;
+            margin-top: 10px;
+            height: 19vh;
+            max-width: -moz-fit-content;
+            max-width: fit-content;
+            border-radius: 40px;
+            border-color: #d2f7ae;
+            border-width: 6px;
+            border-style: inset;    
+        }
 }
 
   @media screen and (max-width: 425px){
     .maste-logo-hamburger {
-    display: flex;
-    margin-right: 6vw;
-    margin-top: 25px;
-    height: 23vh;
-    width: 135vw;
-    /* object-fit: contain; */
-    max-width: none;
+        display: flex;
+        margin-right: 6vw;
+        margin-top: 25px;
+        height: 23vh;
+        width: 135vw;
+        max-width: fit-content;
+        border-radius: 24px;
+        border-color: #d2f7ae;
+        border-width: 6px;
+        border-style: inset;
     }
-  }
+
+    .App-header {
+        width: 107%;   
+    }
+
+    .hamburger-menu {
+                min-width: 107%;
+            }
+        }
+    
+@media screen and (max-width: 375px) {
+        .hamburger-menu {
+            width: 100%;
+        }
+        .maste-logo-hamburger {
+            margin-right: 16vw;
+            height: 23vh;
+            width: 142vw;   
+        }
+    }
+@media screen and (max-width: 320px) {
+    .maste-logo-hamburger {
+        margin-right: 16vw;
+        height: 23vh;
+        width: 165vw;   
+    }
+    
+}

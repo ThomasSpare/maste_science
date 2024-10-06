@@ -134,6 +134,12 @@ textarea {
     .form, form {
         display: contents;
     }
+    button{
+        display: flex !important;
+    }
+    .news-image {
+      margin-top: 8vh;
+  }
     input, select, textarea {
         display: block;
     }

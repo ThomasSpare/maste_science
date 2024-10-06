@@ -45,8 +45,8 @@ const AllNews = () => {
 
     return (
         <div className="text-page">
-            <header className="header">
-                <h1>All News</h1>
+            <header className="header-news">
+                <h1>What's Happening ?</h1>
             </header>
             <main className="content">
                 {articles.map((article) => (
@@ -61,7 +61,7 @@ const AllNews = () => {
                                 e.target.src = "https://via.placeholder.com/150";
                             }}
                         />
-                        <h2>{article.title}</h2>
+                        <h2 className="News-title">{article.title}</h2>
                         <div className="news-card">
                             <p>{truncateContent(article.content)}</p>
                         </div>
