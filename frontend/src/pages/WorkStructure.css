@@ -62,6 +62,7 @@ svg{
   background-color: #f0f9f2;
   padding: 20px;
   z-index: 1100;
+  width: 60vw;
   margin-top: 42vh !important;
 }
 
@@ -111,7 +112,6 @@ svg{
 .WP-img {
   margin-top: 20px;
   margin-bottom: 50px;
-  height: 0vh;
 }
 
 @media screen and (max-width: 1440px) {
@@ -154,9 +154,19 @@ svg{
     animation: fadeIn 2s ease-in-out;
     width: 111%;
   }
+  .ws-text-box p {
+    margin-top: 8vh !important;
+    width: 55vw;
+}
   svg {
     width: 100% !important;
     height: 125% !important;
     z-index: 99;
   }
+}
+
+@media screen and (max-width: 425px){
+  .ws-text-box p {
+    width: 140vw;
+}
 }
