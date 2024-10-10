@@ -180,6 +180,15 @@ body.dark #kth{ background-color: #aff9d3; border-radius: 25px;}
 body.dark #uppsala{ background-color: #aff9d3; border-radius: 25px;}
 /* Dark mode partners page */
 body.dark .partner-box {background-color: #3b3b3b; color: #bee7ff;}
+/* Dark mode Workstructure page */
+body.dark .ws-header {color: #bee7ff; background-color: #0e2533;}
+body.dark .ws-text-box {color: #bee7ff;}
+body.dark .ws-content {background-blend-mode: exclusion;
+background-color: aliceblue;}
+body.dark .ws-img-container {color: #bee7ff;}
+body.dark .svg-text { background-color: #00203b;}
+body.dark .WP-img {opacity: 0.8;}
+
 
 
 .checkbox {
