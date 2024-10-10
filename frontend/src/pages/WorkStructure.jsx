@@ -149,9 +149,9 @@ const WS = () => {
               className="WP-img"
               dangerouslySetInnerHTML={{ __html: svgContent }}
             />
-            <div className="ws-text-box">
-              {selectedElement && <p>{elementTexts[selectedElement]}</p>}
-            </div>
+          </div>
+          <div className="ws-text-box">
+            {selectedElement && <p className="svg-text">{elementTexts[selectedElement]}</p>}
           </div>
         </section>
       </main>

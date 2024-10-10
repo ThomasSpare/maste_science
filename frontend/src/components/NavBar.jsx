@@ -37,7 +37,7 @@ ClarityIcons.addIcons(searchIcon);
 ClarityIcons.addIcons(thumbsUpIcon);
 
 function NavBar() {
-  const { isLoading, user, getAccessTokenSilently } = useAuth0();
+  const { isLoading, user } = useAuth0();
   
   const [showLogo, setShowLogo] = useState(true);
   const location = useLocation();
@@ -73,16 +73,6 @@ function NavBar() {
       document.body.classList.add("dark");
     }
   }, []);
-  
-  // const handleSearchInputChange = (event) => {
-    //   setSearchQuery(event.target.value);
-    // };
-    
-    // const handleSearch = (event) => {
-      //   event.preventDefault();
-      //   console.log('Searching for:', searchQuery);
-      // };
-
       return (
         <header className="App-header">
       <div className="main">
@@ -96,27 +86,12 @@ function NavBar() {
              />
            )} 
           </div>
-          {/* <form className="search" onSubmit={handleSearch}>
-            <input
-            id="search-input-sidenav-ng"
-            type="text"
-            placeholder="Search for keywords..."
-            value={searchQuery}
-            onChange={handleSearchInputChange}
-            />
-            <button type="submit" className="nav-link nav-icon">
-            <cds-icon shape="search">
-            Search
-            </cds-icon>
-            </button>
-            </form> */}
           {!isLoading && user &&(
             <div className="currentUser">
               <cds-icon shape="thumbs-up"></cds-icon>
               <span className="display_email">
                 Logged in as {" " + email || "Guest"}
                 </span>
-                {/* {console.log('Logged with role:', roles)} */}
             </div>
           )}
           <ModalAuth isLoggedIn={isLoading} />
@@ -136,11 +111,9 @@ function NavBar() {
             <Link to="/" className="nav-link nav-icon">
               <cds-icon shape="home"></cds-icon>
             </Link>
-            {/* {!isLoading && user &&( */}
               <Link to="/settings" className="nav-link nav-icon">
                 <cds-icon shape="cog"></cds-icon>
               </Link>
-            {/* )} */}
           </div>
         </header>
         <nav className="subnav">
