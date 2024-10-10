@@ -62,8 +62,8 @@ svg{
   background-color: #f0f9f2;
   padding: 20px;
   z-index: 1100;
-  width: 60vw;
-  margin-top: 42vh !important;
+  width: 40vw;
+  margin-top: 1vh !important;
 }
 
 #root > div > main > section > div > div.ws-text-box > p {
@@ -86,7 +86,7 @@ svg{
 .ws-text-section {
   display: flex;
   margin-bottom: 20px;
-  margin-left: 26vw;
+  margin-left: 14vw;
   margin-right: 26vw;
   flex-wrap: wrap;
   justify-content: center;
