@@ -33,7 +33,7 @@ const SelectedNews = () => {
       </header>
       <main className="content">
         <img
-          style={{ borderStyle: "double", padding: "2px", borderRadius: "5px" }}
+          style={{ padding: "2px", borderRadius: "5px" }}
           src={article.image_url}
           alt={article.title}
           className="news-image"
