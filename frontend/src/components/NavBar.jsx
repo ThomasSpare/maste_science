@@ -75,59 +75,59 @@ function NavBar() {
   }, []);
       return (
         <header className="App-header">
-      <div className="main">
-        <header className="header header-6">
-          <div className="branding">
-          {showLogo && (
-             <img
-               className="logo"
-               src="https://res.cloudinary.com/djunroohl/image/upload/v1727695386/Untitled_2x_tpfxxy.png"
-               alt="logo"
-             />
-           )} 
-          </div>
-          {!isLoading && user &&(
-            <div className="currentUser">
-              <cds-icon shape="thumbs-up"></cds-icon>
-              <span className="display_email">
-                Logged in as {" " + email || "Guest"}
-                </span>
-            </div>
-          )}
-          <ModalAuth isLoggedIn={isLoading} />
-          <div className="settings">
-            <input
-              type="checkbox"
-              className="checkbox"
-              id="checkbox"
-              ref={checkboxRef}
-              onChange={handleCheckboxChange}
-              />
-            <label htmlFor="checkbox" className="checkbox-label">
-              <i className="fas fa-moon"></i>
-              <i className="fas fa-sun"></i>
-              <div className="ball"></div>
-            </label>
-            <Link to="/" className="nav-link nav-icon">
-              <cds-icon shape="home"></cds-icon>
-            </Link>
-              <Link to="/settings" className="nav-link nav-icon">
-                <cds-icon shape="cog"></cds-icon>
-              </Link>
+          <div className="main">
+            <header className="header header-6">
+              <div className="branding" onClick={() => window.location.href = "/"}>
+                {showLogo && (
+                  <img
+                    className="logo"
+                    src="https://res.cloudinary.com/djunroohl/image/upload/v1727695386/Untitled_2x_tpfxxy.png"
+                    alt="logo"
+                  />
+                )}
+              </div>
+              {!isLoading && user && (
+                <div className="currentUser">
+                  <cds-icon shape="thumbs-up"></cds-icon>
+                  <span className="display_email">
+                    Logged in as {" " + email || "Guest"}
+                  </span>
+                </div>
+              )}
+              <ModalAuth isLoggedIn={isLoading} />
+              <div className="settings">
+                <input
+                  type="checkbox"
+                  className="checkbox"
+                  id="checkbox"
+                  ref={checkboxRef}
+                  onChange={handleCheckboxChange}
+                />
+                <label htmlFor="checkbox" className="checkbox-label">
+                  <i className="fas fa-moon"></i>
+                  <i className="fas fa-sun"></i>
+                  <div className="ball"></div>
+                </label>
+                <Link to="/" className="nav-link nav-icon">
+                  <cds-icon shape="home"></cds-icon>
+                </Link>
+                <Link to="/settings" className="nav-link nav-icon">
+                  <cds-icon shape="cog"></cds-icon>
+                </Link>
+              </div>
+            </header>
+            <nav className="subnav">
+              <ul className="nav">
+                <Dropdown1 />
+                <Dropdown2 />
+                <Dropdown3 isLoggedIn={!isLoading} />
+                <Link to="/partners">PARTNERS</Link>
+                <Link to="/contacts">CONTACTS</Link>
+              </ul>
+            </nav>
           </div>
         </header>
-        <nav className="subnav">
-          <ul className="nav">
-            <Dropdown1 />
-            <Dropdown2 />
-            <Dropdown3 isLoggedIn={!isLoading} />
-            <Link to="/partners">PARTNERS</Link>
-            <Link to="/contacts">CONTACTS</Link>
-          </ul>
-        </nav>
-      </div>
-    </header>
-  );
+      );
 }
 
 export default NavBar;

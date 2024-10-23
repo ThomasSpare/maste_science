@@ -32,7 +32,7 @@ const Contacts = () => {
                 SE-412 96 Göteborg, Sweden
                 <br />
                 Email:
-                <a href="mailto:che@chalmers.se">che@chalmers.se
+                <a className="mailto" href="mailto:che@chalmers.se">che@chalmers.se
                     </a>
                 Tel: +46-31-7722801
             </p>

@@ -18,3 +18,7 @@
     font-size: x-large;
     margin-bottom: 5vh;
 }
+
+.mailto {
+    font-size: larger !important;
+}

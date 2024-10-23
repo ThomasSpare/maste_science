@@ -23,6 +23,10 @@
     width: 18px !important;
 }
 
+.ql-editor{
+  background-color: azure;
+}
+
 h1{
     font-size: 3rem;
     color: #000000;

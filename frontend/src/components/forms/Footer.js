@@ -36,15 +36,11 @@ const Footer = () => {
               </p>
               <p>
                 <MDBIcon color="secondary" icon="envelope" className="me-3" />
-                info@example.com
+                che@chalmers.se
               </p>
               <p>
                 <MDBIcon color="secondary" icon="phone" className="me-3" />{" "}
                 031-772 1000
-              </p>
-              <p>
-                <MDBIcon color="secondary" icon="print" className="me-3" /> + 01
-                234 567 89
               </p>
             </MDBCol>
           </MDBRow>
