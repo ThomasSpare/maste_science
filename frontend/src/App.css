@@ -168,7 +168,7 @@ body.dark .news-article {color: #bee7ff; background-color: #41505c;}
 body.dark .news-card {color: #bee7ff; background-color: #41505c; border-color: black;}
 body.dark .search-main-div > div > input{color: #bee7ff !important;}
 .App-header.dark {background-color: #41505c !important;}
-body.dark p {color: #bee7ff}
+body.dark p {color: #758e9c}
 a.dark {color: #bee7ff}
 .footer-logo.dark{background-color: currentColor;}
 .Footer.dark {background-color: #242424 !important;}
@@ -580,6 +580,11 @@ li:hover {
   .text {
     padding-left: 5vw;
     padding-right: 5vw;
+  }
+
+  cds-button{
+    width: 70vw;
+    height: 9vh;
   }
 
   #root > div {
