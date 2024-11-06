@@ -79,16 +79,17 @@
 
   @media screen and (max-width: 425px){
     .maste-logo-hamburger {
-        display: flex;
-        margin-right: 6vw;
-        margin-top: 25px;
-        height: 23vh;
-        width: 135vw;
-        max-width: fit-content;
-        border-radius: 24px;
-        border-color: #d2f7ae;
-        border-width: 6px;
-        border-style: inset;
+      border: 6px inset #d2f7ae;
+      border-radius: 24px;
+      display: flex;
+      height: 18vh;
+      margin-right: 47vw;
+      margin-top: 0px;
+      max-width: -webkit-fit-content;
+      max-width: -moz-fit-content;
+      max-width: fit-content;
+      width: 108vw;
+
     }
 
     .App-header {
@@ -104,17 +105,4 @@
         .hamburger-menu {
             width: 100%;
         }
-        .maste-logo-hamburger {
-            margin-right: 16vw;
-            height: 23vh;
-            width: 142vw;   
-        }
     }
-@media screen and (max-width: 320px) {
-    .maste-logo-hamburger {
-        margin-right: 16vw;
-        height: 23vh;
-        width: 165vw;   
-    }
-    
-}
