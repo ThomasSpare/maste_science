@@ -43,6 +43,51 @@ const decodeToken = (token) => {
   }
 };
 
+const getAuth0AccessToken = async () => {
+  const options = {
+    method: "POST",
+    url: `https://${process.env.AUTH0_DOMAIN}/oauth/token`,
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    data: new URLSearchParams({
+      grant_type: "client_credentials",
+      client_id: process.env.AUTH0_CLIENT_ID,
+      client_secret: process.env.AUTH0_CLIENT_SECRET,
+      audience: `https://${process.env.AUTH0_DOMAIN}/api/v2/`,
+    }),
+  };
+
+  try {
+    const response = await axios.request(options);
+    return response.data.access_token;
+  } catch (error) {
+    console.error("Error getting Auth0 access token:", error);
+    throw error;
+  }
+};
+
+const getUserInfo = async (email) => {
+  const accessToken = await getAuth0AccessToken();
+
+  const options = {
+    method: "GET",
+    url: `https://${process.env.AUTH0_DOMAIN}/api/v2/users-by-email`,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+    },
+    params: {
+      email: email,
+    },
+  };
+
+  try {
+    const response = await axios.request(options);
+    return response.data[0]; // Assuming the email is unique and returns a single user
+  } catch (error) {
+    console.error("Error getting user info from Auth0:", error);
+    throw error;
+  }
+};
+
 var options = {
   method: "POST",
   url: "https://dev-h6b2f6mjco5pu6wz.us.auth0.com/oauth/token",
@@ -59,96 +104,6 @@ axios
   .request(options)
   .then(function (response) {})
   .catch(function (error) {});
-
-// Authorize URL for Google Analytics
-
-// const oauth2Client = new google.auth.OAuth2(
-//   "GOOGLE_ANALYTICS_CLIENT_ID",
-//   "GOOGLE_ANALYTICS_CLIENT_SECRET",
-//   "GOOGLE_ANALYTICS_REDIRECT_URI"
-// );
-
-// const scopes = ["https://www.googleapis.com/auth/analytics.readonly"];
-
-// const authorizationUrl = oauth2Client.generateAuthUrl({
-//   access_type: "offline",
-//   scope: scopes,
-// });
-
-// console.log("Authorize this app by visiting this url:", authorizationUrl);
-
-// Endpoint to fetch Google Analytics data
-// app.get("/api/analytics", async (req, res) => {
-//   const {
-//     GOOGLE_ANALYTICS_CLIENT_ID,
-//     GOOGLE_ANALYTICS_CLIENT_SECRET,
-//     GOOGLE_ANALYTICS_REDIRECT_URI,
-//     GOOGLE_ANALYTICS_VIEW_ID,
-//   } = process.env;
-
-//   const oauth2Client = new google.auth.OAuth2(
-//     GOOGLE_ANALYTICS_CLIENT_ID,
-//     GOOGLE_ANALYTICS_CLIENT_SECRET,
-//     GOOGLE_ANALYTICS_REDIRECT_URI
-//   );
-
-//   oauth2Client.setCredentials({
-//     refresh_token: "your_refresh_token",
-//   });
-
-//   const analytics = google.analyticsreporting({
-//     version: "v4",
-//     auth: oauth2Client,
-//   });
-
-//   try {
-//     const response = await analytics.reports.batchGet({
-//       requestBody: {
-//         reportRequests: [
-//           {
-//             viewId: GOOGLE_ANALYTICS_VIEW_ID,
-//             dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
-//             metrics: [
-//               { expression: "ga:sessions" },
-//               { expression: "ga:pageviews" },
-//             ],
-//             dimensions: [{ name: "ga:date" }],
-//           },
-//         ],
-//       },
-//     });
-
-//     res.json(response.data);
-//   } catch (error) {
-//     console.error("Error fetching Google Analytics data:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// });
-
-// Endpoint to get Auth0 access token
-app.get("/api/auth/token", async (req, res) => {
-  var options = {
-    method: "POST",
-    url: `https://${process.env.AUTH0_DOMAIN}/oauth/token`,
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    data: new URLSearchParams({
-      grant_type: "client_credentials",
-      client_id: process.env.AUTH0_CLIENT_ID,
-      client_secret: process.env.AUTH0_CLIENT_SECRET,
-      audience: process.env.AUTH0_AUDIENCE,
-    }),
-  };
-
-  try {
-    const response = await axios.request(options);
-    const token = response.data.access_token;
-    decodeToken(token); // Decode the token
-    res.json(response.data);
-  } catch (error) {
-    console.error("Error getting access token:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
 
 // AWS S3 Configuration
 const s3 = new AWS.S3({
@@ -177,8 +132,10 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Endpoint to upload files
-app.post("/api/uploads", upload.single("file"), async (req, res) => {
+app.post("/api/uploads", upload.array("files"), async (req, res) => {
   const {
+    folderId,
+    folderName,
     author,
     uploadDate,
     country,
@@ -193,82 +150,96 @@ app.post("/api/uploads", upload.single("file"), async (req, res) => {
     isPublication,
     isTemplate,
   } = req.body;
-  const file = req.file;
 
-  console.log("Received data:", {
-    author,
-    uploadDate,
-    country,
-    category,
-    file,
-    isPublic,
-    workpackage,
-    isMeeting,
-    isDeliverable,
-    isContactList,
-    isPromotion,
-    isReport,
-    isPublication,
-    isTemplate,
-  });
-
-  if (!file || !author || !uploadDate || !country || !category) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
-  const fileKey = `${Date.now()}_${file.originalname}`;
-
-  const params = {
-    Bucket: bucketName,
-    Key: fileKey,
-    Body: file.buffer,
-    ContentType: file.mimetype,
-    // ACL: "public-read",
-  };
+  const files = req.files;
 
   try {
-    // Upload file to S3
-    const uploadResult = await s3.upload(params).promise();
-    const fileUrl = uploadResult.Location;
+    for (const file of files) {
+      const encodedFolderName = encodeURIComponent(folderName);
+      const encodedFileName = encodeURIComponent(file.originalname);
+      const fileKey = folderId
+        ? `${encodedFolderName}/${Date.now()}_${encodedFileName}`
+        : `${Date.now()}_${encodedFileName}`;
 
-    // Insert file metadata into PostgreSQL
-    const query =
-      "INSERT INTO uploads (author, upload_date, country, category, file_url, file_key, is_public, workpackage, is_meeting, is_deliverable, is_contact_list, is_promotion, is_report, is_publication, is_template) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *";
-    const values = [
-      author,
-      uploadDate,
-      country,
-      category,
-      fileUrl,
-      fileKey,
-      isPublic,
-      workpackage,
-      isMeeting,
-      isDeliverable,
-      isContactList,
-      isPromotion,
-      isReport,
-      isPublication,
-      isTemplate,
-    ];
-    const result = await pool.query(query, values);
+      const params = {
+        Bucket: bucketName, // Ensure bucketName is correctly referenced
+        Key: fileKey,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      };
 
-    console.log("File metadata saved to database:", result.rows[0]);
+      // Upload file to S3
+      const uploadResult = await s3.upload(params).promise();
+      const fileUrl = uploadResult.Location;
 
-    res.status(201).json({
-      message: "File uploaded successfully",
-      upload: result.rows[0],
-    });
+      // Prepare the INSERT statement and values
+      const query = folderId
+        ? "INSERT INTO uploads (folder_id, folder_name, author, upload_date, country, category, file, file_url, file_key, is_public, workpackage, is_meeting, is_deliverable, is_contact_list, is_promotion, is_report, is_publication, is_template) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING *"
+        : "INSERT INTO uploads (author, upload_date, country, category, file, file_url, file_key, is_public, workpackage, is_meeting, is_deliverable, is_contact_list, is_promotion, is_report, is_publication, is_template) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *";
+      const values = folderId
+        ? [
+            folderId,
+            folderName,
+            author,
+            uploadDate,
+            country,
+            category,
+            file.originalname, // Add the file name to the file column
+            fileUrl,
+            fileKey,
+            isPublic === "true", // Ensure boolean values are correctly handled
+            workpackage || null, // Handle empty workpackage
+            isMeeting === "true", // Ensure boolean values are correctly handled
+            isDeliverable === "true", // Ensure boolean values are correctly handled
+            isContactList === "true", // Ensure boolean values are correctly handled
+            isPromotion === "true", // Ensure boolean values are correctly handled
+            isReport === "true", // Ensure boolean values are correctly handled
+            isPublication === "true", // Ensure boolean values are correctly handled
+            isTemplate === "true", // Ensure boolean values are correctly handled
+          ]
+        : [
+            author,
+            uploadDate,
+            country,
+            category,
+            file.originalname, // Add the file name to the file column
+            fileUrl,
+            fileKey,
+            isPublic === "true", // Ensure boolean values are correctly handled
+            workpackage || null, // Handle empty workpackage
+            isMeeting === "true", // Ensure boolean values are correctly handled
+            isDeliverable === "true", // Ensure boolean values are correctly handled
+            isContactList === "true", // Ensure boolean values are correctly handled
+            isPromotion === "true", // Ensure boolean values are correctly handled
+            isReport === "true", // Ensure boolean values are correctly handled
+            isPublication === "true", // Ensure boolean values are correctly handled
+            isTemplate === "true", // Ensure boolean values are correctly handled
+          ];
+
+      // Log the query and values for debugging
+      console.log("Executing query:", query);
+      console.log("With values:", values);
+
+      // Execute the INSERT statement
+      const result = await pool.query(query, values);
+
+      console.log("File metadata saved to database:", result.rows[0]);
+    }
+
+    res.status(200).json({ message: "Files uploaded successfully" });
   } catch (error) {
-    console.error("Error uploading file:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error uploading files:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 });
 
 // Endpoint to get list of uploaded files
 app.get("/api/uploads", async (req, res) => {
   try {
-    const query = "SELECT * FROM uploads ORDER BY upload_date DESC";
+    const query =
+      "SELECT * FROM uploads WHERE folder_id IS NULL ORDER BY upload_date DESC";
     const result = await pool.query(query);
     res.json(result.rows);
   } catch (error) {
@@ -277,21 +248,54 @@ app.get("/api/uploads", async (req, res) => {
   }
 });
 
+// Endpoint to fetch folders and their files
+app.get("/api/folders", async (req, res) => {
+  try {
+    const foldersQuery = `
+      SELECT f.id, f.folder_name, f.author, f.upload_date, f.country, f.category, f.is_public, f.workpackage, f.is_meeting, f.is_deliverable, f.is_contact_list, f.is_promotion, f.is_report, f.is_publication, f.is_template,
+             COALESCE(json_agg(json_build_object(
+               'id', u.id,
+               'file_key', u.file_key,
+               'file_url', u.file_url,
+               'author', u.author,
+               'upload_date', u.upload_date,
+               'category', u.category,
+               'country', u.country
+             )) FILTER (WHERE u.id IS NOT NULL), '[]') AS files
+      FROM folders f
+      LEFT JOIN uploads u ON u.folder_id = f.id
+      GROUP BY f.id
+      ORDER BY f.upload_date DESC;
+    `;
+    const foldersResult = await pool.query(foldersQuery);
+    res.json(foldersResult.rows);
+  } catch (error) {
+    console.error("Error fetching folders:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+});
+
 // Endpoint to serve uploaded files
 app.get("/api/uploads/:fileKey", async (req, res) => {
   const { fileKey } = req.params;
-  console.log("Fetching file with key:", fileKey);
+  const decodedFileKey = decodeURIComponent(fileKey); // Decode the file key
+  console.log("Fetching file with key:", decodedFileKey);
 
   const params = {
-    Bucket: bucketName,
-    Key: fileKey,
+    Bucket: bucketName, // Ensure bucketName is correctly referenced
+    Key: decodedFileKey,
   };
 
   try {
     const file = await s3.getObject(params).promise();
     console.log("File fetched successfully:", file);
     res.setHeader("Content-Type", file.ContentType);
-    res.setHeader("Content-Disposition", `attachment; filename="${fileKey}"`);
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename="${decodedFileKey}"`
+    );
     res.send(file.Body);
   } catch (error) {
     console.error("Error fetching file:", error);
@@ -307,7 +311,7 @@ app.get("/api/download-ppt/:fileKey", async (req, res) => {
   console.log("Fetching ppt/pptx file with key:", fileKey);
 
   const params = {
-    Bucket: bucketName,
+    Bucket: bucketName, // Ensure bucketName is correctly referenced
     Key: fileKey,
   };
 
@@ -322,6 +326,89 @@ app.get("/api/download-ppt/:fileKey", async (req, res) => {
     res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
+  }
+});
+
+// Endpoint to delete a folder or file
+app.delete("/api/uploads/:id", checkJwt, async (req, res) => {
+  const { id } = req.params;
+  const userName = req.auth.name; // Auth0 user name
+
+  try {
+    // Check if the item is a folder
+    const folderQuery = "SELECT * FROM folders WHERE id = $1 AND author = $2";
+    const folderValues = [id, userName];
+    const folderResult = await pool.query(folderQuery, folderValues);
+
+    if (folderResult.rowCount > 0) {
+      // Delete all files in the folder
+      const deleteFilesQuery =
+        "DELETE FROM uploads WHERE folder_id = $1 RETURNING *";
+      const deleteFilesValues = [id];
+      const deleteFilesResult = await pool.query(
+        deleteFilesQuery,
+        deleteFilesValues
+      );
+
+      // Delete the folder
+      const deleteFolderQuery = "DELETE FROM folders WHERE id = $1 RETURNING *";
+      const deleteFolderValues = [id];
+      const deleteFolderResult = await pool.query(
+        deleteFolderQuery,
+        deleteFolderValues
+      );
+
+      console.log(
+        "Folder and its files deleted from database:",
+        deleteFolderResult.rows[0],
+        deleteFilesResult.rows
+      );
+
+      return res.status(200).json({
+        message: "Folder and its files deleted successfully",
+        folder: deleteFolderResult.rows[0],
+        files: deleteFilesResult.rows,
+      });
+    }
+
+    // Check if the item is a file
+    const fileQuery = "SELECT * FROM uploads WHERE id = $1 AND author = $2";
+    const fileValues = [id, userName];
+    const fileResult = await pool.query(fileQuery, fileValues);
+
+    if (fileResult.rowCount === 0) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to delete this item" });
+    }
+
+    // Delete the file
+    const deleteFileQuery = "DELETE FROM uploads WHERE id = $1 RETURNING *";
+    const deleteFileValues = [id];
+    const deleteFileResult = await pool.query(
+      deleteFileQuery,
+      deleteFileValues
+    );
+
+    if (deleteFileResult.rowCount === 0) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    console.log("File deleted from database:", deleteFileResult.rows[0]);
+
+    res.status(200).json({
+      message: "File deleted successfully",
+      item: deleteFileResult.rows[0],
+    });
+  } catch (error) {
+    if (error.name === "UnauthorizedError") {
+      console.error("Unauthorized error:", error);
+      return res
+        .status(401)
+        .json({ message: "Invalid token or token expired" });
+    }
+    console.error("Error deleting item:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
@@ -341,7 +428,7 @@ app.post("/api/news", upload.single("image"), async (req, res) => {
   if (image) {
     const fileKey = `${Date.now()}_${image.originalname}`;
     const params = {
-      Bucket: bucketName,
+      Bucket: bucketName, // Ensure bucketName is correctly referenced
       Key: fileKey,
       Body: image.buffer,
       ContentType: image.mimetype,
@@ -420,7 +507,7 @@ app.put("/api/news/:id", upload.single("image"), async (req, res) => {
     if (image) {
       const fileKey = `${Date.now()}_${image.originalname}`;
       const params = {
-        Bucket: bucketName,
+        Bucket: bucketName, // Ensure bucketName is correctly referenced
         Key: fileKey,
         Body: image.buffer,
         ContentType: image.mimetype,
@@ -490,5 +577,5 @@ app.get("/api/news", async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`Måste Server running on port ${port}`);
 });

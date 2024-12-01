@@ -6,11 +6,12 @@ import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
 
 const Upload = () => {
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [author, setAuthor] = useState('');
   const [uploadDate, setUploadDate] = useState('');
   const [country, setCountry] = useState('');
   const [category, setCategory] = useState('');
+  const [folderName, setFolderName] = useState(''); // Add state for folder name
   const [isAuthenticatedState, setIsAuthenticatedState] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
   const [workpackage, setWorkpackage] = useState('');
@@ -22,7 +23,7 @@ const Upload = () => {
   const [isPublication, setIsPublication] = useState(false);
   const [isTemplate, setIsTemplate] = useState(false);
 
-  const { getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated, loginWithRedirect, user } = useAuth0();
 
   const api = axios.create({
     baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -31,47 +32,17 @@ const Upload = () => {
   useEffect(() => {
     setUploadDate(new Date().toISOString().split('T')[0]);
     setIsAuthenticatedState(isAuthenticated);
-  }, [isAuthenticated]);
+    if (user && user.name) {
+      setAuthor(user.name); // Set the author to the logged-in user's name
+    }
+  }, [isAuthenticated, user]);
 
   const handleUpload = async (event) => {
     event.preventDefault();
-    if (!file || !author || !country || !category) {
+    if (files.length === 0 || !author || !category) {
       alert("Please submit all fields");
       return;
     }
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('author', author);
-    formData.append('uploadDate', uploadDate);
-    formData.append('country', country);
-    formData.append('category', category);
-    formData.append('isPublic', isPublic);
-    formData.append('workpackage', workpackage);
-    formData.append('isMeeting', isMeeting);
-    formData.append('isDeliverable', isDeliverable);
-    formData.append('isContactList', isContactList);
-    formData.append('isPromotion', isPromotion);
-    formData.append('isReport', isReport);
-    formData.append('isPublication', isPublication);
-    formData.append('isTemplate', isTemplate);
-
-    console.log("Form data being sent:", {
-      file,
-      author,
-      uploadDate,
-      country,
-      category,
-      isPublic,
-      workpackage,
-      isMeeting,
-      isDeliverable,
-      isContactList,
-      isPromotion,
-      isReport,
-      isPublication,
-      isTemplate,
-    });
 
     try {
       if (!isAuthenticatedState) {
@@ -83,13 +54,35 @@ const Upload = () => {
 
       const token = await getAccessTokenSilently();
 
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('files', file); // Ensure the field name is 'files'
+      });
+      formData.append('author', author); // Set the author to the logged-in user's name
+      formData.append('uploadDate', uploadDate);
+      formData.append('country', country);
+      formData.append('category', category);
+      formData.append('isPublic', isPublic);
+      formData.append('workpackage', workpackage || null); // Handle empty workpackage
+      formData.append('isMeeting', isMeeting);
+      formData.append('isDeliverable', isDeliverable);
+      formData.append('isContactList', isContactList);
+      formData.append('isPromotion', isPromotion);
+      formData.append('isReport', isReport);
+      formData.append('isPublication', isPublication);
+      formData.append('isTemplate', isTemplate);
+      if (files.length > 1) {
+        formData.append('folderName', folderName); // Add folder name to form data if multiple files
+      }
+
       const response = await api.post('/api/uploads', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         }
       });
-      alert('File uploaded successfully');
+
+      alert('Files uploaded successfully');
     } catch (error) {
       console.error('Error during upload:', error);
     }
@@ -104,14 +97,28 @@ const Upload = () => {
   return (
     <div className="Center">
       <form encType='multipart/form-data' className="clr-form" clrLayout="horizontal" onSubmit={handleUpload}>
-        <label>Upload File</label>
+        <label>Upload Files</label>
         <input
           type="file"
-          id="file"
-          name='file'
+          id="files"
+          name='files'
           accept=".pdf, .ppt, .pptx, .doc, .docx, .xls, .xlsx, .csv, .txt, .jpg, .jpeg, .png"
-          onChange={e => setFile(e.target.files[0])}
+          multiple
+          onChange={e => setFiles(Array.from(e.target.files))}
         />
+        {files.length > 1 && (
+          <>
+            <label htmlFor="folderName">Folder Name</label>
+            <input
+              type="text"
+              id="folderName"
+              placeholder="Folder Name"
+              value={folderName}
+              onChange={e => setFolderName(e.target.value)}
+              autoFocus
+            />
+          </>
+        )}
         <div className="horizontal-container">
           <select
             id="workpackage"
@@ -213,7 +220,6 @@ const Upload = () => {
           <label style={{ color: 'white' }} htmlFor="isTemplate">- Template</label>
         </div>
 
-
         <label htmlFor="category">Title</label>
         <input
           type="text"
@@ -229,8 +235,7 @@ const Upload = () => {
           id="author"
           placeholder="Author"
           value={author}
-          onChange={e => setAuthor(e.target.value)}
-          autoFocus
+          readOnly // Make the author field read-only
         />
 
         <label htmlFor="uploadDate">Upload Date</label>
@@ -256,7 +261,6 @@ const Upload = () => {
             </option>
           ))}
         </select>
-
 
         <CdsButton className="clr-button" type='submit' onClick={(e) => {
             if (isPublic && !window.confirm('You have choosen to make this file public, are you sure ?')) {

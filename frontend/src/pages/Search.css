@@ -1,85 +1,97 @@
-p {
-    color: rgb(32, 84, 32);
-    flex: 1 1 0%;
-    margin-top: 0 !important;
-}
-.list-header{
-    display: flex;
-    padding: 10px;
-    background-color: rgb(240, 240, 240);
-    font-weight: bold;
-    width: 90vw;
-    text-align: left;
-}
-
-.search-h1{
-    text-align: justify;
-}
-
-.search-input{
-    text-align: center;
-}
-
-.Search-div{
-    margin-top: 3vh;
-    min-height: 100vh;
-}
-
-.list-info{
-    display: ruby-text;
-}
-
-.search-list-item{
-        border-width: 1px;
-        border-radius: 5px;
-        padding: 5px;
-        margin: 5px;
-        border-color: #72ffa666;
-        width: 60vw;
-        padding-inline: 20px;
-        list-style: none !important;
-        background-color: #2be2ad38;
-        border-radius: 15px;
-        width: 90vw !important;
-        flex-direction: column;
-        align-items: center;
-        max-height: 40px;
-        text-align: justify;
-}
-
-
-li:hover
-{
-    background-color: rgba(0, 255, 255, 0.13);
-    transition: 0.1s;
-}
-
-@media screen and (max-width: 1440px){
- /* Search Categories  */
-    .search-main-div{
-        margin-top: 10vh;
-    }
+/* Ensure the folder content has its own space and is properly indented */
+.folder-search-list-item ul {
+    padding-left: 20px; /* Indent the folder content */
+    margin-top: 10px; /* Add space above the folder content */
+    margin-bottom: 10px; /* Add space below the folder content */
+    list-style-type: none; /* Remove default list style */
+  }
+  
+  .folder-search-list-item ul li {
+    margin-bottom: 10px; /* Add space between each file in the folder */
   }
 
-@media screen and (max-width: 768px) {
-    #root > div > div > div:nth-child(1){
-        margin-top: 10vh;
-    }
-    button{
-        display: none;
-    }
+  #root > div.search-main-div > div > ol > li > div > p > svg.svg-inline--fa.fa-folder.folder{
+    height: 1em !important;
+  }
+
+  #root > div.search-main-div > div > ol > li> div > p> svg.svg-inline--fa.fa-folder-open.folder{
+    height: 1em !important;
+  }
+  
+  .list-info {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
 }
 
-@media screen and (max-width: 425px) {
+.delete{
+    height: 1em !important;
+}
+
+.folder-list-info{
+    display: flex;
+    justify-content: space-between;
+    background-color: #d1dda2;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    padding: 4px;
+}
+  
+  .list-info p {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .folder-search-list-item {
+    border-width: 1px;
+    border-radius: 5px;
+    margin: 5px;
+    border-color: #72ffa666;
+    width: 60vw;
+    padding-inline: 20px;
+    list-style: none !important;
+    width: 50vw !important;
+    flex-direction: column;
+    align-items: center;
+    text-align: justify;
+    z-index: 9999 !important;
+    position: relative;
+    height: 2em;
+}
+  
+  li:hover {
+    background-color: rgba(0, 255, 255, 0.13);
+    transition: 0.1s;
+  }
+  
+  @media screen and (max-width: 1440px) {
+    /* Search Categories  */
     .search-main-div {
-        margin-top: 19vh;
+      margin-top: 10vh;
     }
-}
-
-@media screen and (min-width: 768px) and (max-width: 1024px) {
+  }
+  
+  @media screen and (max-width: 768px) {
+    #root > div > div > div:nth-child(1) {
+      margin-top: 10vh;
+    }
+    button {
+      display: none;
+    }
+  }
+  
+  @media screen and (max-width: 425px) {
+    .search-main-div {
+      margin-top: 19vh;
+    }
+  }
+  
+  @media screen and (min-width: 768px) and (max-width: 1024px) {
     /* CSS code for screens between 768px and 1024px */
-}
-
-@media screen and (min-width: 1024px) {
+  }
+  
+  @media screen and (min-width: 1024px) {
     /* CSS code for screens larger than 1024px */
-}
+  }

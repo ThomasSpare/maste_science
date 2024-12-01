@@ -4,7 +4,6 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { saveAs } from 'file-saver';
 import { CdsButton } from '@cds/react/button';
 
-
 const ViewImg = () => {
     const { fileId, fileKey } = useParams();
     const [imageSrc, setImageSrc] = useState('');
@@ -30,6 +29,7 @@ const ViewImg = () => {
             })
             .then(blob => {
                 const imageUrl = URL.createObjectURL(blob);
+                console.log("Image URL:", imageUrl); // Log the image URL for debugging
                 setImageSrc(imageUrl);
             })
             .catch(error => {
