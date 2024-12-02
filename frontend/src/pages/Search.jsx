@@ -223,14 +223,14 @@ const Search = () => {
                   {item.is_template && 'Template'}
                 </p>
                 <p style={{ flex: '0.5', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-                  {item.type === 'folder' && <FontAwesomeIcon className='folder' icon={expandedFolders[item.id] ? faFolderOpen : faFolder} style={{ cursor: 'pointer', marginLeft: '10px', color: 'coral', position: 'relative, !important' }} />}
+                  {item.type === 'folder' && <FontAwesomeIcon className='folder' icon={expandedFolders[item.id] ? faFolderOpen : faFolder} style={{ cursor: 'pointer', marginLeft: '10px', color: 'coral', }} />}
                   {user && (
                     <FontAwesomeIcon className='delete' icon={faTrashAlt} onClick={(e) => { e.stopPropagation(); handleDeleteClick(item.id, item.type); }} style={{ cursor: 'pointer', color: 'red', marginLeft: '10px' }} />
                   )}
                 </p>
               </div>
               {item.type === 'folder' && expandedFolders[item.id] && (
-                <Card variant="outlined" sx={{ maxWidth: 1000, backgroundColor: 'coral', opacity: '1' }}>
+                <Card variant="outlined" sx={{ maxWidth: 1000, backgroundColor: 'coral', opacity: '1',  position: 'relative' }}>
                 <CardContent>
                 <ul>
                   {item.files && item.files.map((file, fileIndex) => (
