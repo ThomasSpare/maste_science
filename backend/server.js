@@ -8,9 +8,8 @@ const multer = require("multer");
 const cors = require("cors");
 const { Pool } = require("pg");
 const AWS = require("aws-sdk");
-const jwt = require("jsonwebtoken"); // Import jsonwebtoken
-const jwksRsa = require("jwks-rsa");
 
+const jwksRsa = require("jwks-rsa");
 const { expressjwt: jwtMiddleware } = require("express-jwt");
 
 dotenv.config();
@@ -332,12 +331,11 @@ app.get("/api/download-ppt/:fileKey", async (req, res) => {
 // Endpoint to delete a folder or file
 app.delete("/api/uploads/:id", checkJwt, async (req, res) => {
   const { id } = req.params;
-  const userName = req.auth.name; // Auth0 user name
 
   try {
     // Check if the item is a folder
-    const folderQuery = "SELECT * FROM folders WHERE id = $1 AND author = $2";
-    const folderValues = [id, userName];
+    const folderQuery = "SELECT * FROM folders WHERE id = $1";
+    const folderValues = [id];
     const folderResult = await pool.query(folderQuery, folderValues);
 
     if (folderResult.rowCount > 0) {
@@ -372,14 +370,12 @@ app.delete("/api/uploads/:id", checkJwt, async (req, res) => {
     }
 
     // Check if the item is a file
-    const fileQuery = "SELECT * FROM uploads WHERE id = $1 AND author = $2";
-    const fileValues = [id, userName];
+    const fileQuery = "SELECT * FROM uploads WHERE id = $1";
+    const fileValues = [id];
     const fileResult = await pool.query(fileQuery, fileValues);
 
     if (fileResult.rowCount === 0) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to delete this item" });
+      return res.status(404).json({ message: "Item not found" });
     }
 
     // Delete the file
@@ -389,10 +385,6 @@ app.delete("/api/uploads/:id", checkJwt, async (req, res) => {
       deleteFileQuery,
       deleteFileValues
     );
-
-    if (deleteFileResult.rowCount === 0) {
-      return res.status(404).json({ message: "Item not found" });
-    }
 
     console.log("File deleted from database:", deleteFileResult.rows[0]);
 
