@@ -19,9 +19,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const port = process.env.PORT || 10000;
 
-// Middleware to verify JWT token using Auth0 public key
+// Explicit secret retrieval
 const checkJwt = jwt({
-  // Explicitly provide a secret function
+  // Use a function to dynamically retrieve secret
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
