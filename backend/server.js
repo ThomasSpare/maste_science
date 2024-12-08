@@ -44,7 +44,7 @@ const checkJwt = jwt({
   },
 });
 
-const checkFilesScope = jwtMiddleware({
+const checkFilesScope = jwt({
   permissions: [
     "delete:files",
     "update:files",
