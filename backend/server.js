@@ -30,6 +30,16 @@ const checkJwt = jwtMiddleware({
   audience: process.env.AUTH0_AUDIENCE,
   issuer: `https://${process.env.AUTH0_DOMAIN}/`,
   algorithms: ["RS256"],
+  // Add this to ensure a secret is always provided
+  getToken: function fromHeaderOrQuerystring(req) {
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.split(" ")[0] === "Bearer"
+    ) {
+      return req.headers.authorization.split(" ")[1];
+    }
+    return null;
+  },
 });
 
 const checkFilesScope = jwtMiddleware({
@@ -61,6 +71,20 @@ const decodeToken = (token) => {
     console.error("Error decoding token:", error);
   }
 };
+
+app.use((err, req, res, next) => {
+  if (err.name === "UnauthorizedError") {
+    console.error("JWT Error:", {
+      message: err.message,
+      token: req.headers.authorization,
+    });
+    return res.status(401).json({
+      error: "Unauthorized",
+      details: err.message,
+    });
+  }
+  next(err);
+});
 
 const getAuth0AccessToken = async () => {
   const options = {
