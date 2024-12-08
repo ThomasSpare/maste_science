@@ -10,7 +10,7 @@ const { Pool } = require("pg");
 const AWS = require("aws-sdk");
 
 const jwksRsa = require("jwks-rsa");
-const { expressjwt: jwtMiddleware } = require("express-jwt");
+const { expressjwt: jwt } = require("express-jwt");
 
 dotenv.config();
 const app = express();
