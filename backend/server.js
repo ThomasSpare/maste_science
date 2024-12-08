@@ -20,7 +20,8 @@ app.use(express.urlencoded({ extended: true }));
 const port = process.env.PORT || 10000;
 
 // Middleware to verify JWT token using Auth0 public key
-const checkJwt = jwtMiddleware({
+const checkJwt = jwt({
+  // Explicitly provide a secret function
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
@@ -30,7 +31,8 @@ const checkJwt = jwtMiddleware({
   audience: process.env.AUTH0_AUDIENCE,
   issuer: `https://${process.env.AUTH0_DOMAIN}/`,
   algorithms: ["RS256"],
-  // Add this to ensure a secret is always provided
+
+  // Explicitly handle token extraction
   getToken: function fromHeaderOrQuerystring(req) {
     if (
       req.headers.authorization &&
@@ -73,16 +75,19 @@ const decodeToken = (token) => {
 };
 
 app.use((err, req, res, next) => {
+  console.error("JWT Middleware Error:", {
+    name: err.name,
+    message: err.message,
+    status: err.status,
+  });
+
   if (err.name === "UnauthorizedError") {
-    console.error("JWT Error:", {
-      message: err.message,
-      token: req.headers.authorization,
-    });
     return res.status(401).json({
       error: "Unauthorized",
-      details: err.message,
+      message: err.message,
     });
   }
+
   next(err);
 });
 
