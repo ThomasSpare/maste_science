@@ -11,6 +11,7 @@ const AWS = require("aws-sdk");
 
 const jwksRsa = require("jwks-rsa");
 const { expressjwt: jwt } = require("express-jwt");
+const jsonwebtoken = require("jsonwebtoken");
 
 dotenv.config();
 const app = express();
@@ -64,10 +65,9 @@ const checkFilesScope = jwt({
   ],
 });
 
-// Function to decode JWT token
 const decodeToken = (token) => {
   try {
-    const decoded = jwt.decode(token, { complete: true });
+    const decoded = jsonwebtoken.decode(token, { complete: true });
     console.log("Decoded JWT Token:", decoded);
   } catch (error) {
     console.error("Error decoding token:", error);
