@@ -32,6 +32,26 @@ const checkJwt = jwtMiddleware({
   algorithms: ["RS256"],
 });
 
+const checkFilesScope = jwtMiddleware({
+  permissions: [
+    "delete:files",
+    "update:files",
+    "create:files",
+    "read:files",
+    "read:folders",
+    "create:folders",
+    "update:folders",
+    "delete:folders",
+    "read:news",
+    "create:news",
+    "update:news",
+    "delete:news",
+    "read:users",
+    "create:users",
+    "update:users",
+  ],
+});
+
 // Function to decode JWT token
 const decodeToken = (token) => {
   try {
@@ -131,111 +151,116 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Endpoint to upload files
-app.post("/api/uploads", upload.array("files"), async (req, res) => {
-  const {
-    folderId,
-    folderName,
-    author,
-    uploadDate,
-    country,
-    category,
-    isPublic,
-    workpackage,
-    isMeeting,
-    isDeliverable,
-    isContactList,
-    isPromotion,
-    isReport,
-    isPublication,
-    isTemplate,
-  } = req.body;
+app.post(
+  "/api/uploads",
+  checkFilesScope,
+  upload.array("files"),
+  async (req, res) => {
+    const {
+      folderId,
+      folderName,
+      author,
+      uploadDate,
+      country,
+      category,
+      isPublic,
+      workpackage,
+      isMeeting,
+      isDeliverable,
+      isContactList,
+      isPromotion,
+      isReport,
+      isPublication,
+      isTemplate,
+    } = req.body;
 
-  const files = req.files;
+    const files = req.files;
 
-  try {
-    for (const file of files) {
-      const encodedFolderName = encodeURIComponent(folderName);
-      const encodedFileName = encodeURIComponent(file.originalname);
-      const fileKey = folderId
-        ? `${encodedFolderName}/${Date.now()}_${encodedFileName}`
-        : `${Date.now()}_${encodedFileName}`;
+    try {
+      for (const file of files) {
+        const encodedFolderName = encodeURIComponent(folderName);
+        const encodedFileName = encodeURIComponent(file.originalname);
+        const fileKey = folderId
+          ? `${encodedFolderName}/${Date.now()}_${encodedFileName}`
+          : `${Date.now()}_${encodedFileName}`;
 
-      const params = {
-        Bucket: bucketName, // Ensure bucketName is correctly referenced
-        Key: fileKey,
-        Body: file.buffer,
-        ContentType: file.mimetype,
-      };
+        const params = {
+          Bucket: bucketName, // Ensure bucketName is correctly referenced
+          Key: fileKey,
+          Body: file.buffer,
+          ContentType: file.mimetype,
+        };
 
-      // Upload file to S3
-      const uploadResult = await s3.upload(params).promise();
-      const fileUrl = uploadResult.Location;
+        // Upload file to S3
+        const uploadResult = await s3.upload(params).promise();
+        const fileUrl = uploadResult.Location;
 
-      // Prepare the INSERT statement and values
-      const query = folderId
-        ? "INSERT INTO uploads (folder_id, folder_name, author, upload_date, country, category, file, file_url, file_key, is_public, workpackage, is_meeting, is_deliverable, is_contact_list, is_promotion, is_report, is_publication, is_template) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING *"
-        : "INSERT INTO uploads (author, upload_date, country, category, file, file_url, file_key, is_public, workpackage, is_meeting, is_deliverable, is_contact_list, is_promotion, is_report, is_publication, is_template) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *";
-      const values = folderId
-        ? [
-            folderId,
-            folderName,
-            author,
-            uploadDate,
-            country,
-            category,
-            file.originalname, // Add the file name to the file column
-            fileUrl,
-            fileKey,
-            isPublic === "true", // Ensure boolean values are correctly handled
-            workpackage || null, // Handle empty workpackage
-            isMeeting === "true", // Ensure boolean values are correctly handled
-            isDeliverable === "true", // Ensure boolean values are correctly handled
-            isContactList === "true", // Ensure boolean values are correctly handled
-            isPromotion === "true", // Ensure boolean values are correctly handled
-            isReport === "true", // Ensure boolean values are correctly handled
-            isPublication === "true", // Ensure boolean values are correctly handled
-            isTemplate === "true", // Ensure boolean values are correctly handled
-          ]
-        : [
-            author,
-            uploadDate,
-            country,
-            category,
-            file.originalname, // Add the file name to the file column
-            fileUrl,
-            fileKey,
-            isPublic === "true", // Ensure boolean values are correctly handled
-            workpackage || null, // Handle empty workpackage
-            isMeeting === "true", // Ensure boolean values are correctly handled
-            isDeliverable === "true", // Ensure boolean values are correctly handled
-            isContactList === "true", // Ensure boolean values are correctly handled
-            isPromotion === "true", // Ensure boolean values are correctly handled
-            isReport === "true", // Ensure boolean values are correctly handled
-            isPublication === "true", // Ensure boolean values are correctly handled
-            isTemplate === "true", // Ensure boolean values are correctly handled
-          ];
+        // Prepare the INSERT statement and values
+        const query = folderId
+          ? "INSERT INTO uploads (folder_id, folder_name, author, upload_date, country, category, file, file_url, file_key, is_public, workpackage, is_meeting, is_deliverable, is_contact_list, is_promotion, is_report, is_publication, is_template) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING *"
+          : "INSERT INTO uploads (author, upload_date, country, category, file, file_url, file_key, is_public, workpackage, is_meeting, is_deliverable, is_contact_list, is_promotion, is_report, is_publication, is_template) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *";
+        const values = folderId
+          ? [
+              folderId,
+              folderName,
+              author,
+              uploadDate,
+              country,
+              category,
+              file.originalname, // Add the file name to the file column
+              fileUrl,
+              fileKey,
+              isPublic === "true", // Ensure boolean values are correctly handled
+              workpackage || null, // Handle empty workpackage
+              isMeeting === "true", // Ensure boolean values are correctly handled
+              isDeliverable === "true", // Ensure boolean values are correctly handled
+              isContactList === "true", // Ensure boolean values are correctly handled
+              isPromotion === "true", // Ensure boolean values are correctly handled
+              isReport === "true", // Ensure boolean values are correctly handled
+              isPublication === "true", // Ensure boolean values are correctly handled
+              isTemplate === "true", // Ensure boolean values are correctly handled
+            ]
+          : [
+              author,
+              uploadDate,
+              country,
+              category,
+              file.originalname, // Add the file name to the file column
+              fileUrl,
+              fileKey,
+              isPublic === "true", // Ensure boolean values are correctly handled
+              workpackage || null, // Handle empty workpackage
+              isMeeting === "true", // Ensure boolean values are correctly handled
+              isDeliverable === "true", // Ensure boolean values are correctly handled
+              isContactList === "true", // Ensure boolean values are correctly handled
+              isPromotion === "true", // Ensure boolean values are correctly handled
+              isReport === "true", // Ensure boolean values are correctly handled
+              isPublication === "true", // Ensure boolean values are correctly handled
+              isTemplate === "true", // Ensure boolean values are correctly handled
+            ];
 
-      // Log the query and values for debugging
-      console.log("Executing query:", query);
-      console.log("With values:", values);
+        // Log the query and values for debugging
+        console.log("Executing query:", query);
+        console.log("With values:", values);
 
-      // Execute the INSERT statement
-      const result = await pool.query(query, values);
+        // Execute the INSERT statement
+        const result = await pool.query(query, values);
 
-      console.log("File metadata saved to database:", result.rows[0]);
+        console.log("File metadata saved to database:", result.rows[0]);
+      }
+
+      res.status(200).json({ message: "Files uploaded successfully" });
+    } catch (error) {
+      console.error("Error uploading files:", error);
+      res
+        .status(500)
+        .json({ message: "Internal server error", error: error.message });
     }
-
-    res.status(200).json({ message: "Files uploaded successfully" });
-  } catch (error) {
-    console.error("Error uploading files:", error);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
   }
-});
+);
 
 // Endpoint to get list of uploaded files
-app.get("/api/uploads", async (req, res) => {
+app.get("/api/uploads", checkFilesScope, async (req, res) => {
   try {
     const query =
       "SELECT * FROM uploads WHERE folder_id IS NULL ORDER BY upload_date DESC";
@@ -248,7 +273,7 @@ app.get("/api/uploads", async (req, res) => {
 });
 
 // Endpoint to fetch folders and their files
-app.get("/api/folders", async (req, res) => {
+app.get("/api/folders", checkFilesScope, async (req, res) => {
   try {
     const foldersQuery = `
       SELECT f.id, f.folder_name, f.author, f.upload_date, f.country, f.category, f.is_public, f.workpackage, f.is_meeting, f.is_deliverable, f.is_contact_list, f.is_promotion, f.is_report, f.is_publication, f.is_template,
@@ -277,7 +302,7 @@ app.get("/api/folders", async (req, res) => {
 });
 
 // Endpoint to serve uploaded files
-app.get("/api/uploads/:fileKey", async (req, res) => {
+app.get("/api/uploads/:fileKey", checkFilesScope, async (req, res) => {
   const { fileKey } = req.params;
   const decodedFileKey = decodeURIComponent(fileKey); // Decode the file key
   console.log("Fetching file with key:", decodedFileKey);
@@ -305,7 +330,7 @@ app.get("/api/uploads/:fileKey", async (req, res) => {
 });
 
 // Endpoint to serve ppt and pptx files
-app.get("/api/download-ppt/:fileKey", async (req, res) => {
+app.get("/api/download-ppt/:fileKey", checkFilesScope, async (req, res) => {
   const { fileKey } = req.params;
   console.log("Fetching ppt/pptx file with key:", fileKey);
 
@@ -329,7 +354,7 @@ app.get("/api/download-ppt/:fileKey", async (req, res) => {
 });
 
 // Endpoint to delete a folder or file
-app.delete("/api/uploads/:id", checkJwt, async (req, res) => {
+app.delete("/api/uploads/:id", checkFilesScope, checkJwt, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -405,56 +430,61 @@ app.delete("/api/uploads/:id", checkJwt, async (req, res) => {
 });
 
 // Endpoint to post news articles
-app.post("/api/news", upload.single("image"), async (req, res) => {
-  const { title, content, author } = req.body; // Extract author from request body
-  const image = req.file;
+app.post(
+  "/api/news",
+  checkFilesScope,
+  upload.single("image"),
+  async (req, res) => {
+    const { title, content, author } = req.body; // Extract author from request body
+    const image = req.file;
 
-  if (!title || !content || !author) {
-    // Check if author is provided
-    return res
-      .status(400)
-      .json({ message: "Title, content, and author are required" });
-  }
+    if (!title || !content || !author) {
+      // Check if author is provided
+      return res
+        .status(400)
+        .json({ message: "Title, content, and author are required" });
+    }
 
-  let imageUrl = null;
-  if (image) {
-    const fileKey = `${Date.now()}_${image.originalname}`;
-    const params = {
-      Bucket: bucketName, // Ensure bucketName is correctly referenced
-      Key: fileKey,
-      Body: image.buffer,
-      ContentType: image.mimetype,
-    };
+    let imageUrl = null;
+    if (image) {
+      const fileKey = `${Date.now()}_${image.originalname}`;
+      const params = {
+        Bucket: bucketName, // Ensure bucketName is correctly referenced
+        Key: fileKey,
+        Body: image.buffer,
+        ContentType: image.mimetype,
+      };
+
+      try {
+        const uploadResult = await s3.upload(params).promise();
+        imageUrl = uploadResult.Location;
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+    }
 
     try {
-      const uploadResult = await s3.upload(params).promise();
-      imageUrl = uploadResult.Location;
+      const query =
+        "INSERT INTO news (title, content, author, image_url) VALUES ($1, $2, $3, $4) RETURNING *";
+      const values = [title, content, author, imageUrl];
+      const result = await pool.query(query, values);
+
+      console.log("News article saved to database:", result.rows[0]);
+
+      res.status(201).json({
+        message: "News article posted successfully",
+        news: result.rows[0],
+      });
     } catch (error) {
-      console.error("Error uploading image:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.error("Error posting news article:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
   }
-
-  try {
-    const query =
-      "INSERT INTO news (title, content, author, image_url) VALUES ($1, $2, $3, $4) RETURNING *";
-    const values = [title, content, author, imageUrl];
-    const result = await pool.query(query, values);
-
-    console.log("News article saved to database:", result.rows[0]);
-
-    res.status(201).json({
-      message: "News article posted successfully",
-      news: result.rows[0],
-    });
-  } catch (error) {
-    console.error("Error posting news article:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
+);
 
 // Endpoint to get a specific news article by ID
-app.get("/api/news/:id", async (req, res) => {
+app.get("/api/news/:id", checkFilesScope, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -474,65 +504,72 @@ app.get("/api/news/:id", async (req, res) => {
 });
 
 // Endpoint to update news articles
-app.put("/api/news/:id", upload.single("image"), async (req, res) => {
-  const { id } = req.params;
-  const { title, content } = req.body;
-  const image = req.file;
+app.put(
+  "/api/news/:id",
+  checkFilesScope,
+  upload.single("image"),
+  async (req, res) => {
+    const { id } = req.params;
+    const { title, content } = req.body;
+    const image = req.file;
 
-  if (!title || !content) {
-    return res.status(400).json({ message: "Title and content are required" });
-  }
-
-  try {
-    // Fetch the existing post data
-    const existingPostQuery = "SELECT * FROM news WHERE id = $1";
-    const existingPostResult = await pool.query(existingPostQuery, [id]);
-
-    if (existingPostResult.rowCount === 0) {
-      return res.status(404).json({ message: "News article not found" });
+    if (!title || !content) {
+      return res
+        .status(400)
+        .json({ message: "Title and content are required" });
     }
 
-    const existingPost = existingPostResult.rows[0];
-    const uploadDate = existingPost.upload_date; // Preserve the original upload date
+    try {
+      // Fetch the existing post data
+      const existingPostQuery = "SELECT * FROM news WHERE id = $1";
+      const existingPostResult = await pool.query(existingPostQuery, [id]);
 
-    let imageUrl = existingPost.image_url; // Use existing image URL if no new image is provided
-    if (image) {
-      const fileKey = `${Date.now()}_${image.originalname}`;
-      const params = {
-        Bucket: bucketName, // Ensure bucketName is correctly referenced
-        Key: fileKey,
-        Body: image.buffer,
-        ContentType: image.mimetype,
-      };
-
-      try {
-        const uploadResult = await s3.upload(params).promise();
-        imageUrl = uploadResult.Location;
-      } catch (error) {
-        console.error("Error uploading image:", error);
-        return res.status(500).json({ message: "Internal server error" });
+      if (existingPostResult.rowCount === 0) {
+        return res.status(404).json({ message: "News article not found" });
       }
+
+      const existingPost = existingPostResult.rows[0];
+      const uploadDate = existingPost.upload_date; // Preserve the original upload date
+
+      let imageUrl = existingPost.image_url; // Use existing image URL if no new image is provided
+      if (image) {
+        const fileKey = `${Date.now()}_${image.originalname}`;
+        const params = {
+          Bucket: bucketName, // Ensure bucketName is correctly referenced
+          Key: fileKey,
+          Body: image.buffer,
+          ContentType: image.mimetype,
+        };
+
+        try {
+          const uploadResult = await s3.upload(params).promise();
+          imageUrl = uploadResult.Location;
+        } catch (error) {
+          console.error("Error uploading image:", error);
+          return res.status(500).json({ message: "Internal server error" });
+        }
+      }
+
+      const query =
+        "UPDATE news SET title = $1, content = $2, image_url = $3, upload_date = $4 WHERE id = $5 RETURNING *";
+      const values = [title, content, imageUrl, uploadDate, id];
+      const result = await pool.query(query, values);
+
+      console.log("News article updated in database:", result.rows[0]);
+
+      res.status(200).json({
+        message: "News article updated successfully",
+        news: result.rows[0],
+      });
+    } catch (error) {
+      console.error("Error updating news article:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    const query =
-      "UPDATE news SET title = $1, content = $2, image_url = $3, upload_date = $4 WHERE id = $5 RETURNING *";
-    const values = [title, content, imageUrl, uploadDate, id];
-    const result = await pool.query(query, values);
-
-    console.log("News article updated in database:", result.rows[0]);
-
-    res.status(200).json({
-      message: "News article updated successfully",
-      news: result.rows[0],
-    });
-  } catch (error) {
-    console.error("Error updating news article:", error);
-    res.status(500).json({ message: "Internal server error" });
   }
-});
+);
 
 // Endpoint to delete news articles
-app.delete("/api/news/:id", async (req, res) => {
+app.delete("/api/news/:id", checkFilesScope, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -557,7 +594,7 @@ app.delete("/api/news/:id", async (req, res) => {
 });
 
 // Endpoint to get list of news articles
-app.get("/api/news", async (req, res) => {
+app.get("/api/news", checkFilesScope, async (req, res) => {
   try {
     const query = "SELECT * FROM news ORDER BY created_at DESC LIMIT 3";
     const result = await pool.query(query);

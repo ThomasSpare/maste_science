@@ -98,7 +98,12 @@ const Search = () => {
     const confirmDelete = window.confirm('Are you sure you want to delete this item?');
     if (confirmDelete) {
       try {
-        const token = await getAccessTokenSilently();
+        const token = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+            scope: 'read:files create:files delete:files read:folders delete:folders',
+          }
+        });
         await api.delete(`/api/uploads/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
