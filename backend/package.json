@@ -6,6 +6,7 @@
         "typescript": "^5.4.5"
     },
     "dependencies": {
+        "archiver": "^7.0.1",
         "aws-sdk": "^2.1691.0",
         "axios": "^1.7.2",
         "bcrypt": "^5.1.1",

@@ -8,10 +8,10 @@ const multer = require("multer");
 const cors = require("cors");
 const { Pool } = require("pg");
 const AWS = require("aws-sdk");
+const archiver = require("archiver");
 
 const jwksRsa = require("jwks-rsa");
 const { expressjwt: jwt } = require("express-jwt");
-const jsonwebtoken = require("jsonwebtoken");
 
 dotenv.config();
 const app = express();
@@ -64,15 +64,6 @@ const checkFilesScope = jwt({
     "update:users",
   ],
 });
-
-const decodeToken = (token) => {
-  try {
-    const decoded = jsonwebtoken.decode(token, { complete: true });
-    console.log("Decoded JWT Token:", decoded);
-  } catch (error) {
-    console.error("Error decoding token:", error);
-  }
-};
 
 app.use((err, req, res, next) => {
   console.error("JWT Middleware Error:", {
@@ -186,7 +177,6 @@ app.post(
   upload.array("files"),
   async (req, res) => {
     const {
-      folderId,
       folderName,
       author,
       uploadDate,
@@ -206,6 +196,35 @@ app.post(
     const files = req.files;
 
     try {
+      let folderId = null;
+
+      if (files.length > 1) {
+        // Create a new folder entry in the database
+        const folderQuery = `
+          INSERT INTO folders (folder_name, author, upload_date, country, category, is_public, workpackage, is_meeting, is_deliverable, is_contact_list, is_promotion, is_report, is_publication, is_template)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+          RETURNING id
+        `;
+        const folderValues = [
+          folderName,
+          author,
+          uploadDate,
+          country,
+          category,
+          isPublic === "true",
+          workpackage || null,
+          isMeeting === "true",
+          isDeliverable === "true",
+          isContactList === "true",
+          isPromotion === "true",
+          isReport === "true",
+          isPublication === "true",
+          isTemplate === "true",
+        ];
+        const folderResult = await pool.query(folderQuery, folderValues);
+        folderId = folderResult.rows[0].id;
+      }
+
       for (const file of files) {
         const encodedFolderName = encodeURIComponent(folderName);
         const encodedFileName = encodeURIComponent(file.originalname);
@@ -214,7 +233,7 @@ app.post(
           : `${Date.now()}_${encodedFileName}`;
 
         const params = {
-          Bucket: bucketName, // Ensure bucketName is correctly referenced
+          Bucket: bucketName,
           Key: fileKey,
           Body: file.buffer,
           ContentType: file.mimetype,
@@ -236,45 +255,40 @@ app.post(
               uploadDate,
               country,
               category,
-              file.originalname, // Add the file name to the file column
+              file.originalname,
               fileUrl,
               fileKey,
-              isPublic === "true", // Ensure boolean values are correctly handled
-              workpackage || null, // Handle empty workpackage
-              isMeeting === "true", // Ensure boolean values are correctly handled
-              isDeliverable === "true", // Ensure boolean values are correctly handled
-              isContactList === "true", // Ensure boolean values are correctly handled
-              isPromotion === "true", // Ensure boolean values are correctly handled
-              isReport === "true", // Ensure boolean values are correctly handled
-              isPublication === "true", // Ensure boolean values are correctly handled
-              isTemplate === "true", // Ensure boolean values are correctly handled
+              isPublic === "true",
+              workpackage || null,
+              isMeeting === "true",
+              isDeliverable === "true",
+              isContactList === "true",
+              isPromotion === "true",
+              isReport === "true",
+              isPublication === "true",
+              isTemplate === "true",
             ]
           : [
               author,
               uploadDate,
               country,
               category,
-              file.originalname, // Add the file name to the file column
+              file.originalname,
               fileUrl,
               fileKey,
-              isPublic === "true", // Ensure boolean values are correctly handled
-              workpackage || null, // Handle empty workpackage
-              isMeeting === "true", // Ensure boolean values are correctly handled
-              isDeliverable === "true", // Ensure boolean values are correctly handled
-              isContactList === "true", // Ensure boolean values are correctly handled
-              isPromotion === "true", // Ensure boolean values are correctly handled
-              isReport === "true", // Ensure boolean values are correctly handled
-              isPublication === "true", // Ensure boolean values are correctly handled
-              isTemplate === "true", // Ensure boolean values are correctly handled
+              isPublic === "true",
+              workpackage || null,
+              isMeeting === "true",
+              isDeliverable === "true",
+              isContactList === "true",
+              isPromotion === "true",
+              isReport === "true",
+              isPublication === "true",
+              isTemplate === "true",
             ];
-
-        // Log the query and values for debugging
-        console.log("Executing query:", query);
-        console.log("With values:", values);
 
         // Execute the INSERT statement
         const result = await pool.query(query, values);
-
         console.log("File metadata saved to database:", result.rows[0]);
       }
 
@@ -301,32 +315,46 @@ app.get("/api/uploads", checkFilesScope, async (req, res) => {
   }
 });
 
-// Endpoint to fetch folders and their files
-app.get("/api/folders", checkFilesScope, async (req, res) => {
+// Endpoint to download the entire folder as a zip file
+app.get("/api/download-folder/:folderId", checkFilesScope, async (req, res) => {
+  const { folderId } = req.params;
+
   try {
-    const foldersQuery = `
-      SELECT f.id, f.folder_name, f.author, f.upload_date, f.country, f.category, f.is_public, f.workpackage, f.is_meeting, f.is_deliverable, f.is_contact_list, f.is_promotion, f.is_report, f.is_publication, f.is_template,
-             COALESCE(json_agg(json_build_object(
-               'id', u.id,
-               'file_key', u.file_key,
-               'file_url', u.file_url,
-               'author', u.author,
-               'upload_date', u.upload_date,
-               'category', u.category,
-               'country', u.country
-             )) FILTER (WHERE u.id IS NOT NULL), '[]') AS files
+    // Fetch the folder and its files from the database
+    const folderQuery = `
+      SELECT f.folder_name, u.file_key, u.file_url
       FROM folders f
-      LEFT JOIN uploads u ON u.folder_id = f.id
-      GROUP BY f.id
-      ORDER BY f.upload_date DESC;
+      JOIN uploads u ON u.folder_id = f.id
+      WHERE f.id = $1
     `;
-    const foldersResult = await pool.query(foldersQuery);
-    res.json(foldersResult.rows);
+    const folderValues = [folderId];
+    const folderResult = await pool.query(folderQuery, folderValues);
+
+    if (folderResult.rowCount === 0) {
+      return res.status(404).json({ message: "Folder not found" });
+    }
+
+    const folderName = folderResult.rows[0].folder_name;
+    const files = folderResult.rows;
+
+    // Create a zip file
+    const zip = archiver("zip", { zlib: { level: 9 } });
+    res.attachment(`${folderName}.zip`);
+    zip.pipe(res);
+
+    for (const file of files) {
+      const params = {
+        Bucket: bucketName,
+        Key: file.file_key,
+      };
+      const s3Object = await s3.getObject(params).promise();
+      zip.append(s3Object.Body, { name: file.file_key.split("/").pop() });
+    }
+
+    await zip.finalize();
   } catch (error) {
-    console.error("Error fetching folders:", error);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    console.error("Error downloading folder:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 

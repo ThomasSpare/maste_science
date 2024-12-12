@@ -77,17 +77,11 @@ const Search = () => {
     const confirmDownload = window.confirm('Do you want to download this folder?');
     if (confirmDownload) {
       try {
-        for (const file of folder.files) {
-          const endpoint = (file.file_url.split('.').pop() === 'ppt' || file.file_url.split('.').pop() === 'pptx') 
-              ? `/api/download-ppt/${file.file_key}` 
-              : `/api/uploads/${file.file_key}`;
-          const response = await fetch(endpoint);
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const blob = await response.blob();
-          saveAs(blob, file.file_url.split('/').pop());
-        }
+        const response = await api.get(`/api/download-folder/${folder.id}`, {
+          responseType: 'blob',
+        });
+        const blob = new Blob([response.data], { type: 'application/zip' });
+        saveAs(blob, `${folder.folder_name}.zip`);
       } catch (error) {
         console.error('Error downloading folder:', error);
       }
@@ -228,14 +222,19 @@ const Search = () => {
                   {item.is_template && 'Template'}
                 </p>
                 <p style={{ flex: '0.5', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-                  {item.type === 'folder' && <FontAwesomeIcon className='folder' icon={expandedFolders[item.id] ? faFolderOpen : faFolder} style={{ cursor: 'pointer', marginLeft: '10px', color: 'coral', }} />}
+                  {item.type === 'folder' && (
+                    <>
+                      <FontAwesomeIcon className='folder' icon={expandedFolders[item.id] ? faFolderOpen : faFolder} style={{ cursor: 'pointer', marginLeft: '10px', color: 'coral' }} onClick={() => handleFolderClick(item.id)} />
+                      <FontAwesomeIcon className='download' icon={faDownload} onClick={(e) => { e.stopPropagation(); handleDownloadClick(item); }} style={{ cursor: 'pointer', color: 'blue', marginLeft: '10px' }} />
+                    </>
+                  )}
                   {user && (
                     <FontAwesomeIcon className='delete' icon={faTrashAlt} onClick={(e) => { e.stopPropagation(); handleDeleteClick(item.id, item.type); }} style={{ cursor: 'pointer', color: 'red', marginLeft: '10px' }} />
                   )}
                 </p>
               </div>
               {item.type === 'folder' && expandedFolders[item.id] && (
-                <Card variant="outlined" sx={{ maxWidth: 1000, backgroundColor: 'coral', opacity: '1',  position: 'relative' }}>
+                <Card variant="outlined" sx={{ maxWidth: 1000, backgroundColor: 'coral', opacity: '1' }}>
                 <CardContent>
                 <ul>
                   {item.files && item.files.map((file, fileIndex) => (
