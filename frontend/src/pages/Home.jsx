@@ -41,6 +41,12 @@ function Home() {
                 />
               </div>
               <div className="column">
+                <h1 style={{ color: "white", 
+                backgroundColor: "lightcoral", 
+                height: "30px",
+                borderRadius: "6px",
+                padding: "5px" }} 
+                className="home-headline">Ongoing Maintenance of the site </h1>
                 <div>
                   <p className="home-text">
                     The project Multidisciplinära Åtaganden för Sveriges gen-IV

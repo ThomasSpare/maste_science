@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
-import { CdsButton } from '@cds/react/button'; // Ensure this is the correct import for your button component
+import { CdsButton } from '@cds/react/button';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faFolder, faFolderOpen, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
@@ -20,33 +20,55 @@ const Search = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   const navigate = useNavigate();
-  const { user, getAccessTokenSilently } = useAuth0();
+  const { user, getAccessTokenSilently, loginWithRedirect } = useAuth0();
   
   const api = axios.create({
     baseURL: process.env.REACT_APP_API_BASE_URL,
   });
 
-  useEffect(() => {
-    // Fetch folders and single files from the server
-    const fetchData = async () => {
-      try {
-        const folderResponse = await api.get('/api/folders');
-        const singleFileResponse = await api.get('/api/uploads');
-        const folderData = folderResponse.data.map(folder => ({ ...folder, type: 'folder' }));
-        const singleFileData = singleFileResponse.data.filter(file => !file.folder_id).map(file => ({ ...file, type: 'file' }));
-        const combinedData = [...folderData, ...singleFileData];
-        setItems(combinedData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
+  const fetchData = async () => {
+    try {
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+          scope: "read:files read:folders delete:files"
+        },
+        ignoreCache: true
+      });
+  
+      const headers = {
+        Authorization: `Bearer ${token}`
+      };
+  
+      const folderResponse = await api.get('/api/folders', { headers });
+      const singleFileResponse = await api.get('/api/uploads', { headers });
+      
+      const folderData = folderResponse.data.map(folder => ({ ...folder, type: 'folder' }));
+      const singleFileData = singleFileResponse.data
+        .filter(file => !file.folder_id)
+        .map(file => ({ ...file, type: 'file' }));
+      const combinedData = [...folderData, ...singleFileData];
+      setItems(combinedData);
+  
+    } catch (error) {
+      if (error.message === 'Consent required') {
+        loginWithRedirect({
+          authorizationParams: {
+            audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+            scope: "read:files read:folders delete:files"
+          }
+        });
       }
-    };
-
+    }
+  };
+  
+  useEffect(() => {
     fetchData();
-  }, [api]);
-
+  }, []);
+  
   useEffect(() => {
     if (user) {
-      console.log('Logged in user details:', user);
+      // User details can be used here if needed
     }
   }, [user]);
 
@@ -58,8 +80,6 @@ const Search = () => {
   };
 
   const handleFileClick = (upload) => {
-    console.log('File author:', upload.author); // Log the author of the file clicked
-    console.log('Current user:', user.name); // Log the current user
     const fileExtension = upload.file_url.split('.').pop();
     const encodedFileKey = encodeURIComponent(upload.file_key);
     if (upload.is_promotion || ['jpg', 'png', 'svg'].includes(fileExtension)) {
@@ -83,12 +103,16 @@ const Search = () => {
         const blob = new Blob([response.data], { type: 'application/zip' });
         saveAs(blob, `${folder.folder_name}.zip`);
       } catch (error) {
-        console.error('Error downloading folder:', error);
+        // Handle error
       }
     }
   };
 
-  const handleDeleteClick = async (id, type) => {
+  const handleDeleteClick = async (id, type, author) => {
+    if (!user || user.email !== author) {
+      alert('You can only delete files that you have uploaded');
+      return;
+    }
     const confirmDelete = window.confirm('Are you sure you want to delete this item?');
     if (confirmDelete) {
       try {
@@ -98,20 +122,22 @@ const Search = () => {
             scope: 'read:files create:files delete:files read:folders delete:folders',
           }
         });
+        const headers = {
+          Authorization: `Bearer ${token}`
+        };
         await api.delete(`/api/uploads/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        // Refresh the data after deletion
-        const folderResponse = await api.get('/api/folders');
-        const singleFileResponse = await api.get('/api/uploads');
+        const folderResponse = await api.get('/api/folders', { headers });
+        const singleFileResponse = await api.get('/api/uploads', { headers });
         const folderData = folderResponse.data.map(folder => ({ ...folder, type: 'folder' }));
         const singleFileData = singleFileResponse.data.filter(file => !file.folder_id).map(file => ({ ...file, type: 'file' }));
         const combinedData = [...folderData, ...singleFileData];
         setItems(combinedData);
       } catch (error) {
-        console.error('Error deleting item:', error);
+        // Handle error
       }
     }
   };
@@ -126,17 +152,17 @@ const Search = () => {
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(1); // Reset to the first page on search
+    setCurrentPage(1);
   };
 
   const handleStartDateChange = (event) => {
     setStartDate(event.target.value);
-    setCurrentPage(1); // Reset to the first page on date change
+    setCurrentPage(1);
   };
 
   const handleEndDateChange = (event) => {
     setEndDate(event.target.value);
-    setCurrentPage(1); // Reset to the first page on date change
+    setCurrentPage(1);
   };
 
   const filteredItems = items.filter((item) => {
@@ -150,10 +176,7 @@ const Search = () => {
       item.author.toLowerCase().includes(searchTerm.toLowerCase());
     return isWithinDateRange && matchesSearchTerm;
   });
-
-  // Sort the filtered items by upload date in descending order
   const sortedItems = filteredItems.sort((a, b) => new Date(b.upload_date) - new Date(a.upload_date));
-
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedItems = sortedItems.slice(startIndex, endIndex);
@@ -211,55 +234,81 @@ const Search = () => {
                   {new Date(item.upload_date).toLocaleDateString()}
                 </p>
                 <p style={{ flex: '2' }}>
-                  {item.is_public && 'Public'}
-                  {item.workpackage && `${item.workpackage}`}
-                  {item.is_meeting && 'Meeting'}
-                  {item.is_deliverable && 'Deliverable'}
-                  {item.is_contact_list && 'Contact List'}
-                  {item.is_promotion && 'Promotion'}
-                  {item.is_report && 'Report'}
-                  {item.is_publication && 'Publication'}
+                  {item.is_public && 'Public '}
+                  {item.workpackage && item.workpackage !== 'null' && `${item.workpackage} `}
+                  {item.is_meeting && 'Meeting '}
+                  {item.is_deliverable && 'Deliverable '}
+                  {item.is_contact_list && 'Contact List '}
+                  {item.is_promotion && 'Promotion '}
+                  {item.is_report && 'Report '}
+                  {item.is_publication && 'Publication '}
                   {item.is_template && 'Template'}
                 </p>
                 <p style={{ flex: '0.5', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                   {item.type === 'folder' && (
                     <>
-                      <FontAwesomeIcon className='folder' icon={expandedFolders[item.id] ? faFolderOpen : faFolder} style={{ cursor: 'pointer', marginLeft: '10px', color: 'coral' }} onClick={() => handleFolderClick(item.id)} />
-                      <FontAwesomeIcon className='download' icon={faDownload} onClick={(e) => { e.stopPropagation(); handleDownloadClick(item); }} style={{ cursor: 'pointer', color: 'blue', marginLeft: '10px' }} />
+                      <FontAwesomeIcon 
+                        className='folder' 
+                        icon={expandedFolders[item.id] ? faFolderOpen : faFolder} 
+                        style={{ cursor: 'pointer', marginLeft: '10px', color: 'coral' }} 
+                        onClick={() => handleFolderClick(item.id)} 
+                      />
+                      <FontAwesomeIcon 
+                        className='download' 
+                        icon={faDownload} 
+                        onClick={(e) => { e.stopPropagation(); handleDownloadClick(item); }} 
+                        style={{ cursor: 'pointer', color: 'blue', marginLeft: '10px' }} 
+                      />
                     </>
                   )}
-                  {user && (
-                    <FontAwesomeIcon className='delete' icon={faTrashAlt} onClick={(e) => { e.stopPropagation(); handleDeleteClick(item.id, item.type); }} style={{ cursor: 'pointer', color: 'red', marginLeft: '10px' }} />
+                  {user && user.email === item.author && (
+                    <FontAwesomeIcon 
+                      className='delete' 
+                      icon={faTrashAlt} 
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        handleDeleteClick(item.id, item.type, item.author); 
+                      }} 
+                      style={{ cursor: 'pointer', color: 'red', marginLeft: '10px' }} 
+                    />
                   )}
                 </p>
               </div>
               {item.type === 'folder' && expandedFolders[item.id] && (
                 <Card variant="outlined" sx={{ maxWidth: 1000, backgroundColor: 'coral', opacity: '1' }}>
-                <CardContent>
-                <ul>
-                  {item.files && item.files.map((file, fileIndex) => (
-                    <li key={fileIndex} className="folder-search-list-item" onClick={() => handleFileClick(file)}>
-                      <div className='folder-list-info' style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <p style={{ flex: '2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {file.file_key.split('/').pop().length > 40 ? `${file.file_key.split('/').pop().substring(0, 40)}...` : file.file_key.split('/').pop()}
-                        </p>
-                        <p style={{ flex: '1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {file.author.length > 60 ? `${file.author.substring(0, 60)}...` : file.author}
-                        </p>
-                        <p style={{ flex: '2' }}>
-                          {new Date(file.upload_date).toLocaleDateString()}
-                        </p>
-                        <p style={{ flex: '0.75' }}>
-                          {file.file_url ? file.file_url.split('.').pop() : 'N/A'}
-                        </p>
-                        {user && (
-                          <FontAwesomeIcon className='delete' icon={faTrashAlt} onClick={(e) => { e.stopPropagation(); handleDeleteClick(file.id, 'file'); }} style={{ cursor: 'pointer', color: 'red', marginLeft: '10px' }} />
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-                </CardContent>
+                  <CardContent>
+                    <ul>
+                      {item.files && item.files.map((file, fileIndex) => (
+                        <li key={fileIndex} className="folder-search-list-item" onClick={() => handleFileClick(file)}>
+                          <div className='folder-list-info' style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <p style={{ flex: '2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {file.file_key.split('/').pop().length > 40 ? `${file.file_key.split('/').pop().substring(0, 40)}...` : file.file_key.split('/').pop()}
+                            </p>
+                            <p style={{ flex: '1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {file.author_name.length > 60 ? `${file.author_name.substring(0, 60)}...` : file.author_name}
+                            </p>
+                            <p style={{ flex: '2' }}>
+                              {new Date(file.upload_date).toLocaleDateString()}
+                            </p>
+                            <p style={{ flex: '0.75' }}>
+                              {file.file_url ? file.file_url.split('.').pop() : 'N/A'}
+                            </p>
+                            {user && user.email === file.author && (
+                              <FontAwesomeIcon 
+                                className='delete' 
+                                icon={faTrashAlt} 
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  handleDeleteClick(file.id, file.type, file.author); 
+                                }} 
+                                style={{ cursor: 'pointer', color: 'red', marginLeft: '10px' }} 
+                              />
+                            )}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
                 </Card>
               )}
             </li>

@@ -18,7 +18,6 @@ export const useAuth = () => {
         audience,
         scope,
       });
-      console.log("Access token:", token); // Log the token
       return token;
     } catch (error) {
       console.error("Error getting access token:", error);

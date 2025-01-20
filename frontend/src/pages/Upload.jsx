@@ -52,7 +52,21 @@ const Upload = () => {
         return;
       }
 
-      const token = await getAccessTokenSilently();
+      console.log('Attempting to retrieve access token...');
+      const token = await getAccessTokenSilently({
+        audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+        scope: 'create:files delete:files'
+      }).catch(error => {
+        console.error('Error retrieving access token:', error);
+      });
+
+      if (!token) {
+        console.error('Failed to retrieve access token.');
+        return;
+      }
+
+      // Log the token to the console
+      console.log('Access Token:', token);
 
       const formData = new FormData();
       files.forEach(file => {
@@ -82,11 +96,17 @@ const Upload = () => {
         }
       });
 
-      alert('Files uploaded successfully');
+      if (response.status === 200) {
+        alert('Files uploaded successfully');
+        // Add a callback or use React Router to refresh the Search page
+        window.location.href = '/search'; // Or use navigate('/search') if you're using React Router
+      }
     } catch (error) {
-      console.error('Error during upload:', error);
+      console.error('Error uploading files:', error);
+      alert('An error occurred while uploading files. Please try again.');
     }
   };
+  
 
   const currentDate = new Date().toISOString().split('T')[0];
 
@@ -263,7 +283,7 @@ const Upload = () => {
         </select>
 
         <CdsButton className="clr-button" type='submit' onClick={(e) => {
-            if (isPublic && !window.confirm('You have choosen to make this file public, are you sure ?')) {
+            if (isPublic && !window.confirm('You have chosen to make this file public, are you sure?')) {
             e.preventDefault();
             setIsPublic(false);
             }
