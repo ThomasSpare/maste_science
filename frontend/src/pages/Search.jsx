@@ -23,48 +23,50 @@ const Search = () => {
   const { user, getAccessTokenSilently, loginWithRedirect } = useAuth0();
   
   const api = axios.create({
-    baseURL: process.env.REACT_APP_API_BASE_URL,
+    baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:10000', // Fallback to localhost if the environment variable is not set
   });
 
-  const fetchData = async () => {
-    try {
-      const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: process.env.REACT_APP_AUTH0_AUDIENCE,
-          scope: "read:files read:folders delete:files"
-        },
-        ignoreCache: true
-      });
-  
-      const headers = {
-        Authorization: `Bearer ${token}`
-      };
-  
-      const folderResponse = await api.get('/api/folders', { headers });
-      const singleFileResponse = await api.get('/api/uploads', { headers });
-      
-      const folderData = folderResponse.data.map(folder => ({ ...folder, type: 'folder' }));
-      const singleFileData = singleFileResponse.data
-        .filter(file => !file.folder_id)
-        .map(file => ({ ...file, type: 'file' }));
-      const combinedData = [...folderData, ...singleFileData];
-      setItems(combinedData);
-  
-    } catch (error) {
-      if (error.message === 'Consent required') {
-        loginWithRedirect({
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = await getAccessTokenSilently({
           authorizationParams: {
             audience: process.env.REACT_APP_AUTH0_AUDIENCE,
-            scope: "read:files read:folders delete:files"
-          }
+            scope: "read:files read:folders",
+          },
+        });  
+        const headers = {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        };
+        const folderResponse = await api.get('/api/folders', { headers });
+        const singleFileResponse = await api.get('/api/uploads', { headers });
+        const folderData = folderResponse.data.map(folder => ({ ...folder, type: 'folder' }));
+        const singleFileData = singleFileResponse.data.filter(file => !file.folder_id).map(file => ({ ...file, type: 'file' }));
+        const combinedData = [...folderData, ...singleFileData];
+        setItems(combinedData);
+      } catch (error) {
+        console.error('Fetch error:', {
+          message: error.message,
+          scopes: error.scope
         });
+        if (error.error === 'consent_required') {
+          await loginWithRedirect({
+            authorizationParams: {
+              audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+              scope: "openid profile email read:files read:folders",
+              prompt: "consent"
+            },
+            appState: {
+              returnTo: window.location.pathname
+            }
+          });
+        }
       }
-    }
-  };
-  
-  useEffect(() => {
+    };
+    
     fetchData();
-  }, []);
+  }, [ getAccessTokenSilently, loginWithRedirect, api ]);
   
   useEffect(() => {
     if (user) {
@@ -97,7 +99,18 @@ const Search = () => {
     const confirmDownload = window.confirm('Do you want to download this folder?');
     if (confirmDownload) {
       try {
+        const token = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+            scope: 'read:files create:files delete:files read:folders delete:folders',
+          }
+        });
+        const headers = {
+          Authorization: `Bearer ${token}`
+        };
+        
         const response = await api.get(`/api/download-folder/${folder.id}`, {
+          headers,
           responseType: 'blob',
         });
         const blob = new Blob([response.data], { type: 'application/zip' });
@@ -213,11 +226,11 @@ const Search = () => {
           </label>
         </div>
         <div className="list-header" style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', backgroundColor: '#f0f0f0', fontWeight: 'bold' }}>
-          <span style={{ flex: '1.5' }}>Title</span>
-          <span style={{ flex: '1' }}>Author</span>
-          <span style={{ flex: '1' }}>Upload Date</span>
-          <span style={{ flex: '1.25' }}>Type of work</span>
-          <span style={{ flex: '1.75' }}>Download</span>
+          <span style={{ flex: '2.5' }}>Title</span>
+          <span style={{ flex: '1.3' }}>Author</span>
+          <span style={{ flex: '1.3' }}>Upload Date</span>
+          <span style={{ flex: '1' }}>Type of work</span>
+          <span style={{ flex: '1.5' }}>Download</span>
           <span style={{ flex: '0.5' }}>File Type</span>
         </div>
         <ol>

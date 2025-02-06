@@ -13,7 +13,7 @@ export const useAuth = () => {
     try {
       const audience = process.env.REACT_APP_AUTH0_AUDIENCE;
       const scope =
-        "read:users update:users delete:users create:users read:roles create:roles delete:roles update:roles"; // Add other scopes as needed
+        "openid profile email read:news read:files delete:files read:folders delete:folders create:folders read:users read:roles"; // Add other scopes as needed
       const token = await getAccessTokenSilently({
         audience,
         scope,

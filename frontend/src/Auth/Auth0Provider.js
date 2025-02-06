@@ -3,9 +3,9 @@ import { Auth0Provider } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 
 const Auth0ProviderWithHistory = ({ children }) => {
-  const domain = process.env.REACT_APP_AUTH0_DOMAIN || "";
-  const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID || "";
-  const audience = process.env.REACT_APP_AUTH0_AUDIENCE || "";
+  const domain = process.env.REACT_APP_AUTH0_DOMAIN;
+  const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
+  const audience = process.env.REACT_APP_AUTH0_AUDIENCE;
   const redirectUri =
     process.env.REACT_APP_AUTH0_REDIRECT_URI || window.location.origin;
   const navigate = useNavigate();
@@ -21,6 +21,13 @@ const Auth0ProviderWithHistory = ({ children }) => {
       audience={audience}
       redirectUri={redirectUri}
       onRedirectCallback={onRedirectCallback}
+      authorizationParams={{
+        redirect_uri: window.location.origin,
+        audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+        scope: "openid profile email read:files read:folders",
+        response_type: "token id_token",
+        prompt: "consent",
+      }}
     >
       {children}
     </Auth0Provider>

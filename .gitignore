@@ -58,6 +58,10 @@ node_modules/
 # dotenv environment variables file
 .env
 
+# Dependency directories
+backend/private.key
+backend/public.key
+
 # dataconnect generated files
 .dataconnect
 

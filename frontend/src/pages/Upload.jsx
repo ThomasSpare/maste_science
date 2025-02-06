@@ -55,7 +55,7 @@ const Upload = () => {
       console.log('Attempting to retrieve access token...');
       const token = await getAccessTokenSilently({
         audience: process.env.REACT_APP_AUTH0_AUDIENCE,
-        scope: 'create:files delete:files'
+        scope: 'create:files delete:files create:folders',
       }).catch(error => {
         console.error('Error retrieving access token:', error);
       });
@@ -64,10 +64,6 @@ const Upload = () => {
         console.error('Failed to retrieve access token.');
         return;
       }
-
-      // Log the token to the console
-      console.log('Access Token:', token);
-
       const formData = new FormData();
       files.forEach(file => {
         formData.append('files', file); // Ensure the field name is 'files'
@@ -106,7 +102,6 @@ const Upload = () => {
       alert('An error occurred while uploading files. Please try again.');
     }
   };
-  
 
   const currentDate = new Date().toISOString().split('T')[0];
 
@@ -163,7 +158,7 @@ const Upload = () => {
           <input
             type="checkbox"
             id="isPublic"
-            value={isPublic}
+            checked={isPublic}
             name="isPublic"
             onChange={e => setIsPublic(e.target.checked)}
           />
@@ -172,7 +167,7 @@ const Upload = () => {
         <div className="clr-checkbox">
           <input
             type="checkbox"
-            value={isMeeting}
+            checked={isMeeting}
             id="isMeeting"
             name="isMeeting"
             onChange={e => setIsMeeting(e.target.checked)}
@@ -182,7 +177,7 @@ const Upload = () => {
         <div className="clr-checkbox">
           <input
             type="checkbox"
-            value={isDeliverable}
+            checked={isDeliverable}
             id="isDeliverable"
             name="isDeliverable"
             onChange={e => setIsDeliverable(e.target.checked)}
@@ -192,7 +187,7 @@ const Upload = () => {
         <div className="clr-checkbox">
           <input
             type="checkbox"
-            value={isContactList}
+            checked={isContactList}
             id="contactList"
             name="contactList"
             onChange={e => setIsContactList(e.target.checked)}
@@ -202,7 +197,7 @@ const Upload = () => {
         <div className="clr-checkbox">
           <input
             type="checkbox"
-            value={isPromotion}
+            checked={isPromotion}
             id="isPromotion"
             name="isPromotion"
             onChange={e => setIsPromotion(e.target.checked)}
@@ -212,7 +207,7 @@ const Upload = () => {
         <div className="clr-checkbox">
           <input
             type="checkbox"
-            value={isReport}
+            checked={isReport}
             id="isReport"
             name="isReport"
             onChange={e => setIsReport(e.target.checked)}
@@ -222,7 +217,7 @@ const Upload = () => {
         <div className="clr-checkbox">
           <input
             type="checkbox"
-            value={isPublication}
+            checked={isPublication}
             id="isPublication"
             name="isPublication"
             onChange={e => setIsPublication(e.target.checked)}
@@ -232,7 +227,7 @@ const Upload = () => {
         <div className="clr-checkbox">
           <input
             type="checkbox"
-            value={isTemplate}
+            checked={isTemplate}
             id="isTemplate"
             name="isTemplate"
             onChange={e => setIsTemplate(e.target.checked)}
