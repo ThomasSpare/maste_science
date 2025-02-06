@@ -23,24 +23,34 @@ const Search = () => {
   const { user, getAccessTokenSilently, loginWithRedirect } = useAuth0();
   
   const api = axios.create({
-    baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:10000', // Fallback to localhost if the environment variable is not set
+    baseURL: process.env.REACT_APP_API_BASE_URL
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log('Attempting to retrieve access token...');
         const token = await getAccessTokenSilently({
           authorizationParams: {
             audience: process.env.REACT_APP_AUTH0_AUDIENCE,
             scope: "read:files read:folders",
           },
-        });  
+        });
+        console.log('Access token retrieved:', token);
+
         const headers = {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         };
+
+        console.log('Fetching folders...');
         const folderResponse = await api.get('/api/folders', { headers });
+        console.log('Folders fetched:', folderResponse.data);
+
+        console.log('Fetching uploads...');
         const singleFileResponse = await api.get('/api/uploads', { headers });
+        console.log('Uploads fetched:', singleFileResponse.data);
+
         const folderData = folderResponse.data.map(folder => ({ ...folder, type: 'folder' }));
         const singleFileData = singleFileResponse.data.filter(file => !file.folder_id).map(file => ({ ...file, type: 'file' }));
         const combinedData = [...folderData, ...singleFileData];
@@ -116,7 +126,7 @@ const Search = () => {
         const blob = new Blob([response.data], { type: 'application/zip' });
         saveAs(blob, `${folder.folder_name}.zip`);
       } catch (error) {
-        // Handle error
+        console.error('Error downloading folder:', error);
       }
     }
   };
@@ -150,7 +160,7 @@ const Search = () => {
         const combinedData = [...folderData, ...singleFileData];
         setItems(combinedData);
       } catch (error) {
-        // Handle error
+        console.error('Error deleting item:', error);
       }
     }
   };
