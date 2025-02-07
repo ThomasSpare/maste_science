@@ -363,7 +363,8 @@ app.get(
         scopes: req.auth?.scope,
       });
 
-      const query = `
+      // Fetch folders and their files
+      const folderQuery = `
         SELECT f.*, 
           ARRAY_AGG(json_build_object(
             'id', u.id,
@@ -377,16 +378,25 @@ app.get(
         GROUP BY f.id
         ORDER BY f.upload_date DESC
       `;
+      const folderResult = await pool.query(folderQuery);
+      console.log("Folders fetched:", folderResult.rows);
 
-      const result = await pool.query(query);
+      // Fetch files that are not in any folder
+      const fileQuery = `
+        SELECT *
+        FROM uploads
+        WHERE folder_id IS NULL
+        ORDER BY upload_date DESC
+      `;
+      const fileResult = await pool.query(fileQuery);
+      console.log("Files fetched:", fileResult.rows);
 
-      if (result.rowCount === 0) {
-        return res.status(404).json({ message: "No folders found" });
-      }
-
-      res.json(result.rows);
+      res.json({
+        folders: folderResult.rows,
+        files: fileResult.rows,
+      });
     } catch (error) {
-      console.error("Error fetching folders:", error);
+      console.error("Error fetching folders and files:", error);
       res.status(500).json({
         message: "Internal server error",
         error: error.message,
