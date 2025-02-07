@@ -284,7 +284,7 @@ const Search = () => {
                       />
                     </>
                   )}
-                  {user && user.email === item.author && (
+                  {user &&  (user.email === item.author || user.name === item.author) && (
                     <FontAwesomeIcon 
                       className='delete' 
                       icon={faTrashAlt} 
