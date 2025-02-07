@@ -52,7 +52,7 @@ const Search = () => {
         console.log('Uploads fetched:', singleFileResponse.data);
 
         const folderData = folderResponse.data.folders.map(folder => ({ ...folder, type: 'folder' }));
-        const singleFileData = folderResponse.data.files.map(file => ({ ...file, type: 'file' }));
+        const singleFileData = singleFileResponse.data.files.map(file => ({ ...file, type: 'file' }));
         const combinedData = [...folderData, ...singleFileData];
         setItems(combinedData);
       } catch (error) {
@@ -156,7 +156,7 @@ const Search = () => {
         const folderResponse = await api.get('/api/folders', { headers });
         const singleFileResponse = await api.get('/api/uploads', { headers });
         const folderData = folderResponse.data.folders.map(folder => ({ ...folder, type: 'folder' }));
-        const singleFileData = folderResponse.data.files.map(file => ({ ...file, type: 'file' }));
+        const singleFileData = singleFileResponse.data.files.map(file => ({ ...file, type: 'file' }));
         const combinedData = [...folderData, ...singleFileData];
         setItems(combinedData);
       } catch (error) {
