@@ -23,7 +23,7 @@ const Search = () => {
   const { user, getAccessTokenSilently, loginWithRedirect } = useAuth0();
   
   const api = axios.create({
-    baseURL: process.env.REACT_APP_API_BASE_URL
+    baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:10000', // Fallback to localhost if the environment variable is not set
   });
 
   useEffect(() => {
@@ -51,8 +51,8 @@ const Search = () => {
         const singleFileResponse = await api.get('/api/uploads', { headers });
         console.log('Uploads fetched:', singleFileResponse.data);
 
-        const folderData = folderResponse.data.map(folder => ({ ...folder, type: 'folder' }));
-        const singleFileData = singleFileResponse.data.filter(file => !file.folder_id).map(file => ({ ...file, type: 'file' }));
+        const folderData = folderResponse.data.folders.map(folder => ({ ...folder, type: 'folder' }));
+        const singleFileData = folderResponse.data.files.map(file => ({ ...file, type: 'file' }));
         const combinedData = [...folderData, ...singleFileData];
         setItems(combinedData);
       } catch (error) {
@@ -155,8 +155,8 @@ const Search = () => {
         });
         const folderResponse = await api.get('/api/folders', { headers });
         const singleFileResponse = await api.get('/api/uploads', { headers });
-        const folderData = folderResponse.data.map(folder => ({ ...folder, type: 'folder' }));
-        const singleFileData = singleFileResponse.data.filter(file => !file.folder_id).map(file => ({ ...file, type: 'file' }));
+        const folderData = folderResponse.data.folders.map(folder => ({ ...folder, type: 'folder' }));
+        const singleFileData = folderResponse.data.files.map(file => ({ ...file, type: 'file' }));
         const combinedData = [...folderData, ...singleFileData];
         setItems(combinedData);
       } catch (error) {
