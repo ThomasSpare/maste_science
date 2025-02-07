@@ -2,27 +2,32 @@ const fs = require("fs");
 const dotenv = require("dotenv");
 const express = require("express");
 const { google } = require("googleapis");
-const path = require("path"); // Import the path module
+const path = require("path");
 var axios = require("axios").default;
 const multer = require("multer");
 const cors = require("cors");
 const { Pool } = require("pg");
 const AWS = require("aws-sdk");
 const archiver = require("archiver");
-
 const jwksRsa = require("jwks-rsa");
-const { expressjwt: jwt } = require("express-jwt");
+const { expressjwt: jwtMiddleware } = require("express-jwt");
 
 dotenv.config();
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Authorization", "Content-Type"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const port = process.env.PORT || 10000;
 
-// Explicit secret retrieval
-const checkJwt = jwt({
-  // Use a function to dynamically retrieve secret
+// Middleware to verify JWT token using Auth0 public key
+const checkJwt = jwtMiddleware({
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
@@ -32,117 +37,26 @@ const checkJwt = jwt({
   audience: process.env.AUTH0_AUDIENCE,
   issuer: `https://${process.env.AUTH0_DOMAIN}/`,
   algorithms: ["RS256"],
+});
 
-  // Explicitly handle token extraction
-  getToken: function fromHeaderOrQuerystring(req) {
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.split(" ")[0] === "Bearer"
-    ) {
-      return req.headers.authorization.split(" ")[1];
+// Modified checkScope middleware to be used with specific scopes
+const checkScope = (requiredScopes) => {
+  return (req, res, next) => {
+    if (!req.auth || !req.auth.scope) {
+      return res.status(401).json({ message: "No authentication found" });
     }
-    return null;
-  },
-});
 
-const checkFilesScope = jwt({
-  permissions: [
-    "delete:files",
-    "update:files",
-    "create:files",
-    "read:files",
-    "read:folders",
-    "create:folders",
-    "update:folders",
-    "delete:folders",
-    "read:news",
-    "create:news",
-    "update:news",
-    "delete:news",
-    "read:users",
-    "create:users",
-    "update:users",
-  ],
-});
+    const scopes = req.auth.scope.split(" ");
+    const hasScope = requiredScopes.every((scope) => scopes.includes(scope));
 
-app.use((err, req, res, next) => {
-  console.error("JWT Middleware Error:", {
-    name: err.name,
-    message: err.message,
-    status: err.status,
-  });
-
-  if (err.name === "UnauthorizedError") {
-    return res.status(401).json({
-      error: "Unauthorized",
-      message: err.message,
-    });
-  }
-
-  next(err);
-});
-
-const getAuth0AccessToken = async () => {
-  const options = {
-    method: "POST",
-    url: `https://${process.env.AUTH0_DOMAIN}/oauth/token`,
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    data: new URLSearchParams({
-      grant_type: "client_credentials",
-      client_id: process.env.AUTH0_CLIENT_ID,
-      client_secret: process.env.AUTH0_CLIENT_SECRET,
-      audience: `https://${process.env.AUTH0_DOMAIN}/api/v2/`,
-    }),
+    if (!hasScope) {
+      return res.status(403).json({
+        message: "Insufficient permissions",
+      });
+    }
+    next();
   };
-
-  try {
-    const response = await axios.request(options);
-    return response.data.access_token;
-  } catch (error) {
-    console.error("Error getting Auth0 access token:", error);
-    throw error;
-  }
 };
-
-const getUserInfo = async (email) => {
-  const accessToken = await getAuth0AccessToken();
-
-  const options = {
-    method: "GET",
-    url: `https://${process.env.AUTH0_DOMAIN}/api/v2/users-by-email`,
-    headers: {
-      authorization: `Bearer ${accessToken}`,
-    },
-    params: {
-      email: email,
-    },
-  };
-
-  try {
-    const response = await axios.request(options);
-    return response.data[0]; // Assuming the email is unique and returns a single user
-  } catch (error) {
-    console.error("Error getting user info from Auth0:", error);
-    throw error;
-  }
-};
-
-var options = {
-  method: "POST",
-  url: "https://dev-h6b2f6mjco5pu6wz.us.auth0.com/oauth/token",
-  headers: { "content-type": "application/x-www-form-urlencoded" },
-  data: new URLSearchParams({
-    grant_type: "client_credentials",
-    client_id: "AUTH0_CLIENT_ID",
-    client_secret: "AUTH0_CLIENT_SECRET",
-    audience: "AUTH0_AUDIENCE",
-  }),
-};
-
-axios
-  .request(options)
-  .then(function (response) {})
-  .catch(function (error) {});
 
 // AWS S3 Configuration
 const s3 = new AWS.S3({
@@ -173,7 +87,8 @@ const upload = multer({ storage });
 // Endpoint to upload files
 app.post(
   "/api/uploads",
-  checkFilesScope,
+  checkJwt,
+  checkScope(["create:files", "create:folders"]), // Check for the required scope
   upload.array("files"),
   async (req, res) => {
     const {
@@ -198,7 +113,7 @@ app.post(
     try {
       let folderId = null;
 
-      if (files.length > 1) {
+      if (files.length > 1 && folderName) {
         // Create a new folder entry in the database
         const folderQuery = `
           INSERT INTO folders (folder_name, author, upload_date, country, category, is_public, workpackage, is_meeting, is_deliverable, is_contact_list, is_promotion, is_report, is_publication, is_template)
@@ -226,7 +141,9 @@ app.post(
       }
 
       for (const file of files) {
-        const encodedFolderName = encodeURIComponent(folderName);
+        const encodedFolderName = folderName
+          ? encodeURIComponent(folderName)
+          : "";
         const encodedFileName = encodeURIComponent(file.originalname);
         const fileKey = folderId
           ? `${encodedFolderName}/${Date.now()}_${encodedFileName}`
@@ -302,92 +219,156 @@ app.post(
   }
 );
 
-// Endpoint to get list of uploaded files
-app.get("/api/uploads", checkFilesScope, async (req, res) => {
-  try {
-    const query =
-      "SELECT * FROM uploads WHERE folder_id IS NULL ORDER BY upload_date DESC";
-    const result = await pool.query(query);
-    res.json(result.rows);
-  } catch (error) {
-    console.error("Error fetching uploads:", error);
-    res.status(500).json({ message: "Internal server error" });
+// Modified uploads endpoint to match working version
+app.get(
+  "/api/uploads",
+  checkJwt,
+  checkScope(["read:files"]),
+  async (req, res) => {
+    try {
+      const query =
+        "SELECT * FROM uploads WHERE folder_id IS NULL ORDER BY upload_date DESC";
+      const result = await pool.query(query);
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching uploads:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
-});
+);
 
 // Endpoint to download the entire folder as a zip file
-app.get("/api/download-folder/:folderId", checkFilesScope, async (req, res) => {
-  const { folderId } = req.params;
+app.get(
+  "/api/download-folder/:folderId",
+  checkJwt,
+  checkScope(["read:folders"]),
+  async (req, res) => {
+    const { folderId } = req.params;
 
-  try {
-    // Fetch the folder and its files from the database
-    const folderQuery = `
+    try {
+      // Fetch the folder and its files from the database
+      const folderQuery = `
       SELECT f.folder_name, u.file_key, u.file_url
       FROM folders f
       JOIN uploads u ON u.folder_id = f.id
       WHERE f.id = $1
     `;
-    const folderValues = [folderId];
-    const folderResult = await pool.query(folderQuery, folderValues);
+      const folderValues = [folderId];
+      const folderResult = await pool.query(folderQuery, folderValues);
 
-    if (folderResult.rowCount === 0) {
-      return res.status(404).json({ message: "Folder not found" });
+      if (folderResult.rowCount === 0) {
+        return res.status(404).json({ message: "Folder not found" });
+      }
+
+      const folderName = folderResult.rows[0].folder_name;
+      const files = folderResult.rows;
+
+      // Create a zip file
+      const zip = archiver("zip", { zlib: { level: 9 } });
+      res.attachment(`${folderName}.zip`);
+      zip.pipe(res);
+
+      for (const file of files) {
+        const params = {
+          Bucket: bucketName,
+          Key: file.file_key,
+        };
+        const s3Object = await s3.getObject(params).promise();
+        zip.append(s3Object.Body, { name: file.file_key.split("/").pop() });
+      }
+
+      await zip.finalize();
+    } catch (error) {
+      console.error("Error downloading folder:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
+  }
+);
 
-    const folderName = folderResult.rows[0].folder_name;
-    const files = folderResult.rows;
+// Modified folders endpoint to match working version's response structure
+app.get(
+  "/api/folders",
+  checkJwt,
+  checkScope(["read:folders"]),
+  async (req, res) => {
+    try {
+      console.log("Fetching folders with auth:", {
+        hasAuth: !!req.auth,
+        scopes: req.auth?.scope,
+      });
 
-    // Create a zip file
-    const zip = archiver("zip", { zlib: { level: 9 } });
-    res.attachment(`${folderName}.zip`);
-    zip.pipe(res);
+      // Modified query to match working version's structure
+      const foldersQuery = `
+        SELECT f.*,
+          COALESCE(json_agg(
+            CASE WHEN u.id IS NOT NULL THEN
+              json_build_object(
+                'id', u.id,
+                'file_key', u.file_key,
+                'file_url', u.file_url,
+                'author', u.author,
+                'upload_date', u.upload_date,
+                'category', u.category,
+                'country', u.country
+              )
+            END
+          ) FILTER (WHERE u.id IS NOT NULL), '[]') AS files
+        FROM folders f
+        LEFT JOIN uploads u ON f.id = u.folder_id
+        GROUP BY f.id
+        ORDER BY f.upload_date DESC;
+      `;
 
-    for (const file of files) {
-      const params = {
-        Bucket: bucketName,
-        Key: file.file_key,
-      };
-      const s3Object = await s3.getObject(params).promise();
-      zip.append(s3Object.Body, { name: file.file_key.split("/").pop() });
+      const foldersResult = await pool.query(foldersQuery);
+      console.log("Folders fetched:", foldersResult.rows);
+
+      // Return direct query results like the working version
+      res.json(foldersResult.rows);
+    } catch (error) {
+      console.error("Error fetching folders:", error);
+      res.status(500).json({
+        message: "Internal server error",
+        error: error.message,
+      });
     }
-
-    await zip.finalize();
-  } catch (error) {
-    console.error("Error downloading folder:", error);
-    res.status(500).json({ message: "Internal server error" });
   }
-});
+);
 
-// Endpoint to serve uploaded files
-app.get("/api/uploads/:fileKey", checkFilesScope, async (req, res) => {
-  const { fileKey } = req.params;
-  const decodedFileKey = decodeURIComponent(fileKey); // Decode the file key
-  console.log("Fetching file with key:", decodedFileKey);
+// Modified file serving endpoint
+app.get(
+  "/api/uploads/:fileKey",
+  checkJwt,
+  checkScope(["read:files"]),
+  async (req, res) => {
+    const { fileKey } = req.params;
+    const decodedFileKey = decodeURIComponent(fileKey);
+    console.log("Fetching file with key:", decodedFileKey);
 
-  const params = {
-    Bucket: bucketName, // Ensure bucketName is correctly referenced
-    Key: decodedFileKey,
-  };
+    const params = {
+      Bucket: bucketName,
+      Key: decodedFileKey,
+    };
 
-  try {
-    const file = await s3.getObject(params).promise();
-    console.log("File fetched successfully:", file);
-    res.setHeader("Content-Type", file.ContentType);
-    res.setHeader(
-      "Content-Disposition",
-      `inline; filename="${decodedFileKey}"`
-    );
-    res.send(file.Body);
-  } catch (error) {
-    console.error("Error fetching file:", error);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    try {
+      const file = await s3.getObject(params).promise();
+      console.log("File fetched successfully:", file);
+      res.setHeader("Content-Type", file.ContentType);
+      res.setHeader(
+        "Content-Disposition",
+        `inline; filename="${decodedFileKey}"`
+      );
+      res.send(file.Body);
+    } catch (error) {
+      console.error("Error fetching file:", error);
+      res
+        .status(500)
+        .json({ message: "Internal server error", error: error.message });
+    }
   }
-});
+);
 
 // Endpoint to serve ppt and pptx files
-app.get("/api/download-ppt/:fileKey", checkFilesScope, async (req, res) => {
+app.get("/api/download-ppt/:fileKey", checkScope, async (req, res) => {
   const { fileKey } = req.params;
   console.log("Fetching ppt/pptx file with key:", fileKey);
 
@@ -411,7 +392,7 @@ app.get("/api/download-ppt/:fileKey", checkFilesScope, async (req, res) => {
 });
 
 // Endpoint to delete a folder or file
-app.delete("/api/uploads/:id", checkFilesScope, checkJwt, async (req, res) => {
+app.delete("/api/uploads/:id", checkScope, checkJwt, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -487,61 +468,56 @@ app.delete("/api/uploads/:id", checkFilesScope, checkJwt, async (req, res) => {
 });
 
 // Endpoint to post news articles
-app.post(
-  "/api/news",
-  checkFilesScope,
-  upload.single("image"),
-  async (req, res) => {
-    const { title, content, author } = req.body; // Extract author from request body
-    const image = req.file;
+app.post("/api/news", checkScope, upload.single("image"), async (req, res) => {
+  const { title, content, author } = req.body; // Extract author from request body
+  const image = req.file;
 
-    if (!title || !content || !author) {
-      // Check if author is provided
-      return res
-        .status(400)
-        .json({ message: "Title, content, and author are required" });
-    }
+  if (!title || !content || !author) {
+    // Check if author is provided
+    return res
+      .status(400)
+      .json({ message: "Title, content, and author are required" });
+  }
 
-    let imageUrl = null;
-    if (image) {
-      const fileKey = `${Date.now()}_${image.originalname}`;
-      const params = {
-        Bucket: bucketName, // Ensure bucketName is correctly referenced
-        Key: fileKey,
-        Body: image.buffer,
-        ContentType: image.mimetype,
-      };
-
-      try {
-        const uploadResult = await s3.upload(params).promise();
-        imageUrl = uploadResult.Location;
-      } catch (error) {
-        console.error("Error uploading image:", error);
-        return res.status(500).json({ message: "Internal server error" });
-      }
-    }
+  let imageUrl = null;
+  if (image) {
+    const fileKey = `${Date.now()}_${image.originalname}`;
+    const params = {
+      Bucket: bucketName, // Ensure bucketName is correctly referenced
+      Key: fileKey,
+      Body: image.buffer,
+      ContentType: image.mimetype,
+    };
 
     try {
-      const query =
-        "INSERT INTO news (title, content, author, image_url) VALUES ($1, $2, $3, $4) RETURNING *";
-      const values = [title, content, author, imageUrl];
-      const result = await pool.query(query, values);
-
-      console.log("News article saved to database:", result.rows[0]);
-
-      res.status(201).json({
-        message: "News article posted successfully",
-        news: result.rows[0],
-      });
+      const uploadResult = await s3.upload(params).promise();
+      imageUrl = uploadResult.Location;
     } catch (error) {
-      console.error("Error posting news article:", error);
-      res.status(500).json({ message: "Internal server error" });
+      console.error("Error uploading image:", error);
+      return res.status(500).json({ message: "Internal server error" });
     }
   }
-);
+
+  try {
+    const query =
+      "INSERT INTO news (title, content, author, image_url) VALUES ($1, $2, $3, $4) RETURNING *";
+    const values = [title, content, author, imageUrl];
+    const result = await pool.query(query, values);
+
+    console.log("News article saved to database:", result.rows[0]);
+
+    res.status(201).json({
+      message: "News article posted successfully",
+      news: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error posting news article:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 // Endpoint to get a specific news article by ID
-app.get("/api/news/:id", checkFilesScope, async (req, res) => {
+app.get("/api/news/:id", checkScope, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -563,7 +539,7 @@ app.get("/api/news/:id", checkFilesScope, async (req, res) => {
 // Endpoint to update news articles
 app.put(
   "/api/news/:id",
-  checkFilesScope,
+  checkScope,
   upload.single("image"),
   async (req, res) => {
     const { id } = req.params;
@@ -626,7 +602,7 @@ app.put(
 );
 
 // Endpoint to delete news articles
-app.delete("/api/news/:id", checkFilesScope, async (req, res) => {
+app.delete("/api/news/:id", checkScope, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -651,7 +627,7 @@ app.delete("/api/news/:id", checkFilesScope, async (req, res) => {
 });
 
 // Endpoint to get list of news articles
-app.get("/api/news", checkFilesScope, async (req, res) => {
+app.get("/api/news", checkScope, async (req, res) => {
   try {
     const query = "SELECT * FROM news ORDER BY created_at DESC LIMIT 3";
     const result = await pool.query(query);
