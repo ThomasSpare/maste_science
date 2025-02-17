@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
-import { useAuth0 } from '@auth0/auth0-react';
+import { Link } from "react-router-dom";
 import "@cds/core/button/register.js";
 import "@cds/core/icon/register.js";
 import "@cds/core/dropdown/register.js";
@@ -14,30 +13,12 @@ import "./Home.css";
 
 function Home() {
   const [news, setNews] = useState([]);
-  const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const token = await getAccessTokenSilently({
-          authorizationParams: {
-            audience: process.env.REACT_APP_AUTH0_AUDIENCE,
-            scope: "read:news read:files",
-          }
-        });
-
-        const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-        console.log('Token payload:', tokenPayload);
-        console.log('Token permissions:', tokenPayload.permissions || 'No permissions found');
-
         const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL || ''}/api/news`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }
+          `${process.env.REACT_APP_API_BASE_URL || ''}/api/news`
         );
         setNews(response.data);
       } catch (error) {
@@ -46,7 +27,7 @@ function Home() {
     };
 
     fetchNews();
-  }, [getAccessTokenSilently]);
+  }, []);
 
   return (
     <div className="App">
