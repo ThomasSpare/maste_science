@@ -53,49 +53,49 @@ const Upload = () => {
       }
 
       console.log('Attempting to retrieve access token...');
-      const token = await getAccessTokenSilently({
-        audience: process.env.REACT_APP_AUTH0_AUDIENCE,
-        scope: 'create:files delete:files create:folders',
-      }).catch(error => {
-        console.error('Error retrieving access token:', error);
-      });
-
-      if (!token) {
-        console.error('Failed to retrieve access token.');
-        return;
-      }
-      const formData = new FormData();
-      files.forEach(file => {
-        formData.append('files', file); // Ensure the field name is 'files'
-      });
-      formData.append('author', author); // Set the author to the logged-in user's name
-      formData.append('uploadDate', uploadDate);
-      formData.append('country', country);
-      formData.append('category', category);
-      formData.append('isPublic', isPublic);
-      formData.append('workpackage', workpackage || null); // Handle empty workpackage
-      formData.append('isMeeting', isMeeting);
-      formData.append('isDeliverable', isDeliverable);
-      formData.append('isContactList', isContactList);
-      formData.append('isPromotion', isPromotion);
-      formData.append('isReport', isReport);
-      formData.append('isPublication', isPublication);
-      formData.append('isTemplate', isTemplate);
-      if (files.length > 1) {
-        formData.append('folderName', folderName); // Add folder name to form data if multiple files
-      }
-
-      const response = await api.post('/api/uploads', formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
+        const token = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+            scope: "create:files create:folders"
+          }
+        });
+        
+        if (!token) {
+          console.error('Failed to retrieve access token.');
+          return;
         }
-      });
-
-      if (response.status === 200) {
-        alert('Files uploaded successfully');
-        // Add a callback or use React Router to refresh the Search page
-        window.location.href = '/search'; // Or use navigate('/search') if you're using React Router
+        const formData = new FormData();
+        files.forEach(file => {
+          formData.append('files', file); // Ensure the field name is 'files'
+        });
+        formData.append('author', author); // Set the author to the logged-in user's name
+        formData.append('uploadDate', uploadDate);
+        formData.append('country', country);
+        formData.append('category', category);
+        formData.append('isPublic', isPublic);
+        formData.append('workpackage', workpackage || null); // Handle empty workpackage
+        formData.append('isMeeting', isMeeting);
+        formData.append('isDeliverable', isDeliverable);
+        formData.append('isContactList', isContactList);
+        formData.append('isPromotion', isPromotion);
+        formData.append('isReport', isReport);
+        formData.append('isPublication', isPublication);
+        formData.append('isTemplate', isTemplate);
+        if (files.length > 1) {
+          formData.append('folderName', folderName); // Add folder name to form data if multiple files
+        }
+  
+        const response = await api.post('/api/uploads', formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+  
+        if (response.status === 200) {
+          alert('Files uploaded successfully');
+          // Add a callback or use React Router to refresh the Search page
+          window.location.href = '/search'; // Or use navigate('/search') if you're using React Router
       }
     } catch (error) {
       console.error('Error uploading files:', error);
@@ -288,6 +288,6 @@ const Upload = () => {
       </form>
     </div>
   );
-}
+};
 
 export default Upload;

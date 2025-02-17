@@ -292,12 +292,6 @@ app.get(
   checkScope(["read:folders"]),
   async (req, res) => {
     try {
-      console.log("Fetching folders with auth:", {
-        hasAuth: !!req.auth,
-        scopes: req.auth?.scope,
-      });
-
-      // Modified query to match working version's structure
       const foldersQuery = `
         SELECT f.*,
           COALESCE(json_agg(
@@ -315,14 +309,16 @@ app.get(
           ) FILTER (WHERE u.id IS NOT NULL), '[]') AS files
         FROM folders f
         LEFT JOIN uploads u ON f.id = u.folder_id
-        GROUP BY f.id
+        GROUP BY f.id, f.folder_name, f.author, f.upload_date, f.country, 
+                 f.category, f.is_public, f.workpackage, f.is_meeting, 
+                 f.is_deliverable, f.is_contact_list, f.is_promotion, 
+                 f.is_report, f.is_publication, f.is_template
         ORDER BY f.upload_date DESC;
       `;
 
       const foldersResult = await pool.query(foldersQuery);
-      console.log("Folders fetched:", foldersResult.rows);
 
-      // Return direct query results like the working version
+      // Send just the rows directly, don't wrap them
       res.json(foldersResult.rows);
     } catch (error) {
       console.error("Error fetching folders:", error);
