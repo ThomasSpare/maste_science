@@ -229,7 +229,7 @@ app.get(
       const query =
         "SELECT * FROM uploads WHERE folder_id IS NULL ORDER BY upload_date DESC";
       const result = await pool.query(query);
-      res.json(result.rows);
+      res.json({ files: result.rows });
     } catch (error) {
       console.error("Error fetching uploads:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -315,11 +315,8 @@ app.get(
                  f.is_report, f.is_publication, f.is_template
         ORDER BY f.upload_date DESC;
       `;
-
       const foldersResult = await pool.query(foldersQuery);
-
-      // Send just the rows directly, don't wrap them
-      res.json(foldersResult.rows);
+      res.json({ folders: foldersResult.rows });
     } catch (error) {
       console.error("Error fetching folders:", error);
       res.status(500).json({
