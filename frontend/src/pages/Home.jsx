@@ -62,12 +62,6 @@ function Home() {
                 />
               </div>
               <div className="column">
-                <h1 style={{ color: "white", 
-                backgroundColor: "lightcoral", 
-                height: "30px",
-                borderRadius: "6px",
-                padding: "5px" }} 
-                className="home-headline">Ongoing Maintenance of the site </h1>
                 <div>
                   <p className="home-text">
                     The project Multidisciplinära Åtaganden för Sveriges gen-IV
@@ -101,7 +95,7 @@ function Home() {
                           className="news-image"
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "frontend/public/landscape-placeholder-svgrepo-com.svg";
+                            e.target.src = "https://res.cloudinary.com/djunroohl/image/upload/v1739826909/fcpw9zqxs0wwxnmrp62n.svg";
                           }}
                         />
                         <div className="news-content">

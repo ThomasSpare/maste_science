@@ -625,7 +625,8 @@ app.delete("/api/news/:id", checkScope, async (req, res) => {
 // Endpoint to get list of news articles
 app.get("/api/news", checkScope, async (req, res) => {
   try {
-    const query = "SELECT * FROM news ORDER BY created_at DESC LIMIT 3";
+    const query =
+      "SELECT id, title, content, author, image_url, created_at FROM news ORDER BY created_at DESC LIMIT 3";
     const result = await pool.query(query);
     res.json(result.rows);
   } catch (error) {

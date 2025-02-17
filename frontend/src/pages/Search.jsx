@@ -36,20 +36,15 @@ const Search = () => {
             scope: "read:files read:folders",
           },
         });
-        console.log('Access token retrieved:', token);
 
         const headers = {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         };
 
-        console.log('Fetching folders...');
         const folderResponse = await api.get('/api/folders', { headers });
-        console.log('Folders fetched:', folderResponse.data);
 
-        console.log('Fetching uploads...');
         const singleFileResponse = await api.get('/api/uploads', { headers });
-        console.log('Uploads fetched:', singleFileResponse.data);
 
         const folderData = folderResponse.data.folders.map(folder => ({ ...folder, type: 'folder' }));
         const singleFileData = singleFileResponse.data.files.map(file => ({ ...file, type: 'file' }));
