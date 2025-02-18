@@ -41,7 +41,7 @@ img{
 
 @media screen and (max-width: 768px){
     .news-card{
-        width: 80vw;
+        width: 165vw;
     }
     .header-news{
         height: 4.5rem;

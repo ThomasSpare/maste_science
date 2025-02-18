@@ -559,6 +559,7 @@ li:hover {
 
 *, :after, :before {
   box-sizing: inherit;
+  width: auto !important;
 }
 
 

@@ -76,7 +76,6 @@ const Search = () => {
     if (user) {
       const user_nickname = user.nickname.replace('.', ' ').replace(/\b\w/g, char => char.toUpperCase());
       setUserNickname(user_nickname);
-      console.log('user_nickname:', user_nickname);
       // User details can be used here if needed
     }
   }, [user, user_nickname]);
@@ -129,8 +128,6 @@ const Search = () => {
   };
 
   const handleDeleteClick = async (id, user, author, user_nickname) => {
-    console.log('user_nickname:', user_nickname);
-    console.log('author:', author);
     if (user_nickname !== author) {
       alert('You can only delete files that you have uploaded');
       return;

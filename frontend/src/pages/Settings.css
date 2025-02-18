@@ -156,6 +156,7 @@ textarea {
     }
     .news-image {
       margin-top: 8vh;
+      width: auto;
   }
     input, select, textarea {
         display: block;
