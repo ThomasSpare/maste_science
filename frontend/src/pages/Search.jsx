@@ -18,6 +18,7 @@ const Search = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [user_nickname, setUserNickname] = useState('');
   const itemsPerPage = 20;
   const navigate = useNavigate();
   const { user, getAccessTokenSilently, loginWithRedirect } = useAuth0();
@@ -29,14 +30,12 @@ const Search = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log('Attempting to retrieve access token...');
         const token = await getAccessTokenSilently({
           authorizationParams: {
             audience: process.env.REACT_APP_AUTH0_AUDIENCE,
             scope: "read:files read:folders",
           },
         });
-
         const headers = {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -53,7 +52,7 @@ const Search = () => {
       } catch (error) {
         console.error('Fetch error:', {
           message: error.message,
-          scopes: error.scope
+          scopes: error.scope || 'N/A'
         });
         if (error.error === 'consent_required') {
           await loginWithRedirect({
@@ -71,13 +70,16 @@ const Search = () => {
     };
     
     fetchData();
-  }, [ getAccessTokenSilently, loginWithRedirect, api ]);
-  
+  }, [getAccessTokenSilently, loginWithRedirect, api, user]);
+
   useEffect(() => {
     if (user) {
+      const user_nickname = user.nickname.replace('.', ' ').replace(/\b\w/g, char => char.toUpperCase());
+      setUserNickname(user_nickname);
+      console.log('user_nickname:', user_nickname);
       // User details can be used here if needed
     }
-  }, [user]);
+  }, [user, user_nickname]);
 
   const handleFolderClick = (folderId) => {
     setExpandedFolders((prevExpandedFolders) => ({
@@ -126,8 +128,10 @@ const Search = () => {
     }
   };
 
-  const handleDeleteClick = async (id, type, author) => {
-    if (!user || user.email !== author) {
+  const handleDeleteClick = async (id, user, author, user_nickname) => {
+    console.log('user_nickname:', user_nickname);
+    console.log('author:', author);
+    if (user_nickname !== author) {
       alert('You can only delete files that you have uploaded');
       return;
     }
@@ -279,13 +283,13 @@ const Search = () => {
                       />
                     </>
                   )}
-                  {user &&  (user.email === item.author || user.name === item.author) && (
+                  {user_nickname === item.author && (
                     <FontAwesomeIcon 
                       className='delete' 
                       icon={faTrashAlt} 
                       onClick={(e) => { 
                         e.stopPropagation(); 
-                        handleDeleteClick(item.id, item.type, item.author); 
+                        handleDeleteClick(item.id, item.type, item.author, user_nickname); 
                       }} 
                       style={{ cursor: 'pointer', color: 'red', marginLeft: '10px' }} 
                     />
@@ -311,7 +315,7 @@ const Search = () => {
                             <p style={{ flex: '0.75' }}>
                               {file.file_url ? file.file_url.split('.').pop() : 'N/A'}
                             </p>
-                            {user && user.email === file.author && (
+                            {user_nickname === file.author && (
                               <FontAwesomeIcon 
                                 className='delete' 
                                 icon={faTrashAlt} 

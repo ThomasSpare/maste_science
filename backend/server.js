@@ -593,6 +593,25 @@ app.delete("/api/news/:id", async (req, res) => {
   }
 });
 
+app.put("/api/update-author", checkJwt, async (req, res) => {
+  const { oldAuthor, newAuthor } = req.body;
+
+  try {
+    // Update uploads table
+    const uploadsQuery = "UPDATE uploads SET author = $1 WHERE author = $2";
+    await pool.query(uploadsQuery, [newAuthor, oldAuthor]);
+
+    // Update folders table
+    const foldersQuery = "UPDATE folders SET author = $1 WHERE author = $2";
+    await pool.query(foldersQuery, [newAuthor, oldAuthor]);
+
+    res.json({ message: "Author names updated successfully" });
+  } catch (error) {
+    console.error("Error updating author names:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 // Endpoint to get list of news articles
 app.get("/api/news", async (req, res) => {
   try {

@@ -33,8 +33,9 @@ const Upload = () => {
     setUploadDate(new Date().toISOString().split('T')[0]);
     setIsAuthenticatedState(isAuthenticated);
     if (user && user.name) {
-      setAuthor(user.name); // Set the author to the logged-in user's name
+      setAuthor(user.nickname.replace('.', ' ').replace(/\b\w/g, char => char.toUpperCase())); // Set the author to the logged-in user's name with spaces instead of dots and capitalize each word
     }
+  
   }, [isAuthenticated, user]);
 
   const handleUpload = async (event) => {
