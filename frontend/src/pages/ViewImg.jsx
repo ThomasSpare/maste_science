@@ -4,46 +4,52 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { saveAs } from 'file-saver';
 import { CdsButton } from '@cds/react/button';
 
+
 const ViewImg = () => {
     const { fileId, fileKey } = useParams();
+    const { getAccessTokenSilently } = useAuth0();
     const [imageSrc, setImageSrc] = useState('');
     useAuth0(); // Ensure this path is correct
 
     useEffect(() => {
         const abortController = new AbortController();
         const signal = abortController.signal;
+        const fetchData = async () => {
 
         if (!fileKey) {
             console.error("File parameter is undefined.");
             return;
         }
+        const token = await getAccessTokenSilently({
+            authorizationParams: {
+              audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+              scope: "read:files",
+            },
+          });
         const serverAddress = process.env.REACT_APP_API_BASE_URL; // Update this to your server address
         const url = `${serverAddress}/api/uploads/${fileKey}`;
+            const response = await fetch(url, { 
+                signal,
+                headers: {
+                  Authorization: `Bearer ${token}` // Include the token in headers
+                }
+              });
+      
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              
+              const imageBlob = await response.blob();
+              const imageObjectURL = URL.createObjectURL(imageBlob);
+              setImageSrc(imageObjectURL);
+        };
 
-        fetch(url, { signal })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.blob();
-            })
-            .then(blob => {
-                const imageUrl = URL.createObjectURL(blob);
-                console.log("Image URL:", imageUrl); // Log the image URL for debugging
-                setImageSrc(imageUrl);
-            })
-            .catch(error => {
-                if (error.name === 'AbortError') {
-                    console.log('Fetch aborted');
-                } else {
-                    console.error('Fetch error:', error);
-                }
-            });
+        fetchData();
 
         return () => {
             abortController.abort();
         };
-    }, [fileKey]); // Add fileKey to the dependency array
+    }, [fileKey, fileId]); // Add fileKey to the dependency array
 
     const handleDownload = () => {
         fetch(imageSrc)

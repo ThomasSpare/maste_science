@@ -3,49 +3,68 @@ import { useParams } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 
 const ViewPdf = () => {
-  const { fileId, fileKey } = useParams();
+  const { fileKey } = useParams();
   const [fileUrl, setFileUrl] = useState('');
-  useAuth0(); // Ensure this path is correct
+  const { getAccessTokenSilently } = useAuth0(); // Get the token function
 
   useEffect(() => {
     const abortController = new AbortController();
-    const signal = abortController.signal;
 
-    if (!fileKey) {
-      console.error("File parameter is undefined.");
-      return;
-    }
-    const serverAddress = process.env.REACT_APP_API_BASE_URL; // Update this to your server address
-    const url = `${serverAddress}/api/uploads/${fileKey}`;
-    
-    fetch(url, { signal })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+    const fetchPdf = async () => {
+      try {
+        if (!fileKey) {
+          console.error("File parameter is undefined.");
+          return;
         }
-        return response.blob();
-      })
-      .then(blob => {
-        // Create an object URL from the Blob object
+    
+        // Get the authentication token with correct scope format
+        const token = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+            scope: "read:files read:folders delete:files",  // Add all required scopes
+          },
+        });
+    
+        const serverAddress = process.env.REACT_APP_API_BASE_URL;
+        // Decode the fileKey since it might be URL encoded
+        const decodedFileKey = decodeURIComponent(fileKey);
+        const url = `${serverAddress}/api/uploads/${decodedFileKey}`;
+        
+        console.log('Requesting file:', decodedFileKey); // Debug log
+    
+        const response = await fetch(url, { 
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/pdf'
+          }
+        });
+    
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
+
+        const blob = await response.blob();
         const objectUrl = URL.createObjectURL(blob);
         setFileUrl(objectUrl);
-      })
-      .catch(error => {
+      } catch (error) {
         if (error.name === 'AbortError') {
           console.log('Fetch aborted');
         } else {
           console.error('Fetch error:', error);
         }
-      });
+      }
+    };
+
+    fetchPdf();
 
     return () => {
       abortController.abort();
-      // Clean up the object URL to avoid memory leaks
       if (fileUrl) {
         URL.revokeObjectURL(fileUrl);
       }
     };
-  }, [fileKey]); // Add fileKey to the dependency array
+  }, [fileKey, getAccessTokenSilently]); // Add getAccessTokenSilently to dependencies
 
   return (
     <iframe

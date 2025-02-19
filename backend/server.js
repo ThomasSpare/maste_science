@@ -314,32 +314,53 @@ app.get(
 );
 
 // Endpoint to serve uploaded files
-app.get("/api/uploads/:fileKey", async (req, res) => {
-  const { fileKey } = req.params;
-  const decodedFileKey = decodeURIComponent(fileKey); // Decode the file key
-  console.log("Fetching file with key:", decodedFileKey);
+app.get(
+  "/api/uploads/:fileKey",
+  checkJwt,
+  checkScope(["read:files", "read:folders"]), // Fixed scope array
+  async (req, res) => {
+    const { fileKey } = req.params;
+    const decodedKey = decodeURIComponent(fileKey);
 
-  const params = {
-    Bucket: bucketName, // Ensure bucketName is correctly referenced
-    Key: decodedFileKey,
-  };
+    console.log("Attempting to fetch file:", decodedKey); // Debug log
 
-  try {
-    const file = await s3.getObject(params).promise();
-    console.log("File fetched successfully:", file);
-    res.setHeader("Content-Type", file.ContentType);
-    res.setHeader(
-      "Content-Disposition",
-      `inline; filename="${decodedFileKey}"`
-    );
-    res.send(file.Body);
-  } catch (error) {
-    console.error("Error fetching file:", error);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    try {
+      // Check if file exists in database first
+      const fileQuery = "SELECT file_key FROM uploads WHERE file_key = $1";
+      const fileResult = await pool.query(fileQuery, [decodedKey]);
+
+      if (fileResult.rows.length === 0) {
+        console.log("File not found in database:", decodedKey);
+        return res.status(404).json({ message: "File not found in database" });
+      }
+
+      const params = {
+        Bucket: bucketName,
+        Key: decodedKey,
+      };
+
+      const file = await s3.getObject(params).promise();
+
+      res.setHeader("Content-Type", file.ContentType);
+      res.setHeader(
+        "Content-Disposition",
+        `inline; filename="${decodedKey.split("/").pop()}"`
+      );
+      res.send(file.Body);
+    } catch (error) {
+      console.error("Error fetching file:", error);
+      if (error.code === "NoSuchKey") {
+        res.status(404).json({ message: "File not found in S3" });
+      } else {
+        res.status(500).json({
+          message: "Internal server error",
+          error: error.message,
+          key: decodedKey, // Include the key in error response
+        });
+      }
+    }
   }
-});
+);
 
 // Endpoint to serve ppt and pptx files
 app.get("/api/download-ppt/:fileKey", async (req, res) => {

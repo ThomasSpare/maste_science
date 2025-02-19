@@ -11,6 +11,7 @@ import "./Search.css";
 import "../App.css"; 
 import { useAuth0 } from '@auth0/auth0-react';
 
+
 const Search = () => {
   const [items, setItems] = useState([]);
   const [expandedFolders, setExpandedFolders] = useState({});
@@ -42,8 +43,8 @@ const Search = () => {
         };
 
         const folderResponse = await api.get('/api/folders', { headers });
-
         const singleFileResponse = await api.get('/api/uploads', { headers });
+    
 
         const folderData = folderResponse.data.folders.map(folder => ({ ...folder, type: 'folder' }));
         const singleFileData = singleFileResponse.data.files.map(file => ({ ...file, type: 'file' }));
@@ -89,15 +90,15 @@ const Search = () => {
 
   const handleFileClick = (upload) => {
     const fileExtension = upload.file_url.split('.').pop();
-    const encodedFileKey = encodeURIComponent(upload.file_key);
+    // Use file_key directly instead of encoding it again
     if (upload.is_promotion || ['jpg', 'png', 'svg'].includes(fileExtension)) {
-      navigate(`/view-img/${upload.id}/${encodedFileKey}`);
+      navigate(`/view-img/${upload.id}/${upload.file_key}`);
     } else if (['ppt', 'pptx'].includes(fileExtension)) {
-      navigate(`/view-ppt/${upload.id}/${encodedFileKey}`);
+      navigate(`/view-ppt/${upload.id}/${upload.file_key}`);
     } else if (['doc', 'docx', 'xls', 'xlsx', 'csv', 'txt'].includes(fileExtension)) {
-      navigate(`/view-text/${upload.id}/${encodedFileKey}`);
+      navigate(`/view-text/${upload.id}/${upload.file_key}`);
     } else {
-      navigate(`/view-pdf/${upload.id}/${encodedFileKey}`);
+      navigate(`/view-pdf/${upload.id}/${upload.file_key}`);
     }
   };
 
